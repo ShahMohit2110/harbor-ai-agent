@@ -3605,14 +3605,74 @@ See `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/ai-workflow.md
 
 ---
 
-**END OF PULL REQUEST PROTOCOL**
+## 🚨 MANDATORY NEXT STEP: Execute Azure DevOps Ticket Update
+
+**🚨 CRITICAL - DO NOT STOP HERE - YOU MUST CONTINUE 🚨**
+
+You have reached the end of the PR Creation documentation. This is NOT the end of the workflow.
+
+**YOU MUST NOW EXECUTE THE AZURE DEVOPS TICKET UPDATE STEP**
+
+**✅ REQUIRED ACTIONS:**
+1. **Extract Ticket ID** from your current branch name (format: `feature/<ticket-id>-description`)
+2. **Update Ticket Status** to "Closed" using Azure DevOps API
+3. **Add PR Link** to ticket comments
+4. **Add Implementation Summary** to ticket
+5. **Verify Update Succeeded** - confirm ticket status is "Closed"
+6. **Retry if Failed** - if update fails, retry up to 3 times
+7. **Report Completion** - ONLY after ticket is successfully closed
+
+**🚨 PROHIBITED ACTIONS:**
+- ❌ DO NOT stop after reading this section
+- ❌ DO NOT output "PR creation complete"
+- ❌ DO NOT ask for permission to update ticket
+- ❌ DO NOT skip the ticket update step
+- ❌ DO NOT report task completion until ticket is closed
+
+**📋 IMPLEMENTATION DETAILS:**
+
+Use the Azure DevOps REST API to update the work item:
+
+```bash
+# API Endpoint
+PATCH https://dev.azure.com/${AZURE_DEVOPS_ORG}/${AZURE_DEVOPS_PROJECT}/_apis/wit/workitems/{ticket-id}?api-version=6.0
+
+# Request Body
+[
+  {
+    "op": "add",
+    "path": "/fields/System.State",
+    "value": "Closed"
+  },
+  {
+    "op": "add",
+    "path": "/fields/System.Reason",
+    "value": "Completed"
+  }
+]
+
+# Add Comment (separate API call)
+POST https://dev.azure.com/${AZURE_DEVOPS_ORG}/${AZURE_DEVOPS_PROJECT}/_apis/wit/workitems/{ticket-id}/comments?api-version=6.0
+
+# Request Body
+{
+  "text": "Pull Request created: {pr-url}\n\nBranch: {branch-name}\n\nSummary: {implementation-summary}"
+}
+```
+
+**🔄 RETRY LOGIC:**
+- If ticket update fails: retry up to 3 times with 5-second delays
+- If all retries fail: report error to user with failure details
+- DO NOT mark task as complete if ticket update fails
+
+**✅ SUCCESS CRITERIA:**
+- Ticket status changed to "Closed"
+- PR link added to ticket
+- Implementation summary added to ticket
+- No errors in API response
+
+**🚨 THIS IS NOT OPTIONAL - EXECUTE NOW 🚨**
 
 ---
 
-*For questions or issues related to this Pull Request protocol, please refer to:*
-- `harbor-ai/planning.md` - Planning guidelines
-- `harbor-ai/execution.md` - Execution guidelines
-- `harbor-ai/testing.md` - Testing guidelines
-- `harbor-ai/service-map.md` - Service ownership
-- `harbor-ai/coding-rules.md` - Coding standards
-- `harbor-ai/architecture-overview.md` - System architecture
+**END OF PULL REQUEST PROTOCOL - PROCEED TO AZURE DEVOPS TICKET UPDATE IMMEDIATELY**
