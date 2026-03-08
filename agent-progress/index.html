@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harbor AI Autonomous Development Agent</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">Harbor AI Autonomous Development Agent</h1>
+                <p class="subtitle">An AI-powered system that automatically fetches tasks, implements code, tests functionality, and creates pull requests.</p>
+            </div>
+        </header>
+
+        <!-- Architecture Overview -->
+        <section class="section architecture-section">
+            <h2 class="section-title">System Architecture</h2>
+            <div class="architecture-flow">
+                <div class="flow-node">
+                    <div class="node-icon">📋</div>
+                    <div class="node-label">Azure DevOps</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-node">
+                    <div class="node-icon">🤖</div>
+                    <div class="node-label">Harbor AI Agent</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-node">
+                    <div class="node-icon">📝</div>
+                    <div class="node-label">Git Repository</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-node">
+                    <div class="node-icon">🔀</div>
+                    <div class="node-label">Pull Request</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-node">
+                    <div class="node-icon">✅</div>
+                    <div class="node-label">Development Branch</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow Visualization -->
+        <section class="section workflow-section">
+            <h2 class="section-title">Autonomous Workflow Pipeline</h2>
+            <div class="workflow-container">
+                <div class="workflow-step" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Fetch Active Azure DevOps Tickets</h3>
+                        <p>Connect to Azure DevOps and retrieve work items where State = Active</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Architecture Analysis</h3>
+                        <p>Analyze system architecture, service dependencies, and affected components</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Implementation Planning</h3>
+                        <p>Create detailed implementation plan with technical specifications</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Code Implementation</h3>
+                        <p>Write production-ready code following coding standards and best practices</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Testing & Validation</h3>
+                        <p>Run automated tests, validate functionality, and verify requirements</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="6">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Create Branch from dev</h3>
+                        <p>Create new feature branch from the dev branch</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="7">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>Commit & Push Code</h3>
+                        <p>Commit changes with descriptive messages and push to remote repository</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="8">
+                    <div class="step-number">8</div>
+                    <div class="step-content">
+                        <h3>Generate Pull Request</h3>
+                        <p>Create comprehensive pull request targeting dev branch</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step" data-step="9">
+                    <div class="step-number">9</div>
+                    <div class="step-content">
+                        <h3>Update Ticket Status to Closed</h3>
+                        <p>Update Azure DevOps ticket with PR link and mark as completed</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Status Simulation -->
+        <section class="section status-section">
+            <h2 class="section-title">Live Agent Status</h2>
+            <div class="status-panel">
+                <div class="status-header">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Agent Status</span>
+                    </div>
+                    <button class="simulate-btn" onclick="startSimulation()">Start Simulation</button>
+                </div>
+                <div class="status-console" id="statusConsole">
+                    <div class="console-line ready">Ready to start simulation...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Automation Benefits -->
+        <section class="section benefits-section">
+            <h2 class="section-title">Automation Benefits</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">⚡</div>
+                    <h3>Fully Autonomous</h3>
+                    <p>Complete end-to-end development workflow without human intervention</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🏗️</div>
+                    <h3>Architecture Enforcement</h3>
+                    <p>Consistent adherence to architectural standards and patterns</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🧪</div>
+                    <h3>Automatic Testing</h3>
+                    <p>Built-in test execution and validation at every step</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔀</div>
+                    <h3>Automated PRs</h3>
+                    <p>Automatic branch creation and comprehensive pull request generation</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔗</div>
+                    <h3>Seamless Integration</h3>
+                    <p>Full integration with Azure DevOps for complete task lifecycle management</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">📊</div>
+                    <h3>Quality Assurance</h3>
+                    <p>Coding standards compliance and automated code quality checks</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Harbor AI Agent - Presentation Dashboard | For Demonstration Purposes Only</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
