@@ -737,6 +737,39 @@ import { validateRequest } from '../middleware/validation';
 - Run `npm install` or `yarn install`
 - Document in planning document
 
+#### 🚨 CRITICAL: harbor-shared-models Dependency Updates
+
+**When working with harbor-shared-models dependency:**
+
+**❌ NEVER use file path references:**
+```json
+"harbor-shared-models": "file:../harborSharedModels"  // WRONG!
+```
+
+**✅ ALWAYS use the exact version number from harborSharedModels/package.json:**
+```json
+"harbor-shared-models": "1.2.5"  // CORRECT
+```
+
+**Required Process:**
+1. Read the current version from `harborSharedModels/package.json`
+2. Update the dependency in your service's `package.json` to use that exact version
+3. Run `npm install` to update node_modules
+
+**Why this matters:**
+- Version tracking and reproducible builds
+- Production deployments require published versions
+- Proper dependency resolution in npm
+
+**Affected Services:**
+- harborUserSvc
+- harborJobSvc
+- harborNotificationSvc
+- harborSocketSvc
+- harborGateway
+
+**Reference:** See `workflows/harbor-shared-models-workflow.md` for complete details.
+
 **Output of Step 5:** Code that follows placement rules, has no unused code, proper imports, and verified dependencies.
 
 ---

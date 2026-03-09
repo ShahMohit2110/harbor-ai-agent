@@ -79,6 +79,81 @@ When a task involves `harborSharedModels`, the agent will:
 3. Skip testing, PR creation, and Azure DevOps ticket closure
 4. Only update models and version numbers
 
+---
+
+## 🚨 CRITICAL: Dependency Update Rules for Other Services
+
+**When harborSharedModels version is updated, ANY service that depends on it MUST reference the NEW VERSION NUMBER, NOT a file path.**
+
+### Required Behavior
+
+**Scenario:** After updating `harborSharedModels/package.json` version (e.g., from `1.2.4` to `1.2.5`), when working on another service that depends on `harbor-shared-models`:
+
+**❌ WRONG:**
+```json
+"harbor-shared-models": "file:../harborSharedModels"
+```
+
+**✅ CORRECT:**
+```json
+"harbor-shared-models": "1.2.5"
+```
+
+### Mandatory Dependency Update Process
+
+When updating a service that depends on `harbor-shared-models`:
+
+1. **Read the current version** from `harborSharedModels/package.json`
+2. **Update the dependency** in the other service's `package.json` to use that EXACT version number
+3. **NEVER use** `file:../harborSharedModels` or any other file path reference
+4. **Run `npm install`** in the service directory to update node_modules
+
+### Example Workflow
+
+```bash
+# Step 1: After updating harborSharedModels version
+cd harborSharedModels
+# Updated package.json version to 1.2.5
+
+# Step 2: When working on another service (e.g., harborUserSvc)
+cd ../harborUserSvc
+
+# Step 3: Update package.json dependency
+# "harbor-shared-models": "1.2.5"  ← Use the exact version number
+
+# Step 4: Install the updated dependency
+npm install
+
+# Step 5: Continue with implementation
+```
+
+### Services That Depend on harbor-shared-models
+
+The following services typically depend on `harbor-shared-models` and MUST follow this rule:
+- `harborUserSvc` (User Service)
+- `harborJobSvc` (Job Service)
+- `harborNotificationSvc` (Notification Service)
+- `harborSocketSvc` (Socket Service)
+- `harborGateway` (API Gateway)
+
+**Rule:** Whenever any of these services are updated after a `harborSharedModels` version change, their `package.json` MUST reference the new version number.
+
+### Why This Rule Exists
+
+1. **Version Tracking:** Using version numbers instead of file paths ensures proper dependency management
+2. **Reproducibility:** Exact version numbers guarantee reproducible builds
+3. **Deployment:** Production deployments require published package versions, not local file references
+4. **Dependency Resolution:** npm properly resolves version numbers but may have issues with file paths in production
+5. **Semantic Versioning:** Following semantic versioning practices requires using version numbers
+
+### Verification Checklist
+
+After updating dependencies, verify:
+- [ ] `harborSharedModels/package.json` version has been incremented
+- [ ] Other services' `package.json` contains the new version number (NOT `file:...`)
+- [ ] `npm install` has been run in the affected service
+- [ ] No `file:../harborSharedModels` references exist in any service's `package.json`
+
 ## Examples
 
 **Example 1: Adding a field to an existing model**

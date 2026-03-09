@@ -37,6 +37,33 @@ For `harborSharedModels` service:
 - ❌ Do **NOT run `npm start`**
 - ✅ Only **update and version** the service
 
+### 🚨 CRITICAL: Dependency Update Rules
+
+**When harborSharedModels version is updated, ANY service that depends on it MUST reference the NEW VERSION NUMBER, NOT a file path.**
+
+**❌ WRONG:**
+```json
+"harbor-shared-models": "file:../harborSharedModels"
+```
+
+**✅ CORRECT:**
+```json
+"harbor-shared-models": "1.2.5"
+```
+
+**Required Process:**
+1. Read current version from `harborSharedModels/package.json`
+2. Update dependency in other service's `package.json` to use that EXACT version number
+3. NEVER use `file:../harborSharedModels` or any file path reference
+4. Run `npm install` in the service directory
+
+**Affected Services:**
+- harborUserSvc
+- harborJobSvc
+- harborNotificationSvc
+- harborSocketSvc
+- harborGateway
+
 ### Scope Limitation
 These rules apply **EXCLUSIVELY** to `harborSharedModels`.
 
