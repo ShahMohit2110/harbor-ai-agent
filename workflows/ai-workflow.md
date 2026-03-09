@@ -48,6 +48,17 @@ This document defines the **complete end-to-end workflow** that Harbor-AI must f
 - Documentation-only changes
 - Configuration updates
 
+**🚨 EXCEPTION: harborSharedModels Service**
+
+The `harborSharedModels` service follows a **DIFFERENT workflow** from all other services.
+
+**When a task involves harborSharedModels:**
+- ❌ DO NOT use this standard workflow
+- ✅ INSTEAD: Follow `workflows/harbor-shared-models-workflow.md`
+- Key differences: No PRs, version updates mandatory, no tests, branch from main (not dev)
+
+**Detection:** The agent will automatically detect when a task involves `harborSharedModels` and apply the special workflow.
+
 ### Workflow Philosophy
 
 The Harbor AI workflow follows these principles:
@@ -285,6 +296,18 @@ Harbor-AI has access to the following documentation files that guide behavior th
 - PR description templates
 - PR quality rules
 - Review guidelines
+
+#### **9. harbor-shared-models-workflow.md** 🚨 SPECIAL
+**Purpose:** harborSharedModels special workflow
+**Used In:** When task involves harborSharedModels service
+**Contains:**
+- Special workflow rules for shared model library
+- Model update scenarios (existing vs new)
+- Version update requirements
+- Git workflow differences (no PRs, branch from main)
+- Execution restrictions (no tests, no npm start)
+
+**IMPORTANT:** This workflow REPLACES the standard workflow when harborSharedModels is involved.
 
 ### Documentation Usage Matrix
 
