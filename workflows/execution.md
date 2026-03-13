@@ -110,7 +110,32 @@ You do NOT stop after Execution. You do NOT stop after Testing. You continue unt
 
 ### Mandatory Pre-Execution Reading
 
+**⚠️ CRITICAL: The Repository Impact Analysis MUST be completed BEFORE this phase.**
+
 **Before starting ANY implementation, Harbor-AI MUST read the following files in order:**
+
+#### 0. 🚨 Repository Impact Analysis Report (MANDATORY)
+
+**⚠️ This is NOT optional. The Repository Impact Analysis MUST be completed FIRST.**
+
+```
+agent-progress/{task-id}-repository-impact-analysis.md
+```
+
+**This report contains:**
+- **ALL** repositories in the workspace that were analyzed
+- **EACH** repository evaluated for task relevance
+- **SPECIFIC** changes required for each affected repository
+- **IMPLEMENTATION ORDER** for multi-repository changes
+
+**⚠️ IF THIS FILE DOES NOT EXIST:**
+1. **STOP IMMEDIATELY**
+2. **Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/repository-impact-analysis.md`**
+3. **Execute the complete Repository Impact Analysis phase**
+4. **Generate the impact analysis report**
+5. **Only THEN return to this execution phase**
+
+**🚨 CRITICAL: You CANNOT proceed to implementation without completing Repository Impact Analysis.**
 
 #### 1. Planning Documentation
 ```
@@ -120,13 +145,15 @@ harbor-ai/planning.md
 - Defines scope, affected services, API changes, database changes
 - Specifies testing requirements and acceptance criteria
 
-#### 2. Service Map
+#### 2. Repository Analysis (Dynamic)
 ```
-harbor-ai/service-map.md
+agent-memory/repo-analysis/ (generated at runtime)
 ```
-- Identifies which services own specific features
-- Prevents service boundary violations
-- Ensures changes are made in the correct service
+- Contains discovered repository information
+- Identifies which repositories own specific features
+- Prevents repository boundary violations
+- Ensures changes are made in the correct repository
+- Generated automatically when agent starts
 
 #### 3. Global Coding Rules
 ```
@@ -137,7 +164,7 @@ harbor-ai/coding-rules.md
 - Establishes safety rules and constraints
 
 #### 4. Service-Specific Coding Rules
-For each affected service, read:
+For **EACH** affected service (from Repository Impact Analysis), read:
 ```
 {service-directory}/coding-rules.md
 ```
@@ -145,12 +172,93 @@ Examples:
 - `harborUserSvc/coding-rules.md`
 - `harborJobSvc/coding-rules.md`
 - `harborNotificationSvc/coding-rules.md`
+- `harborWebsite/coding-rules.md` (if applicable)
+- Other services as identified in Repository Impact Analysis
+
+**🚨 IMPORTANT: Read service-specific rules for ALL affected repositories, not just one.**
 
 **Verification Checkpoint:**
+- [ ] **Repository Impact Analysis has been completed** (MANDATORY)
+- [ ] **Repository Impact Analysis report exists and has been read** (MANDATORY)
+- [ ] **All affected repositories identified in impact analysis** (MANDATORY)
 - [ ] Planning document exists and is approved
 - [ ] All affected services are identified
-- [ ] Service-specific coding rules are available
+- [ ] Service-specific coding rules are available for **ALL** affected services
 - [ ] Required dependencies are installed
+
+**⚠️ If any mandatory checkpoint fails, DO NOT proceed. Complete the missing phase first.**
+
+---
+
+## 🚨 CRITICAL: Multi-Repository Execution (MANDATORY)
+
+**⚠️ IMPORTANT: This phase REQUIRES the Repository Impact Analysis to be completed FIRST.**
+
+### MANDATORY Pre-Execution Checkpoint
+
+**Before ANY implementation begins, you MUST:**
+
+1. **Read the Repository Impact Analysis Report**
+   - File: `{harbor-ai}/agent-progress/{task-id}-repository-impact-analysis.md`
+   - This file was created in the previous phase (Repository Impact Analysis)
+
+2. **Extract the Complete Repository List**
+   - Identify ALL repositories marked as "Relevant" in the impact analysis
+   - Note the impact level (High/Medium/Low) for each repository
+   - Note the specific changes required for each repository
+
+3. **Verify Multi-Repository Scope**
+   - If impact analysis lists 1 repository → Implement in 1 repository
+   - If impact analysis lists 2 repositories → Implement in BOTH repositories
+   - If impact analysis lists 3+ repositories → Implement in ALL repositories
+
+**🚨 CRITICAL RULE: You MUST implement changes in EVERY repository identified in the impact analysis.**
+
+**❌ FORBIDDEN:**
+- Implementing changes in only ONE repository when impact analysis identifies MULTIPLE
+- Skipping repositories marked as "Relevant"
+- Assuming a repository doesn't need changes without checking the impact analysis
+
+**✅ REQUIRED:**
+- Read the complete impact analysis report
+- Create a checklist of ALL repositories that need changes
+- Implement changes in EACH repository on the checklist
+- Verify ALL repositories have been modified before proceeding
+
+### Multi-Repository Execution Pattern
+
+**For EACH repository identified in the impact analysis, repeat Steps 4-7:**
+
+```markdown
+Repository Execution Loop:
+┌─────────────────────────────────────┐
+│ Repository 1: {name}                 │
+│ - Step 4: Create branch              │
+│ - Step 5: Navigate to repository     │
+│ - Step 6: Implement changes          │
+│ - Step 7: Validate & commit          │
+└─────────────────────────────────────┘
+              ↓
+┌─────────────────────────────────────┐
+│ Repository 2: {name}                 │
+│ - Step 4: Create branch              │
+│ - Step 5: Navigate to repository     │
+│ - Step 6: Implement changes          │
+│ - Step 7: Validate & commit          │
+└─────────────────────────────────────┘
+              ↓
+          Continue...
+              ↓
+┌─────────────────────────────────────┐
+│ Repository N: {name}                 │
+│ - Step 4: Create branch              │
+│ - Step 5: Navigate to repository     │
+│ - Step 6: Implement changes          │
+│ - Step 7: Validate & commit          │
+└─────────────────────────────────────┘
+```
+
+**🚨 ABSOLUTE RULE: Do NOT proceed to testing phase until ALL repositories have been modified.**
 
 ---
 
@@ -197,24 +305,95 @@ Example Success Criteria:
 
 ### Step 2: Identify Affected Services
 
-#### 2.1 Use Service Map
-- **Action:** Reference `harbor-ai/service-map.md`
+#### 2.1 🚨 MANDATORY: Read Repository Impact Analysis
+
+**⚠️ CRITICAL: This step REQUIRES the Repository Impact Analysis to be completed.**
+
+**If the Repository Impact Analysis has NOT been completed:**
+1. **STOP immediately**
+2. **Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/repository-impact-analysis.md`**
+3. **Execute ALL phases of the repository impact analysis**
+4. **Generate the complete impact analysis report**
+5. **Only THEN return to this step**
+
+#### 2.2 Extract Repository List from Impact Analysis
+
+**Read the Repository Impact Analysis Report:**
+```bash
+# Location of the impact analysis report
+cat /Users/mohitshah/Documents/HarborService/harbor-ai/agent-progress/{task-id}-repository-impact-analysis.md
+```
+
+**Extract the following information:**
+```markdown
+## Affected Repositories (from impact analysis)
+
+1. **harborUserSvc**
+   - Impact: HIGH
+   - Changes: Add availability endpoints, update user model
+
+2. **harborWebsite**
+   - Impact: MEDIUM
+   - Changes: Add availability UI components
+
+3. **harborSocketSvc**
+   - Impact: MEDIUM
+   - Changes: Broadcast availability changes
+
+(Additional repositories as identified in the impact analysis)
+```
+
+#### 2.3 Create Repository Execution Checklist
+
+**Create a checklist of ALL repositories that need changes:**
+
+```markdown
+## Repository Execution Checklist
+
+Task: {task title}
+
+Repositories requiring changes:
+- [ ] harborUserSvc - HIGH impact
+- [ ] harborWebsite - MEDIUM impact
+- [ ] harborSocketSvc - MEDIUM impact
+- [ ] (Other repositories from impact analysis)
+
+Total repositories: {count}
+```
+
+**🚨 CRITICAL RULE: You MUST check off EACH repository as you complete it.**
+**Do NOT proceed to testing until ALL repositories are checked.**
+
+#### 2.4 Use Service Map
+- **Action:** Reference `harbor-ai/agent-memory/repo-analysis/ (dynamic repository analysis)`
 - **Process:**
   1. Map each feature in the planning document to its owning service
-  2. Identify primary service (main implementation)
-  3. Identify secondary services (supporting changes)
+  2. **⚠️ CROSS-REFERENCE with Repository Impact Analysis results**
+  3. **⚠️ VERIFY that all repositories from impact analysis are included**
   4. Document cross-service dependencies
 
-#### 2.2 Service Impact Analysis
-Create a service impact table:
+**⚠️ VALIDATION CHECKPOINT:**
+- [ ] Repository Impact Analysis has been completed
+- [ ] Impact analysis report has been read
+- [ ] All affected repositories have been identified
+- [ ] Repository execution checklist has been created
+- [ ] NO repositories have been skipped or omitted
 
-| Service | Role | Impact Level | Changes Required |
-|---------|------|--------------|------------------|
-| harborJobSvc | Primary | High | Add job creation endpoint, validation logic |
-| harborUserSvc | Secondary | Low | Update user profile schema reference |
-| harborNotificationSvc | Secondary | Medium | Add job notification event handler |
+**If any checkpoint fails, STOP and complete the Repository Impact Analysis phase first.**
 
-#### 2.3 Validate Service Boundaries
+#### 2.5 Service Impact Analysis
+Create a service impact table (using data from Repository Impact Analysis):
+
+| Service | Role | Impact Level | Changes Required | Status |
+|---------|------|--------------|------------------|--------|
+| harborJobSvc | Primary | High | Add job creation endpoint, validation logic | Pending |
+| harborUserSvc | Secondary | Low | Update user profile schema reference | Pending |
+| harborNotificationSvc | Secondary | Medium | Add job notification event handler | Pending |
+
+**⚠️ IMPORTANT: The "Status" column tracks completion for EACH repository.**
+**Update status to "Complete" only after changes are implemented in that repository.**
+
+#### 2.6 Validate Service Boundaries
 - **Check:** Does this change respect service ownership?
 - **Verify:** Are we modifying the correct service for this feature?
 - **Confirm:** No cross-boundary data access (e.g., Job Service directly accessing User database)
@@ -257,7 +436,84 @@ Before writing new code, analyze existing implementations:
 
 ---
 
-### Step 4: Create Feature Branch
+### 🚨 Step 3.5: Multi-Repository Loop Planning
+
+**⚠️ CRITICAL: This step ensures ALL repositories are modified.**
+
+#### 3.5.1 Determine Implementation Order
+
+**Based on the Repository Impact Analysis, determine the order for implementing changes:**
+
+```markdown
+## Repository Implementation Order
+
+1. harborSharedModels (if applicable) - Must be FIRST (other repos depend on it)
+2. Primary Backend Service (e.g., harborUserSvc) - Main implementation
+3. Secondary Backend Services (e.g., harborNotificationSvc) - Supporting changes
+4. Frontend Services (e.g., harborWebsite) - UI changes
+5. Mobile Services (e.g., HarborApp) - Mobile UI
+
+⚠️ CRITICAL: Implement in THIS ORDER to respect dependencies.
+```
+
+#### 3.5.2 Create Repository Loop Structure
+
+**For EACH repository in the impact analysis, you will execute Steps 4-7:**
+
+```markdown
+## Repository Execution Loop
+
+Repository 1 of {total}: {repository-name}
+├── Step 4: Create feature branch in {repository-name}
+├── Step 5: Navigate to {repository-name}
+├── Step 6: Implement changes in {repository-name}
+├── Step 7: Validate and commit in {repository-name}
+└── Step 7.5: Mark {repository-name} as complete in checklist
+
+⬇️ (If more repositories exist, loop back to Step 4 for next repository)
+
+Repository 2 of {total}: {repository-name}
+├── Step 4: Create feature branch in {repository-name}
+├── Step 5: Navigate to {repository-name}
+├── Step 6: Implement changes in {repository-name}
+├── Step 7: Validate and commit in {repository-name}
+└── Step 7.5: Mark {repository-name} as complete in checklist
+
+⬇️ (Continue until ALL repositories are complete)
+
+⚠️ Only proceed to Step 8 (Testing) when ALL repositories are marked complete.
+```
+
+#### 3.5.3 Validation Checkpoint Before Implementation
+
+**Before proceeding to Step 4, verify:**
+
+```markdown
+## Pre-Implementation Checklist
+
+Repository Impact Analysis:
+- [ ] Repository Impact Analysis has been completed
+- [ ] Impact analysis report has been read
+- [ ] All affected repositories identified: {list repositories}
+- [ ] Total repositories to modify: {count}
+
+Repository Execution Checklist Created:
+- [ ] Checklist includes ALL repositories from impact analysis
+- [ ] Implementation order determined
+- [ ] Dependencies identified
+
+Ready to Proceed?
+- [ ] YES - All repositories identified, ready to implement
+- [ ] NO - Need to complete Repository Impact Analysis first
+
+⚠️ If "NO", DO NOT proceed. Go back and complete Repository Impact Analysis.
+```
+
+**🚨 ABSOLUTE RULE: Do NOT proceed to Step 4 until this checklist is complete.**
+
+---
+
+### Step 4: Create Feature Branch (Repeat for EACH Repository)
 
 **🚨 CRITICAL STEP - MUST BE COMPLETED BEFORE ANY CODE CHANGES**
 
@@ -450,8 +706,8 @@ ls -la
 # If you see these, you're in the WRONG place:
 # agents/  ❌
 # workflows/  ❌
-# architecture/  ❌
 # context/  ❌
+# tools/  ❌
 # (These indicate you're still in harbor-ai directory)
 ```
 
@@ -997,7 +1253,88 @@ async function createJobWithSkills(jobData: CreateJobDTO, skills: string[]) {
 
 ---
 
-### Step 8: Testing
+### 🚨 Step 7.5: Repository Loop Check (CRITICAL)
+
+**⚠️ CRITICAL: This step ensures ALL repositories are modified before proceeding.**
+
+#### 7.5.1 Check Repository Execution Status
+
+**Review your Repository Execution Checklist:**
+
+```markdown
+## Repository Execution Checklist Status
+
+Task: {task title}
+
+Repositories requiring changes:
+- [✅] harborUserSvc - HIGH impact - **COMPLETED**
+- [ ] harborWebsite - MEDIUM impact - **PENDING**
+- [ ] harborSocketSvc - MEDIUM impact - **PENDING**
+
+Completed: 1 of {total} repositories
+Remaining: {count} repositories
+```
+
+#### 7.5.2 Loop Decision
+
+**IF there are more repositories to implement:**
+
+✅ **Loop back to Step 4 for the next repository**
+1. Return to Step 4: Create Feature Branch
+2. Create branch in the next repository
+3. Navigate to that repository
+4. Implement changes for that repository
+5. Validate and commit changes
+6. Return to Step 7.5 to check status again
+
+**IF ALL repositories are complete:**
+
+✅ **Proceed to Step 8: Testing**
+1. Verify all repositories on the checklist are marked complete
+2. Verify all repositories have committed changes
+3. Proceed to testing phase
+
+#### 7.5.3 Final Verification Before Testing
+
+**Before proceeding to Step 8, verify:**
+
+```markdown
+## Final Pre-Testing Verification
+
+Repository Impact Analysis Compliance:
+- [ ] ALL repositories from impact analysis have been modified
+- [ ] NO repositories were skipped
+- [ ] NO repositories were omitted
+- [ ] Changes implemented in the correct dependency order
+
+Repository Execution Checklist:
+- [ ] Total repositories to modify: {count}
+- [ ] Total repositories completed: {count}
+- [ ] ALL checkboxes marked: ✅
+
+Branch Status:
+- [ ] Feature branches created in ALL repositories
+- [ ] Changes committed in ALL repositories
+- [ ] No uncommitted changes remaining
+
+⚠️ ONLY proceed to Step 8 if ALL items are checked.
+```
+
+**🚨 ABSOLUTE RULE: Do NOT proceed to Step 8 (Testing) until ALL repositories are complete.**
+
+**❌ FORBIDDEN:**
+- Proceeding to testing with incomplete repository changes
+- Assuming a repository "doesn't need changes" without checking impact analysis
+- Skipping repositories marked as "Relevant" in impact analysis
+
+**✅ REQUIRED:**
+- Complete implementation in ALL repositories from impact analysis
+- Verify ALL repositories have committed changes
+- Update checklist for ALL repositories before proceeding
+
+---
+
+### Step 8: Testing (Only After ALL Repositories Complete)
 
 #### 8.1 Run Existing Tests
 
@@ -1802,7 +2139,7 @@ Error: Failed to publish event to queue
 Making changes to the wrong service due to misunderstanding service ownership.
 
 **✅ Prevention:**
-- Always consult service-map.md
+- Always consult agent-memory/repo-analysis/ (dynamic repository analysis)
 - Verify service ownership
 - Cross-reference with architecture.md
 
@@ -2031,7 +2368,7 @@ async function getJobsWithEmployers() {
 
 **Pre-Execution:**
 - [ ] Read and understand `planning.md`
-- [ ] Identify all affected services using `service-map.md`
+- [ ] Identify all affected services using `agent-memory/repo-analysis/ (dynamic repository analysis)`
 - [ ] Read `harbor-ai/coding-rules.md`
 - [ ] Read service-specific `coding-rules.md` files
 - [ ] Verify all dependencies are documented
@@ -2214,7 +2551,7 @@ Use this template to provide a summary after completing execution:
    └─ Identify success criteria
             ↓
    Step 2: Identify Affected Services
-   └─ Use service-map.md
+   └─ Use agent-memory/repo-analysis/ (dynamic repository analysis)
    └─ Create service impact table
    └─ Validate service boundaries
             ↓
@@ -2298,8 +2635,13 @@ Use this template to provide a summary after completing execution:
 
 **🚨 CRITICAL: NEXT STEPS (MANDATORY)**
 
-**Before closing ANY Azure DevOps ticket, you MUST:**
+**⚠️ TESTING MODE: Git Operations Disabled**
 
+**Git operations are currently DISABLED for testing purposes.**
+
+**Git operations that would normally execute (DISABLED in testing mode):**
+
+<!--
 1. **Commit Changes**
    ```bash
    git add <files>
@@ -2335,42 +2677,92 @@ Use this template to provide a summary after completing execution:
 - Report error to user
 - Preserve ticket in current state
 - Wait for further instructions
+-->
 
 ---
 
-## 🚨 MANDATORY: Continue to Next Phase
+## 🚨 TESTING MODE: Stop Execution Here
 
+**⚠️ TESTING MODE: Workflow Stops After Execution**
+
+**Git operations and subsequent phases are DISABLED for testing purposes.**
+
+**Normal workflow (DISABLED in testing mode):**
+
+<!--
 **🚨 CRITICAL RULE - AUTONOMOUS WORKFLOW CONTINUATION:**
 
 **After completing the execution phase, you MUST:**
 
-✅ **IMMEDIATELY continue to Phase 5: Testing**
-   - Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/testing.md`
-   - Execute the complete testing workflow
+✅ **IMMEDIATELY continue to Phase 4: Validation & Auto-Fix**
+   - Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/validation-and-autofix.md`
+   - Execute the complete validation and auto-fix workflow
+   - **CRITICAL:** Continue validation loop until ALL errors are resolved
    - DO NOT stop or ask for permission
    - DO NOT display "Next Steps" or wait for user input
    - This is an AUTONOMOUS workflow - continue automatically
 
 ❌ **PROHIBITED ACTIONS:**
 - **DO NOT** stop after implementation
-- **DO NOT** display "The implementation is ready for testing and deployment"
+- **DO NOT** skip validation - this is MANDATORY
+- **DO NOT** proceed to testing if validation fails
+- **DO NOT** display "The implementation is ready for testing"
 - **DO NOT** ask "Would you like me to continue?"
 - **DO NOT** wait for user confirmation
 - **DO NOT** present options or menus
 
 ✅ **MANDATORY BEHAVIOR:**
 1. Complete all execution validation steps
-2. Verify service builds successfully
-3. **IMMEDIATELY** proceed to `testing.md` workflow
-4. Execute all testing phases
-5. Continue to PR creation after tests pass
-6. Complete the full lifecycle autonomously
+2. **IMMEDIATELY** proceed to `validation-and-autofix.md` workflow
+3. Execute validation commands (build, type-check, lint)
+4. **IF errors detected:** Apply auto-fix procedures and re-validate
+5. **Continue fix-and-validate loop until project is stable**
+6. **ONLY THEN:** Proceed to `testing.md` workflow
+7. Execute all testing phases
+8. Continue to PR creation after tests pass
+9. Complete the full lifecycle autonomously
 
 **Rationale:**
 The Harbor AI agent is designed as an autonomous development system. The execution phase is ONE STEP in the complete workflow, not the final step. The agent must continue through testing → PR creation → ticket closure without interruption.
 
 **Reference:**
 See `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/ai-workflow.md` section "Autonomous Workflow Continuation" for complete rules on autonomous execution.
+-->
+
+**✅ TESTING MODE BEHAVIOR:**
+
+After completing code implementation:
+
+1. ✅ **Complete all execution validation steps**
+2. ✅ **Run validation workflow (build, type-check, lint)**
+3. ✅ **Fix any detected errors**
+4. ✅ **Re-validate until project is stable**
+5. ✅ **Output completion message**
+6. ⏹️ **STOP EXECUTION HERE**
+
+**Completion Message:**
+```
+✅ Code changes completed and validated successfully in the affected repositories.
+✅ Project builds without errors.
+✅ No TypeScript or linting errors detected.
+🚫 Git operations are currently disabled in testing mode.
+📝 Changes have been applied locally only.
+🔄 To re-enable Git operations and continue to testing, see execution.md workflow.
+```
+
+**❌ DO NOT:**
+- Continue to testing phase
+- Create Git branches
+- Commit changes
+- Push to remote
+- Create Pull Requests
+- Update Azure DevOps tickets
+
+**To Re-enable Full Workflow:**
+1. Edit `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/execution.md`
+2. Uncomment the Git operations section
+3. Uncomment the "Continue to Next Phase" section
+4. Remove the testing mode stop instruction
 
 ---
 
@@ -2380,6 +2772,6 @@ See `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/ai-workflow.md
 
 *For questions or issues related to this execution protocol, please refer to:*
 - `harbor-ai/planning.md` - Planning guidelines
-- `harbor-ai/service-map.md` - Service ownership
+- `harbor-ai/agent-memory/repo-analysis/ (dynamic repository analysis)` - Service ownership
 - `harbor-ai/coding-rules.md` - Coding standards
 - `harbor-ai/architecture-overview.md` - System architecture

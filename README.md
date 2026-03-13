@@ -90,24 +90,28 @@ harbor-ai/
 ├── agents/                      # AI agent behavior definitions
 │   └── harbor-backend-agent.md  # Core agent responsibilities and workflow
 ├── workflows/                   # Execution pipeline definitions
-│   ├── ai-workflow.md           # Master workflow document
+│   ├── ai-workflow.md           # Master workflow document (7 phases)
+│   ├── repository-impact-analysis.md  # Repository evaluation workflow (NEW)
+│   ├── dynamic-workflow.md      # Dynamic multi-repository workflow
+│   ├── testing-mode.md          # Testing mode configuration
 │   ├── planning.md              # Planning phase instructions
 │   ├── execution.md             # Execution phase instructions
 │   ├── testing.md               # Testing phase instructions
 │   └── pr.md                    # Pull Request creation instructions
 ├── tools/                       # Tool and integration documentation
+│   ├── repository-scanner.md    # Workspace repository scanner
+│   ├── repository-analyzer-tool.md  # Repository analysis tool (NEW)
 │   └── azure-devops-fetch.md    # Azure DevOps integration guide
 ├── context/                     # Task processing protocols
 │   ├── task-intake.md           # Task intake and analysis
 │   └── repo-context.md          # Repository context documentation
-├── architecture/                # System architecture documentation
-│   ├── architecture-overview.md # High-level system design
-│   ├── service-map.md           # Service responsibilities and boundaries
-│   └── service-dependency-map.md # Service dependency relationships
 ├── standards/                   # Development standards
 │   └── coding-rules.md          # Coding standards and conventions
 ├── memory/                      # Agent knowledge base
-│   └── harbor-agent-memory.md   # Persistent system knowledge
+│   ├── MEMORY.md                # Main memory file
+│   ├── harbor-agent-memory.md   # Persistent system knowledge
+│   └── repo-analysis/           # Individual repository analyses (generated at runtime)
+│       └── template.md          # Analysis template
 ├── recovery/                    # Error handling procedures
 │   └── failure-recovery.md      # Failure recovery strategies
 ├── agent-progress/              # Presentation dashboard
@@ -133,7 +137,6 @@ harborJobSvc/                    # Job Service implementation
 - **`workflows/`** – Contains the complete execution pipeline and phase transitions
 - **`tools/`** – Documentation for external integrations (Azure DevOps, Git, etc.)
 - **`context/`** – Task intake protocols and repository context
-- **`architecture/`** – System design documentation and service boundaries
 - **`standards/`** – Coding rules, conventions, and best practices
 - **`memory/`** – Persistent knowledge base for the AI agent
 - **`recovery/`** – Error handling and failure recovery procedures
@@ -143,7 +146,7 @@ harborJobSvc/                    # Job Service implementation
 
 ## 🔄 Harbor AI Workflow
 
-The Harbor AI agent follows a strict **6-phase autonomous workflow**:
+The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 
 ### Phase 1: Task Intake
 1. Connect to Azure DevOps using configured credentials
@@ -166,7 +169,16 @@ The Harbor AI agent follows a strict **6-phase autonomous workflow**:
 4. Plan validation logic and error handling
 5. Document testing strategy
 
-### Phase 4: Code Implementation
+### Phase 4: Repository Impact Analysis 🚨 MANDATORY
+1. **Scan workspace** for all git repositories
+2. **Analyze each repository** for structure, technology, and purpose
+3. **Evaluate task impact** across ALL repositories
+4. **Determine which repositories** require changes
+5. **Create multi-repository implementation plan**
+
+**🚨 Critical:** This phase ensures that ALL repositories affected by the task are identified BEFORE implementation begins. This prevents incomplete implementations where only one repository is modified when multiple repositories contain related code.
+
+### Phase 5: Code Implementation
 1. Generate TypeScript models and interfaces
 2. Implement repository layer with data access logic
 3. Create service layer with business logic
@@ -174,14 +186,14 @@ The Harbor AI agent follows a strict **6-phase autonomous workflow**:
 5. Add validation middleware and error handling
 6. Follow Harbor coding standards and conventions
 
-### Phase 5: Testing & Validation
+### Phase 6: Testing & Validation
 1. Run unit tests for implemented code
 2. Execute integration tests
 3. Validate API responses and error handling
 4. Verify requirements against acceptance criteria
 5. Fix any failing tests
 
-### Phase 6: Git Operations & PR Creation
+### Phase 7: Git Operations & PR Creation
 1. Create feature branch from `dev` branch
 2. Stage and commit changes with semantic messages
 3. Push branch to remote repository
@@ -199,6 +211,8 @@ Azure DevOps (Active Tickets)
    Architecture Study
          ↓
    Implementation Planning
+         ↓
+   Repository Impact Analysis 🚨 (NEW)
          ↓
    Code Generation
          ↓
@@ -390,6 +404,37 @@ file:///path/to/harbor-ai/agent-progress/index.html
 
 ---
 
+## 🚀 New Features (v2.0 - Dynamic Multi-Repository Agent)
+
+### Dynamic Repository Discovery ⚡
+- **Runtime workspace scanning** - Discovers all git repositories **when agent starts**
+- **Repository analysis** - Analyzes structure, framework, and purpose **at startup**
+- **Technology detection** - Identifies languages, frameworks, and build tools **automatically**
+- **Purpose inference** - Determines repository purpose from code structure **on every execution**
+
+**🚨 Critical:** Repository analysis happens as a **runtime workflow step** when the agent starts, NOT during setup. See `AGENT_STARTUP_WORKFLOW.md` for the complete startup sequence.
+
+### Memory System
+- **Persistent repository memory** - Stores discovered repository information
+- **Repository map** - Maintains relationships between repositories
+- **Auto-generated documentation** - Creates analysis for each repository
+- **Knowledge base** - Builds understanding over time
+
+### Testing Mode
+- **Safe testing environment** - Run without external changes
+- **Local branch creation** - Creates feature branches locally
+- **No automatic pushes** - Prevents unwanted remote changes
+- **Implementation validation** - Verifies code builds and tests pass
+- **Summary reports** - Generates detailed implementation summaries
+
+### Multi-Repository Coordination
+- **Cross-repository planning** - Plans changes across multiple repos
+- **Dependency resolution** - Identifies implementation order
+- **Dynamic service routing** - Determines affected repositories automatically
+- **Consistent patterns** - Maintains conventions across all repositories
+
+---
+
 ## 🚀 Future Improvements
 
 Planned enhancements for the Harbor AI system:
@@ -416,8 +461,8 @@ Planned enhancements for the Harbor AI system:
 - Dashboard for agent status and history
 
 ### Enhanced Architecture Understanding
-- Dynamic architecture discovery
-- Automatic dependency mapping
+- ✅ **Dynamic architecture discovery** (Implemented)
+- ✅ **Automatic dependency mapping** (Implemented)
 - Architecture compliance validation
 
 ### Collaboration Features
@@ -439,7 +484,7 @@ Copyright © 2025 Harbor Service. All rights reserved.
 
 For questions, issues, or contributions related to Harbor AI:
 
-- Review the documentation in the `workflows/` and `architecture/` directories
+- Review the documentation in the `workflows/` directory
 - Check existing implementation patterns in service directories
 - Refer to the `agents/harbor-backend-agent.md` for agent behavior details
 

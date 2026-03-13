@@ -71,7 +71,7 @@ The Harbor AI task intake approach follows these principles:
 **Read these files to understand the system:**
 ```
 harbor-ai/architecture-overview.md
-harbor-ai/service-map.md
+harbor-ai/agent-memory/repo-analysis/ (dynamic repository analysis)
 harbor-ai/coding-rules.md
 ```
 
@@ -274,7 +274,7 @@ Add location and salary range filters to enable precise job matching.
 
 #### 3.1 Use Service Map
 
-**Reference `harbor-ai/service-map.md`:**
+**Reference `harbor-ai/agent-memory/repo-analysis/ (dynamic repository analysis)`:**
 
 **Service Ownership Analysis:**
 ```markdown
@@ -1854,7 +1854,7 @@ Please provide clarification by [Date] so we can proceed with planning.
    └─ Identify problem being solved
             ↓
    Step 3: Identify Affected Services
-   └─ Consult service-map.md
+   └─ Consult agent-memory/repo-analysis/ (dynamic repository analysis)
    └─ Map features to services
    └─ Verify service boundaries
             ↓
@@ -1904,6 +1904,6 @@ Please provide clarification by [Date] so we can proceed with planning.
 
 *For questions or issues related to task intake, please refer to:*
 - `harbor-ai/architecture-overview.md` - System architecture
-- `harbor-ai/service-map.md` - Service ownership
+- `harbor-ai/agent-memory/repo-analysis/ (dynamic repository analysis)` - Service ownership
 - `harbor-ai/coding-rules.md` - Coding standards
 - `harbor-ai/planning.md` - Planning phase (next step)

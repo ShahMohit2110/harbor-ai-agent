@@ -130,7 +130,7 @@ ls -la
 # package.json  tsconfig.json  controllers/  services/  repository/
 
 # ❌ WRONG (you're still in harbor-ai):
-# agents/  workflows/  architecture/  context/
+# agents/  workflows/  context/  tools/  standards/
 ```
 
 ### This Rule Is Enforced at Multiple Points
@@ -148,7 +148,7 @@ This critical rule is reinforced in:
 
 ## Workflow Overview
 
-### The 6-Phase Workflow
+### The 7-Phase Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -174,18 +174,24 @@ This critical rule is reinforced in:
    └──────────────┘
           ↓
    ┌──────────────┐
-   │ PHASE 4      │  Execution
+   │ PHASE 4      │  Repository Impact
+   │ Repository   │  → repository-impact-analysis.md
+   │ Impact       │  (NEW - MANDATORY)
+   └──────────────┘
+          ↓
+   ┌──────────────┐
+   │ PHASE 5      │  Execution
    │ Execution    │  → execution.md
    │              │  → coding-rules.md
    └──────────────┘
           ↓
    ┌──────────────┐
-   │ PHASE 5      │  Testing
+   │ PHASE 6      │  Testing
    │ Testing      │  → testing.md
    └──────────────┘
           ↓
    ┌──────────────┐
-   │ PHASE 6      │  Pull Request
+   │ PHASE 7      │  Pull Request
    │ Pull Request │  → pr.md
    └──────────────┘
           ↓
@@ -199,9 +205,10 @@ This critical rule is reinforced in:
 | 1 | Task Intake | task-intake.md | Structured task summary | 5-10 min |
 | 2 | System Understanding | architecture-overview.md, service-map.md | Service identification | 5 min |
 | 3 | Planning | planning.md | Implementation plan | 15-30 min |
-| 4 | Execution | execution.md, coding-rules.md | Implemented code | 30-60 min |
-| 5 | Testing | testing.md | Test results | 15-30 min |
-| 6 | Pull Request | pr.md | Pull request | 5-10 min |
+| 4 | Repository Impact Analysis | repository-impact-analysis.md | Repository analysis & impact report | 10-20 min |
+| 5 | Execution | execution.md, coding-rules.md | Implemented code | 30-60 min |
+| 6 | Testing | testing.md | Test results | 15-30 min |
+| 7 | Pull Request | pr.md | Pull request | 5-10 min |
 
 **Total Estimated Time:** 1-2 hours per task (varies by complexity)
 
@@ -236,7 +243,7 @@ Harbor-AI has access to the following documentation files that guide behavior th
 
 #### **3. coding-rules.md**
 **Purpose:** Platform-wide coding standards
-**Used In:** Phase 4 (Execution)
+**Used In:** Phase 5 (Execution)
 **Contains:**
 - Microservice architecture principles
 - Code quality standards
@@ -267,9 +274,21 @@ Harbor-AI has access to the following documentation files that guide behavior th
 - Testing strategy
 - Rollback planning
 
-#### **6. execution.md**
+#### **6. repository-impact-analysis.md** 🚨 MANDATORY
+**Purpose:** Workspace-wide repository evaluation
+**Used In:** Phase 4 (Repository Impact Analysis)
+**Contains:**
+- Workspace discovery protocol
+- Repository analysis methodology
+- Task impact evaluation
+- Repository relevance determination
+- Multi-repository implementation planning
+
+**🚨 CRITICAL:** This phase MUST be completed before ANY implementation begins. The agent must analyze ALL repositories in the workspace and determine which ones are affected by the task.
+
+#### **7. execution.md**
 **Purpose:** Code execution protocol
-**Used In:** Phase 4 (Execution)
+**Used In:** Phase 5 (Execution)
 **Contains:**
 - 10-step execution workflow
 - Code organization patterns
@@ -277,9 +296,9 @@ Harbor-AI has access to the following documentation files that guide behavior th
 - Error handling
 - Integration safety
 
-#### **7. testing.md**
+#### **8. testing.md**
 **Purpose:** Testing validation protocol
-**Used In:** Phase 5 (Testing)
+**Used In:** Phase 6 (Testing)
 **Contains:**
 - 10-step testing workflow
 - Test categories
@@ -287,9 +306,9 @@ Harbor-AI has access to the following documentation files that guide behavior th
 - Issue severity classification
 - Automated fix guidelines
 
-#### **8. pr.md**
+#### **9. pr.md**
 **Purpose:** Pull request creation protocol
-**Used In:** Phase 6 (Pull Request)
+**Used In:** Phase 7 (Pull Request)
 **Contains:**
 - Branch naming conventions
 - Commit message standards
@@ -552,6 +571,73 @@ Risk level and mitigation
 
 **Primary Documentation:** `planning.md`
 
+**Output:** Complete planning document with implementation strategy
+
+**Key Activities:**
+- Fill out planning template
+- Identify affected services
+- Plan API changes
+- Plan database changes
+- Assess risks
+- Define testing strategy
+
+---
+
+## PHASE 4: Repository Impact Analysis 🚨 MANDATORY
+
+**Objective:** Analyze ALL repositories in workspace to determine task impact
+
+**Primary Documentation:** `repository-impact-analysis.md`
+
+**Output:** Complete repository impact analysis report
+
+**🚨 CRITICAL RULE:**
+**This phase MUST be completed BEFORE any implementation begins.**
+
+**Key Activities:**
+
+1. **Workspace Discovery**
+   - Scan workspace root for all git repositories
+   - Validate each repository
+   - Gather repository metadata
+
+2. **Repository Analysis**
+   - Analyze each repository's structure
+   - Detect technology stack
+   - Infer repository purpose
+   - Document repository characteristics
+
+3. **Task Impact Evaluation**
+   - Evaluate task requirements against each repository
+   - Determine which repositories contain related code
+   - Assess impact level for each repository
+
+4. **Relevance Determination**
+   - Explicitly decide: Include or Exclude each repository
+   - Document reasoning for each decision
+   - Identify ALL repositories requiring changes
+
+5. **Multi-Repository Planning**
+   - Create implementation order
+   - Identify cross-repository dependencies
+   - Plan changes for each relevant repository
+
+**🚨 FORBIDDEN ACTIONS:**
+- ❌ Skip this phase
+- ❌ Assume which repositories are relevant
+- ❌ Use hardcoded repository lists
+- ❌ Proceed to execution without completing analysis
+
+**Success Criteria:**
+- ✅ All repositories discovered and analyzed
+- ✅ Impact analysis completed for each repository
+- ✅ All relevant repositories identified
+- ✅ Implementation plan covers all affected repositories
+
+---
+
+## PHASE 5: Execution
+
 ### Step 3.1: Read planning.md Template
 
 **Action:** Review the complete planning template
@@ -723,7 +809,7 @@ Risk level and mitigation
 
 ---
 
-## PHASE 4: Execution
+## PHASE 5: Execution
 
 **Objective:** Implement the planned changes
 
@@ -922,7 +1008,7 @@ curl http://localhost:3001/api/jobs/filter?location=Remote
 
 ---
 
-## PHASE 5: Testing
+## PHASE 6: Testing
 
 **Objective:** Validate all changes are safe and correct
 
@@ -1135,7 +1221,7 @@ kill $SERVICE_PID
 
 ---
 
-## PHASE 6: Pull Request Creation
+## PHASE 7: Pull Request Creation
 
 **Objective:** Create pull request for code review and merge
 

@@ -934,38 +934,48 @@ CREATE TABLE user_availability (
 
 **After completing the planning phase successfully, you MUST:**
 
-✅ **IMMEDIATELY continue to Phase 4: Execution**
-   - Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/execution.md`
-   - Execute the complete implementation workflow
+✅ **IMMEDIATELY continue to Phase 4: Repository Impact Analysis**
+   - Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/repository-impact-analysis.md`
+   - Execute complete repository impact analysis
+   - Analyze ALL repositories in the workspace
+   - Determine which repositories are affected by the task
    - DO NOT stop or ask for permission
-   - DO NOT display "Next Steps" or wait for user input
+   - DO NOT display "Planning complete" or wait for user input
    - This is an AUTONOMOUS workflow - continue automatically
 
 ❌ **PROHIBITED ACTIONS:**
 - **DO NOT** stop after planning
+- **DO NOT** skip directly to execution
 - **DO NOT** display "Planning complete, ready for implementation"
 - **DO NOT** ask "Would you like me to proceed with implementation?"
 - **DO NOT** wait for user confirmation
 - **DO NOT** present options or menus
+- **DO NOT** assume which repositories are relevant without analysis
 
 ✅ **MANDATORY BEHAVIOR:**
 1. Complete all planning sections
 2. Verify all checklist items are complete
 3. Confirm "Ready to Implement?" is YES
-4. **IMMEDIATELY** proceed to `execution.md` workflow
-5. Create feature branch from `dev`
-6. Navigate to appropriate service directory
-7. Implement code changes
-8. Complete the full lifecycle autonomously
+4. **IMMEDIATELY** proceed to `repository-impact-analysis.md` workflow
+5. Scan workspace for all repositories
+6. Analyze each repository
+7. Evaluate task impact across all repositories
+8. Determine which repositories require changes
+9. Create multi-repository implementation plan
+10. Then continue to execution phase
+11. Complete the full lifecycle autonomously
 
 **If Planning is Incomplete:**
 - Identify missing sections
 - Complete all required planning sections
-- Only proceed to execution when planning is complete
+- Only proceed to repository impact analysis when planning is complete
 - If unable to complete planning, report error and STOP
 
 **Rationale:**
-The Harbor AI agent is designed as an autonomous development system. The planning phase is ONE STEP in the complete workflow, not the final step. The agent must continue through execution → testing → PR creation → ticket closure without interruption.
+The Harbor AI agent is designed as an autonomous development system. The planning phase is ONE STEP in the complete workflow, followed by the MANDATORY Repository Impact Analysis phase. The agent must evaluate ALL repositories in the workspace before implementing any changes to ensure complete coverage of the task scope.
+
+**🚨 CRITICAL: Repository Impact Analysis is MANDATORY**
+You MUST analyze ALL repositories in the workspace before proceeding to implementation. This prevents the agent from modifying only one repository when other repositories may also be affected by the task.
 
 **Reference:**
 See `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/ai-workflow.md` section "Autonomous Workflow Continuation" for complete rules on autonomous execution.

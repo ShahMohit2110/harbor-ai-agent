@@ -186,10 +186,10 @@ const jobs = await axios.get(`${JOB_SERVICE_URL}/jobs`);
 
 **Before implementing ANY feature, AI agents MUST:**
 
-1. **Identify the correct service** using `.harbor-ai/service-map.md`
-2. **Verify service ownership** by checking the Service Responsibility Matrix
-3. **Read the service's architecture.md** to understand responsibilities
-4. **Follow the service's coding-rules.md** for implementation patterns
+1. **Run dynamic workspace analysis** to discover all repositories (executed at agent startup)
+2. **Identify the correct repository** using dynamic repository analysis from `agent-memory/repo-analysis/`
+3. **Load repository-specific context** from the generated repository analysis
+4. **Follow the service's coding-rules.md** (if present) for implementation patterns
 
 ### 4.2 Service Identification Workflow
 
@@ -199,26 +199,27 @@ const jobs = await axios.get(`${JOB_SERVICE_URL}/jobs`);
 └──────────────┬──────────────────────┘
                │
                ▼
-    ┌──────────────────────┐
-    │ Read service-map.md  │
-    └──────────┬───────────┘
+    ┌──────────────────────────┐
+    │ Load repository analysis │
+    │ from agent-memory/       │
+    └──────────┬───────────────┘
                │
                ▼
     ┌──────────────────────┐
     │ Identify responsible │
-    │ service              │
+    │ repository           │
     └──────────┬───────────┘
                │
                ▼
     ┌──────────────────────┐
-    │ Read service's       │
-    │ architecture.md      │
+    │ Load repository      │
+    │ analysis context     │
     └──────────┬───────────┘
                │
                ▼
     ┌──────────────────────┐
-    │ Read service's       │
-    │ coding-rules.md      │
+    │ Read coding-rules.md │
+    │ (if present)         │
     └──────────┬───────────┘
                │
                ▼
@@ -460,16 +461,16 @@ Step 10: Complete Task
 - Clarify ambiguities before proceeding
 
 **Step 2: Identify Service**
-- Use `.harbor-ai/service-map.md`
-- Search Service Responsibility Matrix
-- Identify primary service owner
-- Check if multiple services are involved
+- Use dynamic repository analysis from `agent-memory/repo-analysis/`
+- Search repository analysis for matching capabilities
+- Identify primary repository owner
+- Check if multiple repositories are involved
 
-**Step 3: Read Service Architecture**
-- Read `<service>/architecture.md`
-- Understand service responsibilities
-- Review technical stack and patterns
-- Identify relevant modules
+**Step 3: Read Repository Analysis**
+- Load repository analysis from `agent-memory/repo-analysis/{repo-name}.md`
+- Understand repository structure and purpose
+- Review detected technology stack and patterns
+- Identify relevant modules and entry points
 
 **Step 4: Read Service Coding Rules**
 - Read `<service>/coding-rules.md`
@@ -786,7 +787,7 @@ THEN modify ONLY Service Y
 ✅ CORRECT: Implementing user profile updates in User Service
 ```
 
-**Prevention:** Always use `service-map.md` to identify the correct service.
+**Prevention:** Always use dynamic repository analysis from `agent-memory/repo-analysis/` to identify the correct repository.
 
 ### 11.2 Direct Database Access
 
@@ -840,13 +841,14 @@ Solution:
 
 ### 12.2 Service Identification Issues
 
-**Unsure which service owns a feature?**
+**Unsure which repository owns a feature?**
 ```
 Solution:
-1. Read service-map.md Section 3 (Service Responsibility Matrix)
-2. Search for similar features
-3. Check architecture.md files
-4. Ask for clarification if still unsure
+1. Load repository analysis from agent-memory/repo-analysis/
+2. Search for similar features in analysis files
+3. Check detected APIs and capabilities
+4. Use dynamic resolution algorithm
+5. Ask for clarification if still unsure
 ```
 
 ### 12.3 Import Problems
@@ -866,9 +868,9 @@ Solution:
 ### Before Implementing Any Feature
 
 - [ ] Read and understood task requirements
-- [ ] Identified correct service using service-map.md
-- [ ] Read service's architecture.md
-- [ ] Read service's coding-rules.md
+- [ ] Identified correct repository using dynamic analysis
+- [ ] Loaded repository analysis from agent-memory/
+- [ ] Read coding-rules.md (if present)
 - [ ] Analyzed existing code patterns
 - [ ] Identified files to modify
 - [ ] Verified no breaking changes
@@ -957,8 +959,8 @@ If you encounter:
 
 ### ✅ DOs
 
-1. **Follow the workflow** - Read service-map.md → architecture.md → coding-rules.md
-2. **Respect boundaries** - Modify only the identified service
+1. **Follow the workflow** - Use dynamic repository analysis → Load context → Apply coding rules
+2. **Respect boundaries** - Modify only the identified repository
 3. **Maintain quality** - Ensure compilation, no errors, clean code
 4. **Reuse code** - Use existing utilities and patterns
 5. **Test changes** - Verify functionality and edge cases
@@ -981,10 +983,10 @@ If you encounter:
 
 ### Internal Documentation
 
-- **Service Map:** `.harbor-ai/service-map.md`
-- **Architecture Overview:** `.harbor-ai/architecture-overview.md`
-- **Service Architecture:** `<service>/architecture.md`
-- **Service Rules:** `<service>/coding-rules.md`
+- **Dynamic Repository Analysis:** `agent-memory/repo-analysis/` (generated at runtime)
+- **Repository Scanner:** `tools/repository-scanner.md`
+- **Dynamic Workflow:** `workflows/dynamic-workflow.md`
+- **Service Rules:** `<service>/coding-rules.md` (if present)
 
 ### External References
 
