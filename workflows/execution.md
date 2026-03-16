@@ -908,11 +908,163 @@ export const validateRequest = (schema: any) => {
 };
 ```
 
-**Output of Step 4:** All code changes implemented according to specifications and standards.
+**Output of Step 6:** All code changes implemented according to specifications and standards.
 
 ---
 
-### Step 5: Validate Code Quality
+### Step 7: Pattern Consistency Verification
+
+#### 🚨 MANDATORY: Pattern Consistency Verification
+
+**⚠️ CRITICAL RULE: This step is MANDATORY before finalizing any changes.**
+
+**Never skip pattern consistency verification. This prevents incomplete implementations.**
+
+#### 7.1 Purpose
+
+The agent must verify that changes are **consistent with the repository's existing patterns** before finalizing.
+
+**Example of the Problem:**
+- ❌ Adding a translation key to `en.json` but forgetting `fr.json` and `es.json`
+- ❌ This breaks the translation system's consistency
+- ❌ Repository becomes inconsistent
+
+**Solution:**
+- ✅ Detect ALL instances of the pattern
+- ✅ Update ALL relevant files
+- ✅ Maintain repository consistency
+
+#### 7.2 Pattern Categories to Verify
+
+**Common patterns that must be checked:**
+
+1. **Multi-Language Translation Systems**
+   - Multiple language files: `en.json`, `fr.json`, `es.json`, etc.
+   - Translation directories: `locales/`, `i18n/`, `translations/`, `lang/`
+   - ✅ When adding a translation key, add it to ALL language files
+
+2. **Configuration Structures**
+   - Multiple environment configs: `.env.development`, `.env.production`, `.env.test`
+   - Config files: `config/` directory, multiple config variants
+   - ✅ When adding config, add to ALL config files/environments
+
+3. **Environment Variable Usage**
+   - `.env` files, `process.env` usage
+   - ✅ When adding environment variable, add to ALL relevant `.env` files
+   - ✅ Document in `.env.example` or similar
+
+4. **Shared Utilities**
+   - `utils/`, `helpers/`, `lib/` directories
+   - ✅ Check if existing utility can be used instead of creating new code
+
+5. **API Conventions**
+   - Consistent API response structures
+   - Standard error handling patterns
+   - ✅ Follow existing API response format
+   - ✅ Use existing error handling patterns
+
+6. **Folder Organization**
+   - Consistent folder structures across features
+   - ✅ Place new files in locations consistent with existing patterns
+
+7. **Reusable Components**
+   - `components/` directories, shared UI components
+   - ✅ Check if existing component can be used
+
+8. **Naming Conventions**
+   - File naming, variable naming, API endpoint naming
+   - ✅ Follow existing naming conventions
+
+#### 7.3 Pattern Detection Workflow
+
+**Step 1: Identify the Change Type**
+- What type of change am I making? (translation, config, API, UI, etc.)
+
+**Step 2: Search for Similar Patterns**
+```bash
+# Find all language files
+find . -name "*.json" -path "*/locales/*" -o -name "*.json" -path "*/i18n/*"
+
+# Find all config files
+find . -name "config.*" -o -name "*.config.*" -o -name ".env.*"
+
+# Using Grep tool to search for patterns
+```
+
+**Step 3: Analyze the Pattern Structure**
+- How many files use this pattern?
+- What is the structure/organization?
+- What are the naming conventions?
+
+**Step 4: Apply Changes Consistently**
+- Update ALL instances of the pattern
+- Verify consistency across all files
+- No files were missed or skipped
+
+#### 7.4 Verification Questions
+
+**Before finalizing ANY change, the agent MUST ask itself:**
+
+- [ ] Did I detect ALL instances of this pattern in the repository?
+- [ ] Did I update ALL relevant files?
+- [ ] Are my changes consistent with existing patterns?
+- [ ] Did I follow naming conventions?
+- [ ] Could this change require updates in other related files?
+- [ ] Does the repository remain consistent after my changes?
+
+#### 7.5 Examples
+
+**❌ WRONG (Inconsistent):**
+```json
+// Only updates en.json
+{
+  "newKey": "New value"
+}
+```
+**Problem:** fr.json, es.json, de.json don't have the key
+
+**✅ CORRECT (Consistent):**
+```json
+// Updates ALL language files
+// en.json: { "newKey": "New value" }
+// fr.json: { "newKey": "Nouvelle valeur" }
+// es.json: { "newKey": "Nuevo valor" }
+// de.json: { "newKey": "Neuer Wert" }
+```
+
+#### 7.6 Mandatory Verification Step
+
+**Before proceeding to validation, the agent MUST:**
+
+1. Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/pattern-consistency-verification.md`
+2. Detect patterns for the type of change made
+3. Search for all instances of the pattern
+4. Verify consistency across all instances
+5. Fix any inconsistencies found
+6. Only then proceed to validation phase
+
+**🚨 CRITICAL: Pattern Consistency Verification is MANDATORY**
+**DO NOT skip this step. DO NOT proceed to validation without completing this step.**
+
+#### 7.7 Agent Behavior Rules
+
+**✅ REQUIRED:**
+- Always detect patterns before making changes
+- Always update all instances of a pattern
+- Always follow existing conventions
+- Always verify consistency before finalizing
+
+**❌ PROHIBITED:**
+- NEVER assume single-file implementation
+- NEVER skip pattern detection
+- NEVER apply changes inconsistently
+- NEVER proceed without verification
+
+**Output of Step 7:** All pattern consistency verified. Repository is consistent. All relevant files updated.
+
+---
+
+### Step 8: Validate Code Quality
 
 #### 5.1 Code Placement Validation
 
