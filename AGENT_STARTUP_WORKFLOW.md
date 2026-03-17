@@ -1,12 +1,29 @@
 # Harbor AI Agent - Startup Workflow
 
-**Version:** 2.0.0
-**Last Updated:** 2026-03-11
-**Purpose:** Complete agent startup and execution workflow
+**Version:** 3.0.0 (GLOBAL AGENT)
+**Last Updated:** 2026-03-17
+**Purpose:** Complete agent startup and execution workflow - Fully Dynamic, Repository-Aware
 
 ---
 
-## 🚨 Critical Rule: Runtime Analysis, Not Setup
+## 🚨 CRITICAL: Global Agent Mode (NEW)
+
+**The Harbor AI Agent is now a FULLY DYNAMIC, REPOSITORY-AWARE GLOBAL DEVELOPMENT AGENT.**
+
+**What This Means:**
+- The agent NO longer relies on predefined rules or hardcoded logic
+- The agent DISCOVERS and UNDERSTANDS all repositories dynamically on startup
+- The agent LEARNS patterns from the codebase itself
+- The agent ADAPTS to any project structure automatically
+
+**Key Principles:**
+- ✅ DISCOVER - Find all repositories dynamically
+- ✅ UNDERSTAND - Learn each repository's purpose from its code
+- ✅ DETECT - Infer patterns and workflows from the codebase
+- ✅ ADAPT - Follow actual implementation patterns, not assumptions
+- ✅ VERIFY - Ensure cross-repository consistency
+
+**🚨 CRITICAL: Runtime Analysis, Not Setup**
 
 **Repository analysis is a RUNTIME workflow step, NOT a setup/configuration step.**
 
@@ -33,13 +50,18 @@ Mode: Testing/Production
 Workspace: /Users/mohitshah/Documents/HarborService/
 ```
 
-### Step 2: Workspace Analysis (RUNTIME) ⚡
+### Step 2: Workspace Analysis & Pattern Detection (RUNTIME) ⚡
 
 **This is the FIRST phase of agent execution.**
 
+**The agent now performs TWO critical analyses:**
+
+1. **Repository Discovery & Understanding**
+2. **Pattern Detection & Workflow Inference**
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Phase 1: Workspace Analysis
+Phase 1: Workspace Analysis & Pattern Detection
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 → Scanning workspace for git repositories...
@@ -53,7 +75,7 @@ Phase 1: Workspace Analysis
    Found: harborSocketSvc (.git detected)
    Total: 8 repositories
 
-→ Analyzing repository structures...
+→ Analyzing repository structures & purposes...
    harborUserSvc: Backend Service (Express.js, TypeScript)
    harborJobSvc: Backend Service (Express.js, TypeScript)
    harborWebsite: Frontend Web (Next.js, TypeScript)
@@ -62,6 +84,36 @@ Phase 1: Workspace Analysis
    harborApiGateWay: Backend API Gateway (Express.js, TypeScript)
    harborNotificationSvc: Backend Service (Express.js, TypeScript)
    harborSocketSvc: Backend Service (Express.js + Socket.io, TypeScript)
+
+→ Detecting patterns across repositories...
+   ✅ Shared Module Pattern detected (harborSharedModels)
+      - Exports models/types
+      - Multiple consumers
+      - Version management in use
+   ✅ API Service Pattern detected (harborUserSvc, harborJobSvc, etc.)
+      - Layered architecture (routes → controllers → services → repositories)
+      - Express.js framework
+      - REST API design
+   ✅ Frontend Pattern detected (harborWebsite)
+      - Next.js App Router
+      - Component-based
+      - API client integration
+   ✅ Version Management Pattern detected
+      - Semantic versioning in use
+      - Dependency version references
+      - Update workflow inferred
+   ✅ Build Pattern detected
+      - Build scripts in package.json
+      - Docker configuration present
+      - CI/CD configured
+
+→ Inferring workflows from codebase...
+   ✅ Shared Module Update workflow inferred
+      1. Update models → bump version → update dependencies → install
+   ✅ API Service workflow inferred
+      1. Routes → Controllers → Services → Repositories
+   ✅ Frontend workflow inferred
+      1. Components → API calls → State management
 
 → Generating repository memory...
    Writing: agent-memory/repo-analysis/harborUserSvc.md
@@ -73,13 +125,13 @@ Phase 1: Workspace Analysis
    Writing: agent-memory/repo-analysis/harborNotificationSvc.md
    Writing: agent-memory/repo-analysis/harborSocketSvc.md
 
-→ Building in-memory repository relationship map...
+→ Building in-memory repository relationship graph...
    harborSharedModels ← (used by) ← harborUserSvc, harborJobSvc, harborNotificationSvc, harborSocketSvc
    harborApiGateWay ← (routes to) ← All backend services
    harborWebsite ← (calls) ← harborApiGateWay
    HarborApp ← (calls) ← harborApiGateWay
 
-→ Workspace analysis complete.
+→ Workspace analysis & pattern detection complete.
 ```
 
 ### Step 3: Task Fetching
@@ -338,12 +390,28 @@ Benefit: Always fresh, automatic, no manual steps
 
 ## Related Documentation
 
-- `workflows/dynamic-workflow.md` - Complete dynamic workflow
+### Core Global Agent Documentation
+- `workflows/global-agent-workflow.md` - **NEW: Complete global agent workflow with adaptive intelligence**
+- `workflows/pattern-detection-system.md` - **NEW: Pattern detection and workflow inference system**
+- `workflows/dynamic-workflow.md` - Dynamic repository discovery
 - `tools/repository-scanner.md` - Repository scanner details
+
+### Execution Workflows
+- `workflows/planning.md` - Planning phase
+- `workflows/repository-impact-analysis.md` - Repository impact analysis
+- `workflows/execution.md` - Execution phase
+- `workflows/pattern-consistency-verification.md` - Pattern consistency verification
+- `workflows/validation-and-autofix.md` - Validation & auto-fix
+- `workflows/testing.md` - Testing phase
+- `workflows/pr.md` - Pull request creation
+
+### Quick Start & Configuration
 - `QUICK_START_V2.md` - Quick start guide
 - `workflows/testing-mode.md` - Testing mode configuration
+- `MEMORY.md` - Agent memory and behavior
 
 ---
 
-**Status:** ✅ Ready for Implementation
-**Last Updated:** 2026-03-11
+**Status:** ✅ Global Agent Mode Active
+**Last Updated:** 2026-03-17
+**Version:** 3.0.0
