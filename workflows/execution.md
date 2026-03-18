@@ -127,15 +127,20 @@ agent-progress/{task-id}-repository-impact-analysis.md
 - **EACH** repository evaluated for task relevance
 - **SPECIFIC** changes required for each affected repository
 - **IMPLEMENTATION ORDER** for multi-repository changes
+- **DECISION VALIDATION** with all 6 validation questions answered ✨ NEW
+- **CROSS-PLATFORM CONSISTENCY VERIFICATION** ✨ NEW
+- **DECISION LOCK** confirming all affected repositories ✨ NEW
 
 **⚠️ IF THIS FILE DOES NOT EXIST:**
 1. **STOP IMMEDIATELY**
 2. **Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/repository-impact-analysis.md`**
 3. **Execute the complete Repository Impact Analysis phase**
-4. **Generate the impact analysis report**
-5. **Only THEN return to this execution phase**
+4. **Complete ALL 6 decision validation questions** ✨ NEW
+5. **Verify cross-platform consistency** ✨ NEW
+6. **Generate the impact analysis report with decision lock** ✨ NEW
+7. **Only THEN return to this execution phase**
 
-**🚨 CRITICAL: You CANNOT proceed to implementation without completing Repository Impact Analysis.**
+**🚨 CRITICAL: You CANNOT proceed to implementation without completing Repository Impact Analysis AND Decision Validation.**
 
 #### 1. Planning Documentation
 ```
@@ -341,6 +346,20 @@ cat /Users/mohitshah/Documents/HarborService/harbor-ai/agent-progress/{task-id}-
    - Changes: Broadcast availability changes
 
 (Additional repositories as identified in the impact analysis)
+
+## Decision Validation (from impact analysis) ✨ NEW
+
+**Validation Questions:**
+- [ ] Q1: Have I checked ALL repositories for potential impact? YES/NO
+- [ ] Q2: Is this feature required in more than one repository? YES/NO
+- [ ] Q3: Are there multiple platforms serving similar roles? YES/NO
+- [ ] Q4: Will changes in one repository require updates in dependent repositories? YES/NO
+- [ ] Q5: Are shared models/types/configurations being modified? YES/NO
+- [ ] Q6: Does this feature exist in multiple repositories that require consistency? YES/NO
+
+**Cross-Platform Consistency:** REQUIRED/NOT REQUIRED
+
+**Decision Lock:** CONFIRMED ✅
 ```
 
 #### 2.3 Create Repository Execution Checklist

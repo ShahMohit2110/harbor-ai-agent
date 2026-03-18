@@ -614,6 +614,304 @@ function generateImpactReport(task, affectedRepositories, implementationOrder) {
 
 ---
 
+## 🚨 CRITICAL: Decision Validation Step (MANDATORY)
+
+### Step 11: Pre-Implementation Decision Validation
+
+**🚨 BEFORE proceeding to implementation, the agent MUST validate its decisions.**
+
+This step is **NON-NEGOTIABLE**. The agent must explicitly answer these questions:
+
+```javascript
+function validateImpactDecisions(task, affectedRepositories, dependencyGraph) {
+  const validation = {
+    questions: [],
+
+    // Question 1: Completeness Check
+    questions.push({
+      id: 'Q1',
+      question: 'Have I checked ALL repositories for potential impact?',
+      answer: null, // Must be explicitly answered
+      evidence: [], // Must provide evidence
+      confidence: null // Must rate confidence (High/Medium/Low)
+    }),
+
+    // Question 2: Multi-Repository Check
+    questions.push({
+      id: 'Q2',
+      question: 'Is this feature required in more than one repository?',
+      answer: null,
+      reasoning: null,
+      evidence: []
+    }),
+
+    // Question 3: Cross-Platform Consistency Check
+    questions.push({
+      id: 'Q3',
+      question: 'Are there multiple platforms serving similar roles?',
+      answer: null,
+      platformsIdentified: [],
+      consistencyRequired: false
+    }),
+
+    // Question 4: Dependency Propagation Check
+    questions.push({
+      id: 'Q4',
+      question: 'Will changes in one repository require updates in dependent repositories?',
+      answer: null,
+      dependentsIdentified: [],
+      updateRequired: []
+    }),
+
+    // Question 5: Shared Resource Check
+    questions.push({
+      id: 'Q5',
+      question: 'Are shared models/types/configurations being modified?',
+      answer: null,
+      sharedResourcesIdentified: [],
+      allConsumersIncluded: false
+    }),
+
+    // Question 6: Feature Parity Check
+    questions.push({
+      id: 'Q6',
+      question: 'Does this feature exist in multiple repositories that require consistency?',
+      answer: null,
+      featureLocations: [],
+      parityRequired: false
+    })
+  };
+
+  return validation;
+}
+```
+
+### Decision Validation Rules
+
+**🚨 RULE 1: Explicit Answer Required**
+
+For EACH validation question, the agent MUST:
+
+1. **Provide an explicit YES/NO answer**
+2. **Provide evidence/reasoning**
+3. **List ALL repositories involved**
+4. **Rate confidence level**
+
+**Example - CORRECT:**
+```markdown
+## Decision Validation
+
+### Q1: Have I checked ALL repositories for potential impact?
+
+**Answer:** YES
+
+**Evidence:**
+- Analyzed 7 repositories in workspace
+- Scored each repository using impact scoring algorithm
+- Checked dependency graph for ripple effects
+- Verified no repositories were omitted
+
+**Repositories Analyzed:**
+1. harborSharedModels - Score: 70 (SECONDARY)
+2. harborUserSvc - Score: 90 (PRIMARY)
+3. harborJobSvc - Score: 0 (NONE)
+4. harborNotificationSvc - Score: 0 (NONE)
+5. harborWebsite - Score: 60 (SECONDARY)
+6. harborApp - Score: 60 (SECONDARY)
+7. harborApiGateway - Score: 0 (NONE)
+
+**Confidence:** HIGH
+```
+
+**Example - WRONG:**
+```markdown
+### Q1: Have I checked all repositories?
+
+Answer: Yes, I checked the main ones.
+```
+
+### Step 12: Cross-Platform Consistency Verification
+
+**🚨 CRITICAL: If multiple repositories serve similar roles, verify consistency.**
+
+```javascript
+function verifyCrossPlatformConsistency(task, affectedRepositories, repositoryAnalysis) {
+  const verification = {
+    platformsIdentified: [],
+    consistencyChecks: [],
+    requiredUpdates: []
+  };
+
+  // Identify platforms serving similar roles
+  const platforms = identifyPlatformTypes(repositoryAnalysis);
+
+  // Group by role
+  const frontendPlatforms = platforms.filter(p => p.type === 'Frontend');
+  const mobilePlatforms = platforms.filter(p => p.type === 'Mobile');
+  const backendServices = platforms.filter(p => p.type === 'Backend');
+
+  // Check if task affects multiple platforms in same category
+  if (frontendPlatforms.length > 1) {
+    verification.consistencyChecks.push({
+      type: 'Frontend',
+      platforms: frontendPlatforms.map(p => p.name),
+      question: `Does this task affect ALL frontend platforms?`,
+      reasoning: [],
+      conclusion: null
+    });
+  }
+
+  if (mobilePlatforms.length > 1) {
+    verification.consistencyChecks.push({
+      type: 'Mobile',
+      platforms: mobilePlatforms.map(p => p.name),
+      question: `Does this task affect ALL mobile platforms?`,
+      reasoning: [],
+      conclusion: null
+    });
+  }
+
+  return verification;
+}
+```
+
+**Cross-Platform Consistency Examples:**
+
+**Example 1: User Profile Redesign**
+```
+Task: "Redesign the user profile page"
+
+Analysis:
+- harborWebsite has user profile page → AFFECTED
+- harborApp has user profile screen → AFFECTED
+
+Decision: BOTH must be updated
+Reasoning: Both are user-facing platforms with profile functionality
+```
+
+**Example 2: User Availability Feature**
+```
+Task: "Add user availability status feature"
+
+Analysis:
+- harborUserSvc manages user data → AFFECTED (API)
+- harborWebsite displays user data → AFFECTED (UI)
+- harborApp displays user data → AFFECTED (UI)
+
+Decision: ALL 3 must be updated
+Reasoning:
+- Backend: Add availability API
+- Web: Add availability UI
+- Mobile: Add availability UI
+- Feature parity required across platforms
+```
+
+### Step 13: Final Decision Lock
+
+**🚨 BEFORE proceeding to implementation, the agent MUST:**
+
+1. **Complete ALL validation questions**
+2. **Provide explicit YES/NO answers**
+3. **List ALL affected repositories**
+4. **Document reasoning for EACH decision**
+5. **Confirm cross-platform consistency requirements**
+
+**Decision Lock Format:**
+
+```markdown
+## 🚨 FINAL DECISION LOCK
+
+**Task:** {task title}
+
+**Affected Repositories:** {count}
+
+**Repository List:**
+1. {repository-name} - {Impact Level} - {Reasoning}
+2. {repository-name} - {Impact Level} - {Reasoning}
+...
+
+**Cross-Platform Consistency:** {REQUIRED/NOT REQUIRED}
+
+**If Consistency Required:**
+- Platform Group: {Frontend/Mobile/Backend}
+- Repositories in Group: {list}
+- Consistency Reasoning: {reasoning}
+
+**Implementation Order:**
+1. {repository} - {reason}
+2. {repository} - {reason}
+...
+
+**Validation Confirmation:**
+- [ ] All validation questions answered
+- [ ] All repositories explicitly listed
+- [ ] Cross-platform consistency verified
+- [ ] Implementation order determined
+- [ ] NO repositories omitted without explicit reasoning
+- [ ] NO assumptions made without evidence
+
+**Decision Status:** LOCKED ✅
+
+**Proceeding to implementation with {count} repositories.**
+```
+
+**🚨 ABSOLUTE RULE:**
+
+```
+IF ANY validation question is unanswered → DO NOT PROCEED
+IF cross-platform consistency is uncertain → RE-ANALYZE
+IF implementation order is unclear → RE-ANALYZE
+IF confidence is LOW → RE-ANALYZE
+```
+
+### Step 14: Uncertainty Resolution
+
+**IF the agent is uncertain about ANY repository impact:**
+
+```javascript
+function resolveUncertainty(task, uncertainRepositories, dependencyGraph) {
+  const resolution = {
+    questions: [],
+    additionalAnalysis: [],
+    finalDecision: null
+  };
+
+  // For each uncertain repository
+  for (const repo of uncertainRepositories) {
+    // Additional analysis steps:
+    // 1. Search repository for related code
+    // 2. Check API endpoints/routes
+    // 3. Check UI components/pages
+    // 4. Check model definitions
+    // 5. Check dependencies on this repo
+
+    resolution.additionalAnalysis.push({
+      repository: repo.name,
+      analysisRequired: [
+        'Code search for relevant keywords',
+        'API endpoint scan',
+        'UI component scan',
+        'Dependency check'
+      ]
+    });
+  }
+
+  return resolution;
+}
+```
+
+**Resolution Actions:**
+
+1. **Search repository code** for task-related keywords
+2. **Check API endpoints** for relevant endpoints
+3. **Check UI components** for related screens/pages
+4. **Verify dependencies** - does this repo depend on affected code?
+5. **Check dependents** - do other repos depend on this repo?
+
+**After additional analysis, re-run validation questions.**
+
+---
+
 ## 🚨 CRITICAL: Impact Analysis Must Complete Before Planning
 
 **ABSOLUTE RULE:**
@@ -622,6 +920,8 @@ function generateImpactReport(task, affectedRepositories, implementationOrder) {
 DO NOT create implementation plan until impact analysis is complete.
 
 Planning WITHOUT impact analysis = INCOMPLETE IMPLEMENTATION
+
+Impact analysis WITHOUT decision validation = INCOMPLETE ANALYSIS
 ```
 
 **Impact Analysis Checklist:**
@@ -638,9 +938,30 @@ Planning WITHOUT impact analysis = INCOMPLETE IMPLEMENTATION
 - [ ] Change scope analyzed for each repository
 - [ ] Implementation order calculated
 - [ ] Coverage verified
+- [ ] **Decision validation questions answered** ✨ NEW
+- [ ] **Cross-platform consistency verified** ✨ NEW
+- [ ] **Decision lock confirmed** ✨ NEW
+- [ ] **Uncertainties resolved** ✨ NEW
 - [ ] Impact report generated
 
 **Only when ALL checks pass → Continue to planning**
+
+---
+
+## 🚨 Enforcement: Agent Cannot Skip This Step
+
+**The agent workflow MUST enforce:**
+
+1. **Impact analysis is MANDATORY** - Cannot proceed without it
+2. **Decision validation is MANDATORY** - Must answer all 6 questions
+3. **Cross-platform check is MANDATORY** - Must verify if multiple platforms affected
+4. **Decision lock is MANDATORY** - Must explicitly confirm decision before proceeding
+
+**If agent attempts to skip:**
+- **STOP immediately**
+- **Re-run complete feature impact analysis**
+- **Complete ALL validation questions**
+- **Lock decision before proceeding**
 
 ---
 

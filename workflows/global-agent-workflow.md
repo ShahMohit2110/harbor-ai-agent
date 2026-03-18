@@ -451,6 +451,137 @@ const affected = {
 // Calculate implementation order
 ```
 
+#### 4.4 🚨 Decision Validation Step (MANDATORY) ✨ NEW
+
+**🚨 CRITICAL: BEFORE proceeding to implementation, validate ALL decisions.**
+
+**Reference:** `feature-impact-analyzer.md` Step 11-14
+
+**The agent MUST explicitly answer these 6 validation questions:**
+
+1. **Have I checked ALL repositories for potential impact?**
+   - Explicit YES/NO answer required
+   - Must list ALL repositories analyzed
+   - Must provide evidence
+
+2. **Is this feature required in more than one repository?**
+   - Explicit YES/NO answer required
+   - Must identify all affected repositories
+   - Must provide reasoning
+
+3. **Are there multiple platforms serving similar roles?**
+   - Identify frontend platforms (harborWebsite, harborApp, etc.)
+   - Identify if task affects multiple platforms in same category
+   - Verify cross-platform consistency requirements
+
+4. **Will changes in one repository require updates in dependent repositories?**
+   - Check dependency graph
+   - Identify all dependents
+   - Determine if dependent repos need updates
+
+5. **Are shared models/types/configurations being modified?**
+   - Identify shared resources being modified
+   - Verify ALL consumers are included in impact analysis
+   - Check if version updates are required
+
+6. **Does this feature exist in multiple repositories that require consistency?**
+   - Check if feature exists in multiple repos
+   - Determine if feature parity is required
+   - Verify all repos with this feature are updated
+
+**Decision Lock Format:**
+
+```markdown
+## 🚨 FINAL DECISION LOCK
+
+**Task:** {task title}
+
+**Affected Repositories:** {count}
+
+**Repository List:**
+1. {repository-name} - {Impact Level} - {Reasoning}
+2. {repository-name} - {Impact Level} - {Reasoning}
+...
+
+**Cross-Platform Consistency:** {REQUIRED/NOT REQUIRED}
+
+**If Consistency Required:**
+- Platform Group: {Frontend/Mobile/Backend}
+- Repositories in Group: {list}
+- Consistency Reasoning: {reasoning}
+
+**Implementation Order:**
+1. {repository} - {reason}
+2. {repository} - {reason}
+...
+
+**Validation Confirmation:**
+- [ ] All 6 validation questions answered
+- [ ] All repositories explicitly listed
+- [ ] Cross-platform consistency verified
+- [ ] Implementation order determined
+- [ ] NO repositories omitted without explicit reasoning
+- [ ] NO assumptions made without evidence
+
+**Decision Status:** LOCKED ✅
+
+**Proceeding to implementation with {count} repositories.**
+```
+
+**🚨 ABSOLUTE RULE:**
+
+```
+IF ANY validation question is unanswered → DO NOT PROCEED
+IF cross-platform consistency is uncertain → RE-ANALYZE
+IF implementation order is unclear → RE-ANALYZE
+IF confidence is LOW → RE-ANALYZE
+```
+
+**Cross-Platform Consistency Examples:**
+
+**Example 1: User Profile Redesign**
+```
+Task: "Redesign the user profile page"
+
+Analysis:
+- harborWebsite has user profile page → AFFECTED
+- harborApp has user profile screen → AFFECTED
+
+Decision: BOTH must be updated
+Reasoning: Both are user-facing platforms with profile functionality
+Cross-Platform Consistency: REQUIRED
+```
+
+**Example 2: User Availability Feature**
+```
+Task: "Add user availability status feature"
+
+Analysis:
+- harborUserSvc manages user data → AFFECTED (API)
+- harborWebsite displays user data → AFFECTED (UI)
+- harborApp displays user data → AFFECTED (UI)
+
+Decision: ALL 3 must be updated
+Reasoning:
+- Backend: Add availability API
+- Web: Add availability UI
+- Mobile: Add availability UI
+- Feature parity required across platforms
+Cross-Platform Consistency: REQUIRED
+```
+
+**Uncertainty Resolution:**
+
+**IF the agent is uncertain about ANY repository impact:**
+
+1. **Search repository code** for task-related keywords
+2. **Check API endpoints** for relevant endpoints
+3. **Check UI components** for related screens/pages
+4. **Verify dependencies** - does this repo depend on affected code?
+5. **Check dependents** - do other repos depend on this repo?
+
+**After additional analysis, re-run ALL validation questions.**
+
 ---
 
 ### Phase 5: Repository Rule Detection
