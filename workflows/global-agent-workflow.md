@@ -1,103 +1,579 @@
-# Global Agent Workflow - Dynamic Repository Discovery & Adaptive Intelligence
+# Global Agent Workflow - Deep Repository Intelligence
 
-**Version:** 3.0.0
-**Last Updated:** 2026-03-17
-**Purpose:** Fully dynamic, repository-aware global development agent that adapts to any project structure
+**Version:** 4.0.0
+**Last Updated:** 2026-03-18
+**Purpose:** Fully autonomous agent with deep repository analysis, comprehensive dependency mapping, and system integrity verification
 
 ---
 
 ## 🚨 CORE PHILOSOPHY
 
-**This agent is NOT rule-based. It is ADAPTIVE.**
+**This agent thinks like a senior systems engineer, not a file editor.**
 
 The agent must:
-- ✅ **Discover** - Find all repositories dynamically
-- ✅ **Understand** - Learn each repository's purpose from its code
-- ✅ **Detect** - Infer patterns and workflows from the codebase
-- ✅ **Adapt** - Follow actual implementation patterns, not assumptions
-- ✅ **Verify** - Ensure cross-repository consistency
+- ✅ **Deep Analysis** - Perform comprehensive multi-stage repository analysis before ANY implementation
+- ✅ **Complete Understanding** - Fully understand the entire system structure, dependencies, and patterns
+- ✅ **Accurate Impact Detection** - Precisely determine ALL repositories affected by a change
+- ✅ **Pattern Learning** - Detect and follow ALL implicit patterns and rules in each repository
+- ✅ **System Integrity** - Verify complete integration across ALL repositories before completion
+- ✅ **Zero Partial Implementation** - NEVER deliver partially integrated features
 
 **The agent must NEVER:**
-- ❌ Assume all projects follow the same structure
-- ❌ Use hardcoded rules about how projects work
-- ❌ Apply generic patterns blindly
-- ❌ Make decisions without verifying from the codebase
+- ❌ Begin implementation without deep repository analysis
+- ❌ Assume which repositories are affected - MUST analyze dependency graph
+- ❌ Skip repositories that depend on modified code
+- ❌ Ignore implicit patterns or rules in repositories
+- ❌ Consider a feature complete without cross-repository verification
+- ❌ Use hardcoded rules - MUST detect patterns from the codebase
 
 ---
 
-## MANDATORY STARTUP: Repository Discovery & Understanding Phase
+## 📊 INTEGRATED ANALYSIS SYSTEMS
 
-### Phase 1: Workspace Discovery (AUTOMATIC on Startup)
+This workflow integrates the following deep analysis systems:
 
-**🚨 CRITICAL: This phase runs EVERY TIME the agent starts.**
+1. **Deep Repository Analysis** (`deep-repository-analysis.md`)
+   - Comprehensive repository discovery and classification
+   - Structural pattern detection
+   - Integration pattern detection
+   - Repository rule detection
 
-When the user starts the agent (e.g., "start harbor-ai"), the agent MUST:
+2. **Cross-Repository Dependency Mapper** (`cross-repository-dependency-mapper.md`)
+   - Complete dependency graph construction
+   - Dependency type classification
+   - Change propagation analysis
+   - Implementation order calculation
 
-#### 1.1 Scan All Repositories in Workspace
+3. **Feature Impact Analyzer** (`feature-impact-analyzer.md`)
+   - Task requirement parsing
+   - Domain identification
+   - Repository impact scoring
+   - Affected repository determination
 
-**Action:** Scan the parent directory of harbor-ai to discover all repositories
+4. **Repository Rule Detector** (`repository-rule-detector.md`)
+   - Version update rule detection
+   - Model registration pattern detection
+   - API registration pattern detection
+   - Export/index file rule detection
+   - Dependency synchronization rule detection
+
+5. **System Integrity Checker** (`system-integrity-checker.md`)
+   - Repository coverage verification
+   - Cross-repository consistency checks
+   - Project convention verification
+   - Build and test verification
+   - End-to-end integration verification
+
+---
+
+---
+
+## MANDATORY STARTUP: Deep Repository Analysis Phase
+
+### 🚨 CRITICAL: Deep Analysis Runs BEFORE Any Implementation
+
+**When the agent starts, it MUST perform comprehensive repository analysis.**
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/deep-repository-analysis.md`
+
+---
+
+### Phase 1: Repository Discovery (DEEP)
+
+**🚨 CRITICAL: This is NOT a simple directory scan. This is DEEP discovery.**
+
+#### 1.1 Workspace Scanning
 
 ```bash
-# Workspace root is the parent of harbor-ai
+# Workspace root
 WORKSPACE_ROOT=/Users/mohitshah/Documents/HarborService/
 
-# List all directories
-ls -la ${WORKSPACE_ROOT}
-
-# For each directory, check if it's a git repository
-# by checking for .git subdirectory
+# Find ALL git repositories
+find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
 ```
 
-**Output:** List of all git repositories in workspace
+#### 1.2 Repository Classification
 
-#### 1.2 Analyze Each Repository's Purpose
+**For EACH repository, perform comprehensive classification:**
 
-**For EACH repository, perform DEEP analysis:**
+**Read:**
+- `deep-repository-analysis.md` Section 1.2: Repository Classification
 
-**Step 1: Read Core Configuration Files**
+**Execute classification algorithm:**
+- Detect repository type (Backend Service, Frontend Web, Mobile App, Shared Library, etc.)
+- Infer repository purpose from multiple data sources
+- Identify repository role in the system
+- Calculate confidence scores
 
-```
-Priority order:
-1. package.json (if exists) - reveals framework, dependencies, scripts
-2. tsconfig.json (if exists) - reveals TypeScript configuration
-3. README.md (if exists) - often states purpose
-4. pom.xml, requirements.txt, go.mod (for non-JS projects)
-5. Dockerfile, docker-compose.yml (reveals runtime behavior)
-6. .env.example (reveals configuration needs)
-```
-
-**Step 2: Analyze Directory Structure**
-
-```
-For each repository, map the directory structure:
-
-Example inference:
-- src/controllers/, src/routes/ → API service
-- app/, pages/ → Next.js/web application
-- ios/, android/ → Mobile application
-- No main/server entry, mostly exports → Shared library
-- migrations/, models/, sequelize/ → Database service
-- public/, static/, assets/ → Static assets or frontend
+**Output for each repository:**
+```javascript
+{
+  name: "harborUserSvc",
+  path: "/path/to/harborUserSvc",
+  type: "Backend Service",
+  purpose: "User management API service",
+  responsibilities: [
+    "User authentication",
+    "User profile management",
+    "User preferences",
+    "User availability"
+  ],
+  confidence: 95
+}
 ```
 
-**Step 3: Detect Technology Stack**
+---
+
+### Phase 2: Structural Pattern Detection
+
+**Reference:** `deep-repository-analysis.md` Section 2: Structural Pattern Detection
+
+#### 2.1 Directory Structure Analysis
+
+**For EACH repository:**
+
+**Analyze:**
+- Full directory tree
+- Key directories and their purposes
+- Architectural pattern (Layered, MVC, Modular, DDD, etc.)
+- All entry points (main.js, server.js, App.tsx, etc.)
+
+**Detect:**
+- How code is organized
+- Where new features should be placed
+- What the architectural pattern is
+
+#### 2.2 Entry Point Analysis
+
+**Find ALL entry points:**
+- Main entry points (main.js, server.js, app.js)
+- Next.js specific (app/, pages/)
+- React Native specific (App.tsx, index.tsx)
+- API routes
+- Exported modules
+
+#### 2.3 Dependency Declaration Analysis
+
+**Understand dependency management:**
+- Package manager detection (npm, bun, yarn, pnpm)
+- Local dependencies
+- External dependencies
+- Version strategy
+- Workspace references
+
+#### 2.4 Import/Export Pattern Analysis
+
+**Understand module system:**
+- Barrel export patterns
+- Named export patterns
+- Relative vs absolute imports
+- Path mapping
+- Module resolution (CommonJS, ES Modules)
+
+#### 2.5 Module Registration Pattern Detection
+
+**Detect how new modules are registered:**
+- API route registration
+- Controller registration
+- Service registration
+- Model registration
+- Middleware registration
+- Component registration
+
+#### 2.6 Shared Resource Pattern Detection
+
+**Detect shared resource usage:**
+- Shared models
+- Shared utilities
+- Shared types
+- Shared configurations
+- Shared constants
+
+---
+
+### Phase 3: Cross-Repository Dependency Mapping
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/cross-repository-dependency-mapper.md`
+
+#### 3.1 Build Dependency Graph
+
+**Construct comprehensive dependency graph:**
+
+```javascript
+// For each repository
+- Extract local dependencies
+- Extract external dependencies
+- Detect API dependencies
+- Detect data model dependencies
+- Detect shared resource dependencies
+
+// Build graph
+const graph = {
+  nodes: [all repositories],
+  edges: [all dependencies]
+};
+```
+
+#### 3.2 Dependency Type Classification
+
+**Classify each dependency:**
+- Code Dependency (imports)
+- API Dependency (service calls)
+- Database Dependency (shared DB)
+- Config Dependency (shared config)
+- Type Dependency (TypeScript types)
+- Resource Dependency (shared files)
+
+#### 3.3 Dependency Propagation Analysis
+
+**Understand how changes propagate:**
+- Direct dependents
+- Transitive dependents
+- Ripple effect calculation
+
+#### 3.4 Implementation Order Calculation
+
+**Calculate correct implementation order:**
+- Topological sort
+- Circular dependency detection
+- Layer-based ordering
+
+---
+
+### Phase 4: Feature Impact Analysis
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/feature-impact-analyzer.md`
+
+#### 4.1 Task Requirement Parsing
+
+**When a task is received:**
+
+```javascript
+function parseTaskRequirements(task) {
+  return {
+    featureType: identifyFeatureType(task),
+    domain: identifyDomain(task),
+    dataModels: extractDataModels(task),
+    apis: extractApis(task),
+    uiComponents: extractUiComponents(task),
+    userInteractions: extractUserInteractions(task),
+    businessLogic: extractBusinessLogic(task),
+    nonFunctional: extractNonFunctionalRequirements(task)
+  };
+}
+```
+
+#### 4.2 Repository Impact Scoring
+
+**Score EACH repository by relevance:**
+
+```javascript
+function scoreRepositoryImpact(repository, task, requirements) {
+  const score = {
+    domainMatch: repository.domain === requirements.domain ? 50 : 0,
+    apiMatch: repository.apis.some(api => requirements.apis.includes(api)) ? 30 : 0,
+    modelMatch: repository.models.some(model => requirements.dataModels.includes(model)) ? 20 : 0,
+    techFit: calculateTechFit(repository, requirements) ? 10 : 0,
+    consumerRelevance: calculateConsumerRelevance(repository, requirements) ? 10 : 0
+  };
+
+  return {
+    totalScore: sum(score),
+    classification: score.totalScore >= 70 ? 'PRIMARY' :
+                  score.totalScore >= 40 ? 'SECONDARY' :
+                  score.totalScore >= 20 ? 'TERTIARY' : 'NONE'
+  };
+}
+```
+
+#### 4.3 Affected Repository Determination
+
+**Determine ALL affected repositories:**
+
+```javascript
+const affected = {
+  primary: [],    // Directly implement the feature
+  secondary: [],  // Consume the feature
+  tertiary: []    // May need updates
+};
+
+// Score all repositories
+// Classify by score
+// Add dependency-based repositories
+// Calculate implementation order
+```
+
+---
+
+### Phase 5: Repository Rule Detection
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/repository-rule-detector.md`
+
+**🚨 CRITICAL: Detect ALL implicit rules before implementation.**
+
+#### 5.1 Version Update Rule Detection
+
+**Detect if version updates are required:**
+- Check for package.json version
+- Check for version references in other repos
+- Check for changelog
+- Infer versioning workflow
+
+#### 5.2 Model Registration Rule Detection
+
+**Detect how models are registered:**
+- Barrel export in models/index.ts
+- ORM registration in database/index.ts
+- Sequelize.sync() pattern
+- Migration-based pattern
+
+#### 5.3 API Registration Rule Detection
+
+**Detect how APIs are registered:**
+- Centralized routes in routes/index.ts
+- Controller-based pattern
+- Nest.js module-based
+- Fastify plugin-based
+
+#### 5.4 Export/Index File Rule Detection
+
+**Detect if index files must be updated:**
+- Find all index.ts files
+- Detect export patterns
+- Infer export instruction
+
+#### 5.5 Dependency Synchronization Rule Detection
+
+**Detect dependency sync requirements:**
+- Local dependency versioning
+- Install requirements
+- Build requirements
+- Lock file requirements
+
+#### 5.6 Installation Rule Detection
+
+**Detect installation patterns:**
+- Package manager detection
+- Install triggers
+- Install command
+- Lock file handling
+
+#### 5.7 Build Rule Detection
+
+**Detect build patterns:**
+- Build script detection
+- Build output directory
+- Build requirements
+- TypeScript compilation
+- Bundler detection
+
+#### 5.8 Testing Rule Detection
+
+**Detect testing patterns:**
+- Test framework detection
+- Test directory location
+- Test file naming
+- Coverage requirements
+
+---
+
+### Phase 6: Analysis Completion Verification
+
+**🚨 CRITICAL: Verify analysis is complete before proceeding.**
+
+**Analysis Checklist:**
+
+```javascript
+const analysisChecklist = {
+  // Repository Discovery
+  allRepositoriesDiscovered: false,
+  repositoriesClassified: false,
+  purposesInferred: false,
+
+  // Structural Pattern Detection
+  directoryStructureAnalyzed: false,
+  entryPointsDetected: false,
+  dependencyDeclarationsAnalyzed: false,
+  importExportPatternsAnalyzed: false,
+  moduleRegistrationPatternsDetected: false,
+  sharedResourcePatternsDetected: false,
+
+  // Cross-Repository Dependency Mapping
+  dependencyGraphBuilt: false,
+  dependenciesClassified: false,
+  propagationAnalyzed: false,
+  implementationOrderCalculated: false,
+
+  // Feature Impact Analysis
+  taskRequirementsParsed: false,
+  featureTypeClassified: false,
+  domainIdentified: false,
+  repositoriesScored: false,
+  affectedRepositoriesDetermined: false,
+
+  // Repository Rule Detection
+  versionUpdateRulesDetected: false,
+  modelRegistrationRulesDetected: false,
+  apiRegistrationRulesDetected: false,
+  exportRulesDetected: false,
+  dependencySyncRulesDetected: false,
+  installationRulesDetected: false,
+  buildRulesDetected: false,
+  testingRulesDetected: false
+};
+
+// Verify ALL items are true before proceeding
+const analysisComplete = Object.values(analysisChecklist).every(item => item === true);
+
+if (!analysisComplete) {
+  throw new Error('Analysis incomplete. Cannot proceed to implementation.');
+}
+```
+
+**✅ ONLY when ALL checks pass → Continue to implementation**
+
+---
+
+## 🚨 CRITICAL RULES
+
+### Rule 1: Analysis Before Implementation
+
+**❌ WRONG:**
+```
+User: "Add user availability feature"
+Agent: "I'll start implementing in harborUserSvc"
+```
+
+**✅ RIGHT:**
+```
+User: "Add user availability feature"
+Agent: "Beginning deep repository analysis..."
+Agent: "Building dependency graph..."
+Agent: "Analyzing feature impact..."
+Agent: "Detecting repository rules..."
+Agent: "Analysis complete. Affected repositories: harborSharedModels, harborUserSvc, harborWebsite, harborApp"
+Agent: "Beginning implementation in dependency order..."
+```
+
+### Rule 2: Never Assume Affected Repositories
+
+**❌ WRONG:**
+```
+Agent: "This is a user feature, so I'll only modify harborUserSvc"
+```
+
+**✅ RIGHT:**
+```
+Agent: "Analyzing dependency graph..."
+Agent: "harborUserSvc depends on harborSharedModels → Must modify"
+Agent: "harborWebsite consumes user APIs → Must modify"
+Agent: "harborApp consumes user APIs → Must modify"
+Agent: "Affected repositories: harborSharedModels, harborUserSvc, harborWebsite, harborApp"
+```
+
+### Rule 3: Never Ignore Implicit Rules
+
+**❌ WRONG:**
+```
+Agent: "I'll create the new model file"
+```
+
+**✅ RIGHT:**
+```
+Agent: "Detecting model registration rules..."
+Agent: "Pattern detected: Barrel export in models/index.ts"
+Agent: "Action: 1) Create model file, 2) Add export to models/index.ts"
+```
+
+### Rule 4: Never Deliver Partial Integration
+
+**❌ WRONG:**
+```
+Agent: "Implementation complete. harborUserSvc now has user availability."
+```
+
+**✅ RIGHT:**
+```
+Agent: "Verifying cross-repository consistency..."
+Agent: "✅ harborSharedModels updated and versioned"
+Agent: "✅ harborUserSvc implemented API"
+Agent: "✅ harborWebsite updated UI"
+Agent: "✅ harborApp updated mobile screens"
+Agent: "✅ All repositories build successfully"
+Agent: "✅ All tests pass"
+Agent: "Feature complete and fully integrated."
+```
+
+---
+
+## WORKFLOW INTEGRATION
+
+### Startup Sequence
 
 ```
-From package.json dependencies, detect:
-- Backend: express, fastify, nestjs, koa, hapi
-- Frontend: next, react, vue, angular, svelte
-- Mobile: react-native, flutter, ionic
-- Database: sequelize, typeorm, mongoose, prisma
-- Testing: jest, cypress, playwright, mocha
-- Build: webpack, vite, rollup, esbuild
+1. User: "start harbor-ai" (or similar trigger)
+2. Agent: Beginning deep repository analysis...
+3. Agent: Scanning workspace for repositories...
+4. Agent: Discovered N repositories
+5. Agent: Classifying repositories...
+6. Agent: Detecting structural patterns...
+7. Agent: Building dependency graph...
+8. Agent: Detecting repository rules...
+9. Agent: Deep analysis complete
+10. Agent: Fetching tasks from Azure DevOps...
+11. Agent: Processing tasks...
 ```
 
-**Step 4: Infer Repository Purpose**
+### Task Processing Sequence
 
 ```
-Based on ALL collected data, infer purpose with confidence score:
+For each task:
+1. Parse task requirements
+2. Identify domain and feature type
+3. Score repository impact
+4. Determine affected repositories
+5. Add dependency-based repositories
+6. Calculate implementation order
+7. Detect repository rules for affected repos
+8. Create implementation plan
+9. Execute implementation (following detected rules)
+10. Verify cross-repository consistency
+11. Run system integrity checks
+12. Validate all repositories build
+13. Validate all tests pass
+14. Create PRs
+15. Close tickets
+```
 
-Purpose Categories:
+---
+
+## 🚨 CRITICAL: Autonomous Execution
+
+**After completing analysis and implementation, the agent MUST:**
+
+✅ **Continue AUTOMATICALLY to system integrity verification**
+- Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/system-integrity-checker.md`
+- Verify ALL affected repositories were modified
+- Verify cross-repository consistency
+- Verify project conventions were followed
+- Verify all builds pass
+- Verify all tests pass
+- Fix any issues found
+- Continue until ALL checks pass
+
+✅ **Continue AUTOMATICALLY to the next workflow phase**
+- Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/execution.md`
+- Use the analysis results
+- Implement changes in ALL affected repositories
+- Follow detected patterns (not assumptions)
+- Ensure cross-repository consistency
+- DO NOT stop or ask for permission
+- DO NOT display "Analysis complete"
+- Continue AUTOMATICALLY through all phases
+
+---
+
+**End of Global Agent Workflow v4.0 - Deep Repository Intelligence**
 1. Backend Service - API endpoints, business logic, database access
 2. Frontend Website - Web UI, pages, browser-based
 3. Mobile Application - iOS/Android app
