@@ -965,6 +965,353 @@ export const validateRequest = (schema: any) => {
 
 ---
 
+### 🚨 Step 6.5: Module Registration Awareness (MANDATORY)
+
+#### ⚠️ CRITICAL: MANDATORY Module Registration Detection
+
+**This step is MANDATORY when creating ANY new module.**
+
+**Never skip module registration detection. This prevents runtime errors caused by incomplete integration.**
+
+#### 6.5.1 Purpose
+
+**The Problem:**
+- ❌ Agent creates a new module file (model, service, controller, etc.)
+- ❌ Agent forgets to register the module in required locations
+- ❌ Module is not accessible at runtime
+- ❌ Application crashes or fails to recognize the new module
+
+**The Solution:**
+- ✅ Detect ALL registration points before creating module
+- ✅ Complete ALL registration steps after creating module
+- ✅ Verify module is fully integrated before proceeding
+
+#### 6.5.2 When Is This Step Required?
+
+**This step is MANDATORY when:**
+- Creating a new model (ORM model, database schema)
+- Creating a new service (business logic service)
+- Creating a new controller (API controller)
+- Creating a new entity (TypeORM entity, Sequelize model)
+- Creating a new repository (data access layer)
+- Creating a new route (API route)
+- Creating ANY structural component that needs to be integrated
+
+**This step is NOT required when:- Modifying existing module code (no registration needed)
+- Updating configuration (unless new module is added)
+- Changing existing logic (no new module)
+
+#### 6.5.3 Module Registration Workflow
+
+**🚨 MANDATORY: Read the full Module Registration Awareness document before creating ANY module.**```
+Location: /Users/mohitshah/Documents/HarborService/harbor-ai/workflows/module-registration-awareness.md
+```**Phase 1: Pre-Creation Analysis (MANDATORY)**
+
+Before creating ANY module, complete this analysis:
+
+**1. Identify Similar Existing Modules**
+```bash
+# Search for existing modules of the same type
+# Example: If creating a new model, search for existing models
+find . -name "*.model.ts" -o -name "*Model.ts"
+# OR
+find . -path "*/models/*" -name "*.ts"
+```
+
+**2. Analyze Integration Patterns**
+
+For **EACH** similar existing module, identify:
+
+- **Where is it imported?**
+  ```bash
+  grep -r "from.*ExistingModel" --include="*.ts" .
+  ```
+
+- **Where is it registered?**
+  - Barrel exports (`index.ts` files)
+  - Central configuration files
+  - ORM/database registration files
+  - Route registration files
+
+- **What is the initialization pattern?**
+  - Is there an `init()` function?
+  - Is there a setup/registration file?
+  - Is there a loader/registry pattern?
+
+**3. Document Registration Requirements**
+
+Create a checklist of ALL registration points:
+
+```markdown
+## Module Registration Checklist
+
+Module Type: {model/service/controller/etc}
+
+Registration Points Detected:
+- [ ] models/index.ts (barrel export)
+- [ ] database/index.ts (ORM registration)
+- [ ] routes/index.ts (route registration)
+- [ ] server.ts (app initialization)
+- [ ] {other registration points}
+```
+
+**Phase 2: Module Creation**
+
+After completing Phase 1 analysis:
+1. Create the module file following detected patterns
+2. Apply ALL registration steps from checklist
+
+**❌ FORBIDDEN:**
+- Creating the module file only
+- Skipping registration steps
+- Assuming "it should work automatically"
+
+**✅ REQUIRED:**
+- Complete ALL registration steps from the checklist
+- Update ALL files that reference similar modules
+- Add exports to ALL barrel files
+- Register in ALL initialization files
+
+**Phase 3: Verification (MANDATORY)**
+
+Before proceeding, verify:
+
+**1. Registration Completeness**
+```bash
+# Verify the registration file includes the new module
+grep -n "NewModule" /path/to/registration/file.ts
+```
+
+**2. Syntax Check**
+```bash
+# Compile to check for errors
+npm run build
+# OR
+tsc --noEmit
+```
+
+**3. Import Resolution**
+- No "Cannot find module" errors
+- No undefined references
+- All exports are valid
+
+**4. Runtime Integration**
+- Module can be imported
+- Module is initialized (if required)
+- Module is accessible (API endpoint, ORM, etc.)
+
+**5. Consistency Verification**
+- File structure matches existing modules
+- Export pattern matches existing modules
+- Registration pattern matches existing modules
+- Import pattern matches existing modules
+- Initialization pattern matches existing modules
+
+#### 6.5.4 Common Registration Patterns
+
+**Pattern 1: Barrel Export**
+```typescript
+// models/index.ts
+export { User } from './user.model';
+export { Job } from './job.model';
+// ✅ ADD NEW MODULE HERE
+export { NewModule } from './new-module.model';
+```
+
+**Pattern 2: ORM Registration**
+```typescript
+// database/index.ts
+import { User } from '../models/user.model';
+import { Job } from '../models/job.model';
+// ✅ ADD IMPORT HERE
+import { NewModule } from '../models/new-module.model';
+
+export const db = {
+  User,
+  Job,
+  // ✅ REGISTER HERE
+  NewModule,
+  sequelize
+};
+```
+
+**Pattern 3: Route Registration**
+```typescript
+// routes/index.ts
+import userRoutes from './user.routes';
+import jobRoutes from './job.routes';
+// ✅ ADD IMPORT HERE
+import newModuleRoutes from './new-module.routes';
+
+const router = Router();
+router.use('/users', userRoutes);
+router.use('/jobs', jobRoutes);
+// ✅ REGISTER ROUTE HERE
+router.use('/new-modules', newModuleRoutes);
+```
+
+**Pattern 4: Service Registration**
+```typescript
+// services/container.ts
+import { UserService } from './user.service';
+import { JobService } from './job.service';
+// ✅ ADD IMPORT HERE
+import { NewModuleService } from './new-module.service';
+
+container.bind<UserService>('UserService').to(UserService);
+container.bind<JobService>('JobService').to(JobService);
+// ✅ REGISTER SERVICE HERE
+container.bind<NewModuleService>('NewModuleService').to(NewModuleService);
+```
+
+#### 6.5.5 Pre-Implementation Checklist
+
+**Before creating ANY module, complete this checklist:**
+
+```markdown
+## Module Registration Pre-Implementation Checklist
+
+Module to Create: {module name}
+Module Type: {model/service/controller/etc}
+
+### Phase 1: Analysis Complete
+- [ ] Searched for existing similar modules
+- [ ] Identified integration patterns
+- [ ] Documented all registration points
+- [ ] Created registration requirements checklist
+
+### Phase 2: Pattern Detection
+- [ ] Detected barrel export pattern: {YES/NO + location}
+- [ ] Detected ORM registration pattern: {YES/NO + location}
+- [ ] Detected route registration pattern: {YES/NO + location}
+- [ ] Detected service registration pattern: {YES/NO + location}
+- [ ] Detected configuration pattern: {YES/NO + location}
+- [ ] Detected migration pattern: {YES/NO + location}
+- [ ] Detected loader/registry pattern: {YES/NO + location}
+
+### Ready to Proceed?
+- [ ] YES - All registration points identified
+- [ ] NO - Need more analysis
+
+⚠️ If "NO", DO NOT proceed with module creation.
+```
+
+#### 6.5.6 Post-Implementation Checklist
+
+**After creating the module, complete this checklist:**
+
+```markdown
+## Module Registration Post-Implementation Checklist
+
+Module Created: {module name}
+
+### Phase 1: Module File Created
+- [ ] Module file created following detected patterns
+- [ ] File structure matches existing modules
+- [ ] Code follows existing conventions
+
+### Phase 2: Registration Complete
+- [ ] Barrel export updated (if required)
+- [ ] ORM registration updated (if required)
+- [ ] Route registration updated (if required)
+- [ ] Service registration updated (if required)
+- [ ] Configuration updated (if required)
+- [ ] Migration created (if required)
+- [ ] Loader/registry updated (if required)
+
+### Phase 3: Verification
+- [ ] All registration files updated
+- [ ] Module can be imported without errors
+- [ ] TypeScript compilation succeeds
+- [ ] No "Cannot find module" errors
+- [ ] Module follows exact same pattern as existing modules
+- [ ] Module is initialized (if required)
+- [ ] Module is accessible (API endpoint, ORM, etc.)
+
+### Phase 4: Consistency Check
+- [ ] Module structure matches existing modules
+- [ ] Export pattern matches existing modules
+- [ ] Registration pattern matches existing modules
+- [ ] Import pattern matches existing modules
+- [ ] Initialization pattern matches existing modules
+
+### Ready to Proceed?
+- [ ] YES - All checks passed, module fully integrated
+- [ ] NO - Registration incomplete, fix before proceeding
+
+⚠️ If "NO", fix registration issues before proceeding.
+```
+
+#### 6.5.7 Critical Rules
+
+**Rule 1: Never Assume Auto-Registration**
+
+❌ **FORBIDDEN ASSUMPTIONS:**
+- "The framework will detect it automatically"
+- "It should work without registration"
+- "I'll add registration later"
+
+✅ **REQUIRED BEHAVIOR:**
+- **ALWAYS** detect registration patterns
+- **ALWAYS** complete ALL registration steps
+- **NEVER** assume auto-registration without evidence
+
+**Rule 2: Never Skip Verification**
+
+❌ **FORBIDDEN:**
+- Creating module file only
+- Assuming registration worked without testing
+- Proceeding without compilation check
+
+✅ **REQUIRED:**
+- **ALWAYS** compile to verify
+- **ALWAYS** test import
+- **ALWAYS** verify runtime integration
+
+**Rule 3: Never Hardcode File Names**
+
+❌ **FORBIDDEN:**
+```typescript
+// ❌ WRONG: Hardcoded assumption
+// "Add to models/index.ts" (file might not exist)
+```
+
+✅ **REQUIRED:**
+```typescript
+// ✅ CORRECT: Dynamic detection
+// 1. Search for registration files
+find . -name "index.ts" -path "*/models/*"
+
+// 2. Analyze existing patterns
+grep -r "export.*Model" models/index.ts
+
+// 3. Follow detected pattern
+```
+
+**Rule 4: Follow Exact Patterns**
+
+❌ **FORBIDDEN:**
+- Creating a new registration pattern
+- Using a different export style
+- "Improving" the existing pattern
+
+✅ **REQUIRED:**
+- **EXACTLY** match existing patterns
+- **EXACTLY** match export style
+- **NEVER** deviate from detected pattern
+
+#### 6.5.8 Output
+
+**Output of Step 6.5:**
+- All new modules fully registered and integrated
+- All registration points updated
+- Module verified as accessible
+- Repository consistency maintained
+
+**⚠️ CRITICAL: Do NOT proceed to Step 7 until Module Registration is complete.**
+
+---
+
 ### Step 7: Pattern Consistency Verification
 
 #### 🚨 MANDATORY: Pattern Consistency Verification
@@ -2899,18 +3246,20 @@ Use this template to provide a summary after completing execution:
 
 **After completing the execution phase, you MUST:**
 
-✅ **IMMEDIATELY continue to Phase 4: Validation & Auto-Fix**
-   - Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/validation-and-autofix.md`
-   - Execute the complete validation and auto-fix workflow
-   - **CRITICAL:** Continue validation loop until ALL errors are resolved
+✅ **IMMEDIATELY continue to Phase 4: Testing & Self-Validation**
+   - Read `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/testing-and-self-validation.md`
+   - Execute the complete testing and self-validation workflow
+   - **CRITICAL:** Continue testing loop until ALL errors are resolved
+   - **CRITICAL:** Auto-fix all detected issues
+   - **CRITICAL:** Validate functionality end-to-end
    - DO NOT stop or ask for permission
    - DO NOT display "Next Steps" or wait for user input
    - This is an AUTONOMOUS workflow - continue automatically
 
 ❌ **PROHIBITED ACTIONS:**
 - **DO NOT** stop after implementation
-- **DO NOT** skip validation - this is MANDATORY
-- **DO NOT** proceed to testing if validation fails
+- **DO NOT** skip testing and self-validation - this is MANDATORY
+- **DO NOT** proceed to PR creation if testing fails
 - **DO NOT** display "The implementation is ready for testing"
 - **DO NOT** ask "Would you like me to continue?"
 - **DO NOT** wait for user confirmation
@@ -2918,14 +3267,13 @@ Use this template to provide a summary after completing execution:
 
 ✅ **MANDATORY BEHAVIOR:**
 1. Complete all execution validation steps
-2. **IMMEDIATELY** proceed to `validation-and-autofix.md` workflow
-3. Execute validation commands (build, type-check, lint)
-4. **IF errors detected:** Apply auto-fix procedures and re-validate
-5. **Continue fix-and-validate loop until project is stable**
-6. **ONLY THEN:** Proceed to `testing.md` workflow
-7. Execute all testing phases
-8. Continue to PR creation after tests pass
-9. Complete the full lifecycle autonomously
+2. **IMMEDIATELY** proceed to `testing-and-self-validation.md` workflow
+3. Execute comprehensive testing and validation
+4. **IF errors detected:** Apply auto-fix procedures and re-test
+5. **Continue fix-and-test loop until feature works correctly**
+6. **ONLY THEN:** Proceed to PR creation workflow
+7. Continue to PR creation after all tests pass
+8. Complete the full lifecycle autonomously
 
 **Rationale:**
 The Harbor AI agent is designed as an autonomous development system. The execution phase is ONE STEP in the complete workflow, not the final step. The agent must continue through testing → PR creation → ticket closure without interruption.

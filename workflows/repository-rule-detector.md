@@ -18,6 +18,38 @@ The agent must:
 
 ---
 
+## 🚨 CRITICAL: Module Registration Awareness (MANDATORY)
+
+**⚠️ This is the MOST CRITICAL rule category.**
+
+**When creating ANY new module (model, service, controller, entity, etc.), the agent MUST:**
+
+1. **Detect ALL registration points** before creating the module
+2. **Complete ALL registration steps** after creating the module
+3. **Verify complete integration** before proceeding
+
+**📄 Full Documentation:** See `workflows/module-registration-awareness.md`
+
+**❌ COMMON MISTAKE TO AVOID:**
+- Creating a module file but forgetting to register it
+- Assuming "the framework will handle it automatically"
+- Skipping verification steps
+
+**✅ REQUIRED BEHAVIOR:**
+- Always detect registration patterns from existing modules
+- Always follow the EXACT same registration pattern
+- Always verify the module is fully integrated
+
+**Quick Detection Checklist:**
+- [ ] Search for existing similar modules
+- [ ] Identify where they are imported
+- [ ] Identify where they are registered
+- [ ] Document all registration points
+- [ ] Apply all registration steps
+- [ ] Verify complete integration
+
+---
+
 ## Rule Categories
 
 ### 1. Version Update Rules

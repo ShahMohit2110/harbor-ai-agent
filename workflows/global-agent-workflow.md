@@ -1,18 +1,24 @@
 # Global Agent Workflow - Deep Repository Intelligence
 
-**Version:** 5.0.0
+**Version:** 6.0.0
 **Last Updated:** 2026-03-18
-**Purpose:** Fully autonomous agent with package-based architecture support, visible repository analysis, comprehensive dependency mapping, and automatic package propagation
+**Purpose:** System-aware engineering agent with dynamic workflow inference, automatic pipeline construction, and intelligent change propagation
 
-**What's New in v5.0:**
-- 🎁 **Package-Based Architecture Support** - Automatic detection and handling of package repositories ✨ NEW
-- 🔄 **Automatic Package Propagation** - Changes to packages automatically propagate to all consumers ✨ NEW
-- 📦 **Package Lifecycle Detection** - Detects versioning, build, publish, and install workflows dynamically ✨ NEW
-- 🔗 **Cross-Repository Synchronization** - Ensures all dependent repositories stay synchronized ✨ NEW
-- ✨ **Visible Repository Analysis** - Analysis process is now fully transparent and observable
-- 📊 **Live Progress Table** - Real-time status updates for each repository
-- 📝 **Detailed Logs** - Step-by-step logs during analysis
-- 🔄 **Sequential Processing** - One repository at a time with clear status indicators
+**What's New in v6.0:**
+- 🌊 **System Flow Discovery** - Understands how changes flow across the entire system ✨ NEW
+- ⚙️ **Dynamic Pipeline Construction** - Automatically builds execution pipelines based on system flow ✨ NEW
+- 🔄 **Workflow-Aware Execution** - Follows detected workflows instead of hardcoded rules ✨ NEW
+- 🎯 **System-Level Understanding** - Operates like a senior engineer who understands the entire system ✨ NEW
+
+**Previous Features (from v5.0):**
+- 🎁 Package-Based Architecture Support
+- 🔄 Automatic Package Propagation
+- 📦 Package Lifecycle Detection
+- 🔗 Cross-Repository Synchronization
+- ✨ Visible Repository Analysis
+- 📊 Live Progress Table
+- 📝 Detailed Logs
+- 🔄 Sequential Processing
 
 ---
 
@@ -91,46 +97,73 @@ This workflow integrates the following deep analysis systems:
    - Change propagation analysis
    - Implementation order calculation
 
-4. **Feature Impact Analyzer** (`feature-impact-analyzer.md`)
+4. **System Flow Discovery** (`system-flow-discovery.md`) 🌊 ✨ NEW
+   - **System-level understanding of how changes flow across repositories**
+   - Repository role identification (sources, transformers, consumers)
+   - Integration pattern detection
+   - Change flow graph construction
+   - Execution pipeline inference
+
+5. **Dynamic Pipeline Construction** (`system-flow-discovery.md`) ⚙️ ✨ NEW
+   - **Automatic execution pipeline generation based on system flow**
+   - Affected repository identification
+   - Relevant flow selection
+   - Task-specific flow customization
+   - Execution plan generation with rollback strategy
+
+6. **Feature Impact Analyzer** (`feature-impact-analyzer.md`)
    - Task requirement parsing
    - Domain identification
    - Repository impact scoring
    - Affected repository determination
 
-5. **Repository Rule Detector** (`repository-rule-detector.md`)
+7. **Repository Rule Detector** (`repository-rule-detector.md`)
    - Version update rule detection
    - Model registration pattern detection
    - API registration pattern detection
    - Export/index file rule detection
    - Dependency synchronization rule detection
 
-6. **Package Lifecycle Detection** (`package-lifecycle-detection.md`) ✨ NEW
-   - **Automatic package repository detection**
+8. **Package Lifecycle Detection** (`package-lifecycle-detection.md`) 📦
+   - Automatic package repository detection
    - Package type classification (shared library, built library, publishable package, local package, monorepo package)
    - Lifecycle stage detection (version, build, publish, install)
    - Consumer identification and integration pattern detection
    - Dependency synchronization rule detection
 
-7. **Package Propagation Workflow** (`package-propagation-workflow.md`) ✨ NEW
-   - **Automatic package change propagation**
+9. **Package Propagation Workflow** (`package-propagation-workflow.md`) 🔄
+   - Automatic package change propagation
    - Version management (manual, lerna, changesets, standard-version)
    - Build execution for built packages
    - Publishing workflow (if required)
    - Consumer synchronization (version updates, installs, code updates)
    - Cross-repository validation
 
-8. **Cross-Repository Synchronization** (`cross-repository-synchronization.md`)
-   - **Source-of-truth repository detection**
-   - Consumer relationship mapping
-   - Synchronization pattern detection
-   - Automatic consumer updates
+10. **Cross-Repository Synchronization** (`cross-repository-synchronization.md`)
+    - Source-of-truth repository detection
+    - Consumer relationship mapping
+    - Synchronization pattern detection
+    - Automatic consumer updates
 
-9. **System Integrity Checker** (`system-integrity-checker.md`)
-   - Repository coverage verification
-   - Cross-repository consistency checks
-   - Project convention verification
-   - Build and test verification
-   - End-to-end integration verification
+11. **Module Registration Awareness** (`module-registration-awareness.md`) 🔧
+    - Module registration pattern detection
+    - Pre-creation analysis
+    - Registration step execution
+    - Integration verification
+
+12. **Testing & Self-Validation** (`testing-and-self-validation.md`) 🧪
+    - Test scenario generation
+    - Build validation
+    - Automated testing
+    - Error detection and auto-fix loop
+    - Final validation
+
+13. **System Integrity Checker** (`system-integrity-checker.md`)
+    - Repository coverage verification
+    - Cross-repository consistency checks
+    - Project convention verification
+    - Build and test verification
+    - End-to-end integration verification
 
 ---
 
@@ -437,6 +470,183 @@ const graph = {
 - Topological sort
 - Circular dependency detection
 - Layer-based ordering
+
+---
+
+### Phase 3.5: System Flow Discovery (NEW - MANDATORY) 🌊
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/system-flow-discovery.md`
+
+**🚨 CRITICAL: This phase transforms the agent from repository-level operator to system-level intelligence engine.**
+
+#### What This Phase Does
+
+After understanding individual repositories (Phases 1-3), this phase builds a **System Flow Map** that captures:
+
+- **Source Repositories** - Where changes originate (shared libraries, models, types)
+- **Transformer Repositories** - Services that transform data (backend services)
+- **Consumer Repositories** - Applications that consume data (frontend, mobile)
+- **Change Flows** - How changes propagate from sources through transformers to consumers
+- **Execution Pipelines** - The complete workflow required for any change
+
+#### 3.5.1 Identify Repository Roles
+
+**Classify EACH repository by its role in the system:**
+
+```javascript
+async function identifyRepositoryRoles(repositories) {
+  return {
+    sources: [
+      // Shared libraries, model repositories, type definitions
+      { name: "harborSharedModels", type: "sharedLibrary", exports: [...] }
+    ],
+    transformers: [
+      // Backend services that transform and expose APIs
+      { name: "harborUserSvc", type: "backendService", transforms: [...] }
+    ],
+    consumers: [
+      // Frontend, mobile apps that consume APIs
+      { name: "harborWebsite", type: "frontend", consumes: [...] }
+    ]
+  };
+}
+```
+
+#### 3.5.2 Detect Integration Patterns
+
+**For EACH repository, detect how it integrates with others:**
+
+```javascript
+async function detectIntegrationPatterns(repositories, roles) {
+  // Detect:
+  // - Import-based integration
+  // - API-based integration
+  // - Code generation
+  // - File synchronization
+
+  return [
+    {
+      repository: "harborUserSvc",
+      consumesFrom: [
+        { source: "harborSharedModels", type: "import-based" }
+      ],
+      producesFor: [
+        { consumer: "harborWebsite", type: "api-based" }
+      ]
+    }
+  ];
+}
+```
+
+#### 3.5.3 Build Change Flow Graph
+
+**For EACH source repository, trace how changes flow through the system:**
+
+```javascript
+async function buildChangeFlowGraph(repositories, roles, integrations) {
+  return [
+    {
+      flowId: "user-model-change-flow",
+      trigger: "User model modified in harborSharedModels",
+      steps: [
+        { step: 1, repository: "harborSharedModels", action: "Update User model" },
+        { step: 2, repository: "harborSharedModels", action: "Version update" },
+        { step: 3, repository: "harborUserSvc", action: "Update dependency version" },
+        { step: 4, repository: "harborUserSvc", action: "Install dependencies" },
+        { step: 5, repository: "harborUserSvc", action: "Update API" },
+        { step: 6, repository: "harborWebsite", action: "Update API client" },
+        { step: 7, repository: "harborWebsite", action: "Update UI" },
+        { step: 8, repository: "all", action: "System validation" }
+      ],
+      repositoriesInvolved: ["harborSharedModels", "harborUserSvc", "harborWebsite"]
+    }
+  ];
+}
+```
+
+#### 3.5.4 Infer Execution Pipelines
+
+**Group flow steps into executable stages:**
+
+```javascript
+async function inferExecutionPipelines(flowGraph) {
+  return {
+    "user-model-change-flow": {
+      stages: [
+        {
+          stageNumber: 1,
+          repository: "harborSharedModels",
+          actions: ["Update User model", "Version update"]
+        },
+        {
+          stageNumber: 2,
+          repository: "harborUserSvc",
+          actions: ["Update dependency", "Install", "Update API", "Build"]
+        },
+        {
+          stageNumber: 3,
+          repository: "harborWebsite",
+          actions: ["Update client", "Update UI", "Build"]
+        }
+      ],
+      validationPoints: [...],
+      rollbackPlan: {...}
+    }
+  };
+}
+```
+
+#### 3.5.5 Display System Flow Map
+
+**🚨 CRITICAL: Display the System Flow Map to the user:**
+
+```markdown
+## 🌊 System Flow Map Generated
+
+### Repository Roles
+
+**Sources (2):**
+- harborSharedModels: Shared Library (User, Job, Notification models)
+- harborTranslations: Translation Repository
+
+**Transformers (3):**
+- harborUserSvc: Backend Service (User management, authentication)
+- harborJobSvc: Backend Service (Job lifecycle, scheduling)
+- harborNotificationSvc: Backend Service (Email, SMS notifications)
+
+**Consumers (2):**
+- harborWebsite: Frontend (Next.js web app)
+- harborApp: Mobile (React Native app)
+
+### Change Flows Detected (3)
+
+**Flow 1:** user-model-change-flow
+├─ Trigger: User model modified in harborSharedModels
+├─ Repositories: harborSharedModels → harborUserSvc → harborWebsite → harborApp
+└─ Steps: 8 (3 stages)
+
+**Flow 2:** job-model-change-flow
+├─ Trigger: Job model modified in harborSharedModels
+├─ Repositories: harborSharedModels → harborJobSvc → harborWebsite
+└─ Steps: 7 (3 stages)
+
+**Flow 3:** translation-change-flow
+├─ Trigger: Translation added to harborTranslations
+├─ Repositories: harborTranslations → harborWebsite → harborApp
+└─ Steps: 5 (2 stages)
+
+### Execution Pipelines Ready
+
+Agent is now ready to execute tasks with full system-level understanding.
+```
+
+#### Output
+
+A **System Flow Map** that:
+- Captures how the entire system operates
+- Identifies all change propagation paths
+- Provides execution pipelines for any task
+- Enables autonomous workflow inference
 
 ---
 
@@ -1388,13 +1598,207 @@ Rule: Implement in dependency order
    - Action: Implement mobile screens
 ```
 
+### 3.4 Dynamic Pipeline Construction (NEW - MANDATORY) ⚙️
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/system-flow-discovery.md`
+
+**🚨 CRITICAL: This phase transforms planning from static to dynamic.**
+
+#### What This Does
+
+Instead of following hardcoded rules, the agent:
+1. **Selects the relevant system flow** from the System Flow Map
+2. **Customizes the flow** for the specific task
+3. **Generates an execution pipeline** with stages, steps, and validation points
+4. **Creates a rollback plan** in case of failures
+
+#### 3.4.1 Identify Affected Repositories
+
+```javascript
+async function identifyAffectedRepositories(task, systemFlowMap) {
+  const affected = [];
+
+  // Check which repositories are affected by the task
+  for (const repo of getAllRepositories()) {
+    const impact = await analyzeTaskImpact(task, repo);
+    if (impact.level > 0) {
+      affected.push({
+        repository: repo,
+        impactLevel: impact.level, // high/medium/low
+        changesRequired: impact.changes
+      });
+    }
+  }
+
+  return affected;
+}
+```
+
+#### 3.4.2 Select Relevant System Flow
+
+```javascript
+async function selectRelevantFlow(task, affectedRepos, systemFlowMap) {
+  // Find the flow that matches the task's impact
+  const primaryAffected = affectedRepos[0];
+
+  // Find flow for this repository
+  const relevantFlow = systemFlowMap.flows.find(
+    f => f.source === primaryAffected.repository.name ||
+         f.repositoriesInvolved.includes(primaryAffected.repository.name)
+  );
+
+  if (!relevantFlow) {
+    // Generate ad-hoc flow if none exists
+    return await generateAdHocFlow(task, affectedRepos);
+  }
+
+  return relevantFlow;
+}
+```
+
+#### 3.4.3 Customize Flow for Task
+
+```javascript
+async function customizeFlowForTask(flow, task, affectedRepos) {
+  const customized = { ...flow };
+
+  // Add task-specific context to each step
+  customized.steps = await Promise.all(customized.steps.map(async step => {
+    return {
+      ...step,
+      taskContext: {
+        taskId: task.id,
+        taskType: task.type,
+        taskDescription: task.description
+      },
+      implementationDetails: await generateImplementationDetails(step, task)
+    };
+  }));
+
+  return customized;
+}
+```
+
+#### 3.4.4 Generate Execution Plan
+
+```javascript
+async function generateExecutionPlan(customizedFlow) {
+  return {
+    planId: `execution-plan-${Date.now()}`,
+    flow: customizedFlow.flowId,
+    stages: await buildExecutionStages(customizedFlow),
+    totalStages: customizedFlow.estimatedSteps,
+    estimatedDuration: await estimatePipelineDuration(customizedFlow),
+    validationPoints: await identifyValidationPoints(customizedFlow),
+    rollbackPlan: await generateRollbackPlan(customizedFlow)
+  };
+}
+```
+
+#### 3.4.5 Display Execution Plan
+
+**🚨 CRITICAL: Display the execution plan to the user:**
+
+```markdown
+## ⚙️ Execution Pipeline Constructed
+
+**Task:** {task description}
+**Flow:** {flow name}
+**Affected Repositories:** {list}
+
+### Pipeline Stages (3)
+
+**Stage 1:** harborSharedModels
+├─ Update User model
+├─ Update exports
+├─ Bump version: 1.2.3 → 1.2.4
+└─ No build required
+
+**Stage 2:** harborUserSvc
+├─ Update dependency: harbor-shared-models@1.2.4
+├─ Install dependencies
+├─ Update API endpoints for new field
+└─ Build service
+
+**Stage 3:** harborWebsite
+├─ Update API client
+├─ Update UI components
+└─ Build frontend
+
+### Validation Points (2)
+
+✓ After Stage 1: Package validation
+✓ After Stage 3: System validation
+
+### Rollback Plan
+
+If any stage fails:
+1. Revert changes in current repository
+2. Continue rollback in reverse order
+3. Restore system to previous state
+
+### Estimated Duration: 4m 30s
+
+Ready to execute pipeline.
+```
+
 ---
 
-## Phase 4: Execution (Pattern-Following)
+## Phase 4: Execution (Pipeline-Following) ⚙️
 
-### 4.1 Context Switching & Pattern Adherence
+**🚨 CRITICAL: Execute according to the constructed pipeline from Phase 3.4.**
 
-**For EACH repository in implementation order:**
+### 4.1 Pipeline Execution
+
+**Execute the stages defined in the execution plan:**
+
+```javascript
+async function executePipeline(executionPlan) {
+  const results = {
+    planId: executionPlan.planId,
+    stages: [],
+    status: 'in-progress'
+  };
+
+  try {
+    // Execute each stage in order
+    for (const stage of executionPlan.stages) {
+      console.log(`\n📍 Stage ${stage.stageNumber}: ${stage.repository}`);
+
+      const stageResult = await executeStage(stage);
+      results.stages.push(stageResult);
+
+      if (!stageResult.success) {
+        throw new Error(`Stage ${stage.stageNumber} failed: ${stageResult.error}`);
+      }
+
+      console.log(`✅ Stage ${stage.stageNumber} complete`);
+    }
+
+    // Run validations
+    for (const validationPoint of executionPlan.validationPoints) {
+      const validationResult = await runValidation(validationPoint);
+      if (!validationResult.passed) {
+        throw new Error(`Validation failed: ${validationResult.errors.join(', ')}`);
+      }
+    }
+
+    results.status = 'success';
+  } catch (error) {
+    results.status = 'failed';
+    results.error = error.message;
+
+    // Execute rollback
+    await executeRollback(executionPlan.rollbackPlan);
+  }
+
+  return results;
+}
+```
+
+### 4.2 Context Switching & Pattern Adherence
+
+**For EACH repository in the pipeline:**
 
 1. **Navigate to repository**
    ```bash
