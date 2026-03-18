@@ -1,8 +1,32 @@
 # Harbor AI - Pull Request Protocol
 
 **Document Version:** 1.0.0
-**Last Updated:** 2025-03-06
+**Last Updated:** 2025-03-18
 **Owner:** Harbor AI Development Team
+
+---
+
+## 🧪 TESTING PHASE CONFIGURATION (2025-03-18)
+
+**Current Mode:** **TESTING** 🧪
+
+**Pull Request Creation:** **DISABLED** ❌
+
+During testing phase, this workflow is **COMPLETELY SKIPPED**:
+- ❌ **NOT** create Git branches
+- ❌ **NOT** commit changes
+- ❌ **NOT** create Pull Requests
+- ❌ **NOT** submit changes for review
+
+**Workflow Behavior:**
+After completing execution and testing phases, the agent **STOPS** without creating any Pull Requests.
+
+**Purpose:**
+- Prevent unwanted PRs during testing
+- Allow safe validation of code changes locally
+- Enable testing without affecting remote repositories
+
+**Status:** This workflow remains disabled until testing phase is complete.
 
 ---
 

@@ -16,6 +16,33 @@
 
 ---
 
+## 🧪 TESTING PHASE CONFIGURATION (2025-03-18)
+
+**Current Mode:** **TESTING** 🧪
+
+**Git Operations:** **DISABLED** ❌
+
+During testing phase, the agent must:
+- ✅ Perform code implementation
+- ✅ Run validation and testing
+- ✅ Verify functionality locally
+- ❌ **NOT** create Git branches
+- ❌ **NOT** commit changes
+- ❌ **NOT** push to remote repositories
+- ❌ **NOT** create Pull Requests
+
+**Workflow Behavior:**
+After completing implementation, validation, and testing, the agent must **STOP** without triggering any Git actions.
+
+**Purpose:**
+- Prevent unwanted commits or pushes during testing
+- Allow safe validation of code changes locally
+- Enable testing without manual reverts
+
+**Status:** This rule remains in effect until explicitly re-enabled by the user.
+
+---
+
 ## 🚨 CORE PHILOSOPHY
 
 **This agent thinks like a senior systems engineer, not a file editor.**
@@ -1076,9 +1103,11 @@ For each task:
 11. Run system integrity checks
 12. Validate all repositories build
 13. Validate all tests pass
-14. Create PRs
-15. Close tickets
+14. [SKIP IN TESTING MODE] Create PRs
+15. [SKIP IN TESTING MODE] Close tickets
 ```
+
+**🧪 Testing Mode Note:** Steps 14-15 are SKIPPED during testing phase. After validation, the agent STOPs without Git operations.
 
 ---
 
@@ -1629,9 +1658,11 @@ Implement in ALL relevant repositories, in dependency order"
 6. Verify cross-repository consistency
 7. Validate all repositories
 8. Test all repositories
-9. Create PRs
-10. Close tickets
+9. [SKIP IN TESTING MODE] Create PRs
+10. [SKIP IN TESTING MODE] Close tickets
 ```
+
+**🧪 Testing Mode Note:** Steps 9-10 are SKIPPED during testing phase. After validation, the agent STOPs without Git operations.
 
 ---
 
@@ -1648,6 +1679,22 @@ Implement in ALL relevant repositories, in dependency order"
 - DO NOT stop or ask for permission
 - DO NOT display "Analysis complete"
 - Continue AUTOMATICALLY through all phases
+
+**🧪 TESTING MODE BEHAVIOR:**
+- After validation/testing is complete: **STOP**
+- DO NOT create Git branches
+- DO NOT commit changes
+- DO NOT push to remote
+- DO NOT create Pull Requests
+- DO NOT close tickets
+
+**🚀 NORMAL MODE BEHAVIOR (when testing is disabled):**
+- After validation/testing is complete:
+  - Create Git branches for all affected repositories
+  - Commit changes with descriptive messages
+  - Push to remote repositories
+  - Create Pull Requests
+  - Close Azure DevOps tickets
 
 ---
 

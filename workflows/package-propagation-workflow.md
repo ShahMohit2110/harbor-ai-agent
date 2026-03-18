@@ -6,6 +6,30 @@
 
 ---
 
+## 🧪 TESTING PHASE CONFIGURATION (2025-03-18)
+
+**Current Mode:** **TESTING** 🧪
+
+**Git Operations:** **DISABLED** ❌
+
+During testing phase, this workflow:
+- ✅ Performs package propagation analysis
+- ✅ Executes version updates, builds, and synchronization
+- ✅ Validates all changes locally
+- ❌ **NOT** commit any changes to Git
+- ❌ **NOT** create Git branches
+- ❌ **NOT** push changes to remote repositories
+
+**Workflow Behavior:**
+After completing propagation and validation, the workflow **STOPS** without Git operations.
+
+**Purpose:**
+- Test package propagation logic safely
+- Validate synchronization works correctly
+- Prevent unwanted commits during testing
+
+---
+
 ## 🎯 Core Philosophy
 
 **When a package repository changes, ALL dependent repositories MUST be synchronized automatically.**
@@ -207,7 +231,10 @@ async function updatePackageVersion(repository, lifecycleMap) {
   }
 
   // Commit version update
-  await commitChanges(repository, `chore: bump version to ${newVersion}`);
+  // 🧪 TESTING MODE: Skipped during testing phase
+  if (!isTestingMode()) {
+    await commitChanges(repository, `chore: bump version to ${newVersion}`);
+  }
 
   return {
     type: 'version-update',
@@ -448,10 +475,13 @@ async function updateDependencyVersion(consumerRepo, consumer, newVersion) {
   await writeJsonFile(packageJsonPath, packageJson);
 
   // Commit the change
-  await commitChanges(
-    consumerRepo,
-    `chore: update ${packageName} to ${newVersion}`
-  );
+  // 🧪 TESTING MODE: Skipped during testing phase
+  if (!isTestingMode()) {
+    await commitChanges(
+      consumerRepo,
+      `chore: update ${packageName} to ${newVersion}`
+    );
+  }
 }
 ```
 
@@ -499,10 +529,13 @@ async function updateConsumerCode(consumer, packageChanges) {
   }
 
   // Commit code updates
-  await commitChanges(
-    repository,
-    `feat: update code for new package exports`
-  );
+  // 🧪 TESTING MODE: Skipped during testing phase
+  if (!isTestingMode()) {
+    await commitChanges(
+      repository,
+      `feat: update code for new package exports`
+    );
+  }
 }
 ```
 

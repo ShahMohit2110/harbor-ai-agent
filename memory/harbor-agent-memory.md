@@ -1,21 +1,49 @@
 # Harbor Agent Memory
 
 **Memory Version:** 1.0.0
-**Last Updated:** 2025-03-06
+**Last Updated:** 2025-03-18
 **Purpose:** Persistent memory for Harbor AI agent to maintain contextual understanding of the Harbor platform
+
+---
+
+## 🚨 TESTING PHASE CONFIGURATION (2025-03-18)
+
+**Current Mode:** **TESTING** 🧪
+
+**Git Operations:** **DISABLED** ❌
+
+During testing phase, the agent must:
+- ✅ Perform code implementation
+- ✅ Run validation and testing
+- ✅ Verify functionality locally
+- ❌ **NOT** create Git branches
+- ❌ **NOT** commit changes
+- ❌ **NOT** push to remote repositories
+- ❌ **NOT** create Pull Requests
+
+**Workflow Behavior:**
+After completing implementation, validation, and testing, the agent must **STOP** without triggering any Git actions.
+
+**Purpose:**
+- Prevent unwanted commits or pushes during testing
+- Allow safe validation of code changes locally
+- Enable testing without manual reverts
+
+**Status:** This rule remains in effect until explicitly re-enabled by the user.
 
 ---
 
 ## Table of Contents
 
-1. [System Overview](#system-overview)
-2. [Service Responsibilities](#service-responsibilities)
-3. [Technology Stack](#technology-stack)
-4. [Backend Conventions](#backend-conventions)
-5. [Development Patterns](#development-patterns)
-6. [Architecture Patterns](#architecture-patterns)
-7. [Data Flow Patterns](#data-flow-patterns)
-8. [Integration Points](#integration-points)
+1. [Testing Phase Configuration](#-testing-phase-configuration-2025-03-18)
+2. [System Overview](#system-overview)
+3. [Service Responsibilities](#service-responsibilities)
+4. [Technology Stack](#technology-stack)
+5. [Backend Conventions](#backend-conventions)
+6. [Development Patterns](#development-patterns)
+7. [Architecture Patterns](#architecture-patterns)
+8. [Data Flow Patterns](#data-flow-patterns)
+9. [Integration Points](#integration-points)
 
 ---
 
