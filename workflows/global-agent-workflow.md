@@ -1,8 +1,14 @@
 # Global Agent Workflow - Deep Repository Intelligence
 
-**Version:** 4.0.0
+**Version:** 4.1.0
 **Last Updated:** 2026-03-18
-**Purpose:** Fully autonomous agent with deep repository analysis, comprehensive dependency mapping, and system integrity verification
+**Purpose:** Fully autonomous agent with visible, transparent repository analysis, comprehensive dependency mapping, and system integrity verification
+
+**What's New in v4.1:**
+- ✨ **Visible Repository Analysis** - Analysis process is now fully transparent and observable
+- 📊 **Live Progress Table** - Real-time status updates for each repository
+- 📝 **Detailed Logs** - Step-by-step logs during analysis
+- 🔄 **Sequential Processing** - One repository at a time with clear status indicators
 
 ---
 
@@ -11,6 +17,7 @@
 **This agent thinks like a senior systems engineer, not a file editor.**
 
 The agent must:
+- ✅ **Visible Analysis** - Perform analysis transparently with real-time progress tracking ✨ NEW
 - ✅ **Deep Analysis** - Perform comprehensive multi-stage repository analysis before ANY implementation
 - ✅ **Complete Understanding** - Fully understand the entire system structure, dependencies, and patterns
 - ✅ **Accurate Impact Detection** - Precisely determine ALL repositories affected by a change
@@ -19,6 +26,8 @@ The agent must:
 - ✅ **Zero Partial Implementation** - NEVER deliver partially integrated features
 
 **The agent must NEVER:**
+- ❌ Perform analysis silently without displaying progress
+- ❌ Hide the analysis process from the user
 - ❌ Begin implementation without deep repository analysis
 - ❌ Assume which repositories are affected - MUST analyze dependency graph
 - ❌ Skip repositories that depend on modified code
@@ -32,32 +41,39 @@ The agent must:
 
 This workflow integrates the following deep analysis systems:
 
-1. **Deep Repository Analysis** (`deep-repository-analysis.md`)
+1. **Visible Repository Analysis** (`visible-repository-analysis.md`) ✨ NEW
+   - **Transparent, observable analysis with real-time progress tracking**
+   - Live updating table showing analysis status
+   - Detailed logs during analysis
+   - Sequential repository processing
+   - Complete analysis summary
+
+2. **Deep Repository Analysis** (`deep-repository-analysis.md`)
    - Comprehensive repository discovery and classification
    - Structural pattern detection
    - Integration pattern detection
    - Repository rule detection
 
-2. **Cross-Repository Dependency Mapper** (`cross-repository-dependency-mapper.md`)
+3. **Cross-Repository Dependency Mapper** (`cross-repository-dependency-mapper.md`)
    - Complete dependency graph construction
    - Dependency type classification
    - Change propagation analysis
    - Implementation order calculation
 
-3. **Feature Impact Analyzer** (`feature-impact-analyzer.md`)
+4. **Feature Impact Analyzer** (`feature-impact-analyzer.md`)
    - Task requirement parsing
    - Domain identification
    - Repository impact scoring
    - Affected repository determination
 
-4. **Repository Rule Detector** (`repository-rule-detector.md`)
+5. **Repository Rule Detector** (`repository-rule-detector.md`)
    - Version update rule detection
    - Model registration pattern detection
    - API registration pattern detection
    - Export/index file rule detection
    - Dependency synchronization rule detection
 
-5. **System Integrity Checker** (`system-integrity-checker.md`)
+6. **System Integrity Checker** (`system-integrity-checker.md`)
    - Repository coverage verification
    - Cross-repository consistency checks
    - Project convention verification
@@ -68,19 +84,149 @@ This workflow integrates the following deep analysis systems:
 
 ---
 
-## MANDATORY STARTUP: Deep Repository Analysis Phase
+## 🚨 MANDATORY STARTUP: Visible Repository Analysis Phase
 
-### 🚨 CRITICAL: Deep Analysis Runs BEFORE Any Implementation
+### 🚨 CRITICAL: Visible, Transparent Analysis Runs BEFORE Any Implementation
 
-**When the agent starts, it MUST perform comprehensive repository analysis.**
+**When the agent starts, it MUST perform VISIBLE repository analysis.**
 
-**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/deep-repository-analysis.md`
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/visible-repository-analysis.md`
+
+**This analysis is:**
+- ✅ **VISIBLE** - User sees progress table and detailed logs
+- ✅ **SEQUENTIAL** - One repository at a time
+- ✅ **TRANSPARENT** - Every step is logged
+- ✅ **OBSERVABLE** - Real-time status updates
+
+---
+
+### Phase 0: Visible Repository Analysis (NEW - MANDATORY)
+
+**🚨 CRITICAL: This phase makes the analysis process FULLY VISIBLE to the user.**
+
+#### Step 0.1: Display Analysis Header
+
+```
+## 🔍 Beginning Deep Repository Analysis
+
+Workspace: /Users/mohitshah/Documents/HarborService/
+Repositories Discovered: {count}
+```
+
+#### Step 0.2: Initialize Progress Table
+
+**Display initial table with all repositories marked as "Pending":**
+
+```markdown
+## 📊 Repository Analysis Progress
+
+| Repository Name         | Status       | Type                | Notes                    |
+| ----------------------- | ------------ | ------------------- | ------------------------ |
+| harborSharedModels      | ⏳ Pending    | Unknown             | Not started              |
+| harborUserSvc           | ⏳ Pending    | Unknown             | Not started              |
+| harborJobSvc            | ⏳ Pending    | Unknown             | Not started              |
+| harborNotificationSvc   | ⏳ Pending    | Unknown             | Not started              |
+| harborWebsite           | ⏳ Pending    | Unknown             | Not started              |
+| harborApp               | ⏳ Pending    | Unknown             | Not started              |
+| harborApiGateway        | ⏳ Pending    | Unknown             | Not started              |
+
+**Progress:** 0/7 repositories analyzed (0%)
+```
+
+#### Step 0.3: Sequential Repository Analysis
+
+**For EACH repository, perform VISIBLE analysis:**
+
+**1. Mark as "In Progress"**
+- Update table to show 🔄 In Progress status
+
+**2. Display Repository Header**
+```
+### 🔍 Analyzing: {Repository Name}
+```
+
+**3. Display Detailed Logs**
+```
+📂 Scanning folder structure...
+   ✅ Found: {directories}
+   ✅ Detected: {project type}
+
+🏗️  Detecting architecture patterns...
+   ✅ Pattern: {pattern}
+   ✅ Entry points: {entry points}
+   ✅ Key features: {features}
+
+📦 Identifying dependencies...
+   ✅ Local dependencies: {deps}
+   ✅ External dependencies: {deps}
+
+🎯 Understanding repository role...
+   ✅ Purpose: {purpose}
+   ✅ Key features: {features}
+   ✅ Relationships: {relationships}
+
+📋 Detecting repository rules...
+   ✅ Version management: {required/not}
+   ✅ File organization: {pattern}
+   ✅ Integration pattern: {pattern}
+   ✅ Build process: {commands}
+   ✅ Testing: {framework}
+
+✅ Analysis complete for {Repository Name}
+```
+
+**4. Mark as "Completed"**
+- Update table to show ✅ Completed status
+- Update notes with summary
+- Update progress percentage
+
+**5. Continue to Next Repository**
+- Repeat steps 1-4 for ALL repositories
+
+#### Step 0.4: Display Analysis Summary
+
+**After ALL repositories are analyzed:**
+
+```
+## ✅ Repository Analysis Complete
+
+**Total Repositories Analyzed:** {count}
+**Duration:** {time}
+
+### 📊 Repository Summary
+
+| Repository         | Type              | Purpose                          |
+| ------------------ | ----------------- | -------------------------------- |
+| harborSharedModels | Shared Library    | Models and types shared across services |
+| harborUserSvc      | Backend Service   | User management and authentication |
+| harborJobSvc       | Backend Service   | Job lifecycle and scheduling      |
+| harborNotificationSvc | Backend Service | Email and SMS notifications      |
+| harborWebsite      | Frontend Web      | Web application (Next.js)         |
+| harborApp          | Mobile App        | Mobile application (React Native) |
+| harborApiGateway   | Gateway           | API gateway and routing           |
+
+### 🔗 Dependency Graph
+
+{dependency graph visualization}
+
+### 📋 Detected Patterns
+
+{list of detected patterns}
+
+### 🎯 Ready for Task Processing
+
+Agent is now ready to process tasks with complete understanding of the workspace.
+```
 
 ---
 
 ### Phase 1: Repository Discovery (DEEP)
 
-**🚨 CRITICAL: This is NOT a simple directory scan. This is DEEP discovery.**
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/deep-repository-analysis.md`
+
+**🚨 CRITICAL: This phase runs WITHIN the visible analysis loop.**
+
+**For EACH repository (during visible analysis):**
 
 #### 1.1 Workspace Scanning
 
@@ -121,6 +267,8 @@ find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
   confidence: 95
 }
 ```
+
+**🚨 CRITICAL: Display this information in the visible logs.**
 
 ---
 
@@ -508,20 +656,42 @@ Agent: "Feature complete and fully integrated."
 
 ## WORKFLOW INTEGRATION
 
-### Startup Sequence
+### Startup Sequence (UPDATED with Visible Analysis)
 
 ```
 1. User: "start harbor-ai" (or similar trigger)
-2. Agent: Beginning deep repository analysis...
-3. Agent: Scanning workspace for repositories...
-4. Agent: Discovered N repositories
-5. Agent: Classifying repositories...
-6. Agent: Detecting structural patterns...
-7. Agent: Building dependency graph...
-8. Agent: Detecting repository rules...
-9. Agent: Deep analysis complete
-10. Agent: Fetching tasks from Azure DevOps...
-11. Agent: Processing tasks...
+
+2. Agent: ## 🔍 Beginning Deep Repository Analysis
+   Workspace: /Users/mohitshah/Documents/HarborService/
+   Repositories Discovered: 7
+
+3. Agent: ## 📊 Repository Analysis Progress
+   [Displays table with all repos marked as "Pending"]
+
+4. Agent: ### 🔍 Analyzing: harborSharedModels
+   📂 Scanning folder structure...
+   🏗️  Detecting architecture patterns...
+   📦 Identifying dependencies...
+   🎯 Understanding repository role...
+   📋 Detecting repository rules...
+   ✅ Analysis complete for harborSharedModels
+   [Updates table: harborSharedModels ✅ Completed]
+
+5. Agent: ### 🔍 Analyzing: harborUserSvc
+   [Repeats detailed logs for harborUserSvc]
+   [Updates table: harborUserSvc ✅ Completed]
+
+6. Agent: [Continues for ALL repositories...]
+
+7. Agent: ## ✅ Repository Analysis Complete
+   **Total Repositories Analyzed:** 7
+   **Duration:** 42 seconds
+
+   [Displays summary, dependency graph, detected patterns]
+
+8. Agent: Fetching tasks from Azure DevOps...
+
+9. Agent: Processing tasks...
 ```
 
 ### Task Processing Sequence
