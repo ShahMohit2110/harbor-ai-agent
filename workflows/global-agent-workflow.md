@@ -1,10 +1,14 @@
 # Global Agent Workflow - Deep Repository Intelligence
 
-**Version:** 4.1.0
+**Version:** 5.0.0
 **Last Updated:** 2026-03-18
-**Purpose:** Fully autonomous agent with visible, transparent repository analysis, comprehensive dependency mapping, and system integrity verification
+**Purpose:** Fully autonomous agent with package-based architecture support, visible repository analysis, comprehensive dependency mapping, and automatic package propagation
 
-**What's New in v4.1:**
+**What's New in v5.0:**
+- 🎁 **Package-Based Architecture Support** - Automatic detection and handling of package repositories ✨ NEW
+- 🔄 **Automatic Package Propagation** - Changes to packages automatically propagate to all consumers ✨ NEW
+- 📦 **Package Lifecycle Detection** - Detects versioning, build, publish, and install workflows dynamically ✨ NEW
+- 🔗 **Cross-Repository Synchronization** - Ensures all dependent repositories stay synchronized ✨ NEW
 - ✨ **Visible Repository Analysis** - Analysis process is now fully transparent and observable
 - 📊 **Live Progress Table** - Real-time status updates for each repository
 - 📝 **Detailed Logs** - Step-by-step logs during analysis
@@ -41,7 +45,7 @@ The agent must:
 
 This workflow integrates the following deep analysis systems:
 
-1. **Visible Repository Analysis** (`visible-repository-analysis.md`) ✨ NEW
+1. **Visible Repository Analysis** (`visible-repository-analysis.md`) ✨
    - **Transparent, observable analysis with real-time progress tracking**
    - Live updating table showing analysis status
    - Detailed logs during analysis
@@ -73,7 +77,28 @@ This workflow integrates the following deep analysis systems:
    - Export/index file rule detection
    - Dependency synchronization rule detection
 
-6. **System Integrity Checker** (`system-integrity-checker.md`)
+6. **Package Lifecycle Detection** (`package-lifecycle-detection.md`) ✨ NEW
+   - **Automatic package repository detection**
+   - Package type classification (shared library, built library, publishable package, local package, monorepo package)
+   - Lifecycle stage detection (version, build, publish, install)
+   - Consumer identification and integration pattern detection
+   - Dependency synchronization rule detection
+
+7. **Package Propagation Workflow** (`package-propagation-workflow.md`) ✨ NEW
+   - **Automatic package change propagation**
+   - Version management (manual, lerna, changesets, standard-version)
+   - Build execution for built packages
+   - Publishing workflow (if required)
+   - Consumer synchronization (version updates, installs, code updates)
+   - Cross-repository validation
+
+8. **Cross-Repository Synchronization** (`cross-repository-synchronization.md`)
+   - **Source-of-truth repository detection**
+   - Consumer relationship mapping
+   - Synchronization pattern detection
+   - Automatic consumer updates
+
+9. **System Integrity Checker** (`system-integrity-checker.md`)
    - Repository coverage verification
    - Cross-repository consistency checks
    - Project convention verification
@@ -656,6 +681,207 @@ Cross-Platform Consistency: REQUIRED
 
 ---
 
+### Phase 5.5: Package-Based Architecture Detection (NEW - MANDATORY) ✨
+
+**🚨 CRITICAL: This phase detects package-based architectures and their propagation requirements.**
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/package-lifecycle-detection.md`
+
+#### Step 5.5.1: Detect Package Repositories
+
+**For EACH repository, determine if it behaves as a package:**
+
+```javascript
+async function detectPackageRepositories(repositories) {
+  const packageRepos = [];
+
+  for (const repo of repositories) {
+    const packageInfo = await detectPackageRepository(repo);
+
+    if (packageInfo.isPackage) {
+      console.log(`📦 Package detected: ${repo.name}`);
+      console.log(`   Type: ${packageInfo.packageType}`);
+      console.log(`   Confidence: ${packageInfo.confidence}%`);
+
+      packageRepos.push({
+        repository: repo,
+        packageInfo: packageInfo
+      });
+    }
+  }
+
+  return packageRepos;
+}
+```
+
+#### Step 5.5.2: Build Package Lifecycle Maps
+
+**For EACH package repository, build its complete lifecycle:**
+
+```javascript
+async function buildPackageLifecycleMaps(packageRepos) {
+  const lifecycleMaps = [];
+
+  for (const packageRepo of packageRepos) {
+    console.log(`🔍 Building lifecycle map for ${packageRepo.repository.name}...`);
+
+    const lifecycleMap = await buildPackageLifecycleMap(packageRepo.repository);
+
+    console.log(`   Lifecycle stages:`);
+    console.log(`   - Source changes: ${lifecycleMap.lifecycle.sourceChanges ? '✅' : '❌'}`);
+    console.log(`   - Version update: ${lifecycleMap.lifecycle.versionUpdate.required ? '✅' : '❌'}`);
+    console.log(`   - Build: ${lifecycleMap.lifecycle.build.required ? '✅' : '❌'}`);
+    console.log(`   - Publish: ${lifecycleMap.lifecycle.publish.required ? '✅' : '❌'}`);
+    console.log(`   - Install: ${lifecycleMap.lifecycle.install.required ? '✅' : '❌'}`);
+
+    console.log(`   Consumers: ${lifecycleMap.consumers.length}`);
+
+    lifecycleMaps.push(lifecycleMap);
+  }
+
+  return lifecycleMaps;
+}
+```
+
+#### Step 5.5.3: Detect Propagation Requirements
+
+**For EACH package repository, determine if it requires propagation:**
+
+```javascript
+async function detectPropagationRequirements(packageRepo, task) {
+  const willBeModified = await checkIfTaskModifiesPackage(packageRepo, task);
+
+  if (!willBeModified) {
+    return {
+      requiresPropagation: false,
+      reason: 'Package not modified by task'
+    };
+  }
+
+  const consumers = packageRepo.consumers;
+
+  if (consumers.length === 0) {
+    return {
+      requiresPropagation: false,
+      reason: 'No consumers found'
+    };
+  }
+
+  return {
+    requiresPropagation: true,
+    consumers: consumers,
+    lifecycle: packageRepo.lifecycle,
+    syncRules: packageRepo.syncRules
+  };
+}
+```
+
+#### Step 5.5.4: Build Propagation Strategy
+
+**For EACH package that requires propagation, build the strategy:**
+
+```javascript
+async function buildPropagationStrategy(packageRepo, task) {
+  const strategy = {
+    // Package information
+    package: packageRepo.repository,
+    packageType: packageRepo.packageType,
+
+    // Lifecycle stages to execute
+    stages: [],
+
+    // Consumers to synchronize
+    consumers: packageRepo.consumers,
+
+    // Implementation order
+    order: [],
+
+    // Validation requirements
+    validation: []
+  };
+
+  // Determine lifecycle stages
+  if (packageRepo.lifecycle.versionUpdate.required) {
+    strategy.stages.push('version-update');
+  }
+
+  if (packageRepo.lifecycle.build.required) {
+    strategy.stages.push('build');
+  }
+
+  if (packageRepo.lifecycle.publish.required) {
+    strategy.stages.push('publish');
+  }
+
+  // Calculate implementation order
+  strategy.order = calculatePackageImplementationOrder(packageRepo);
+
+  // Determine validation requirements
+  strategy.validation = determineValidationRequirements(packageRepo);
+
+  return strategy;
+}
+```
+
+#### Step 5.5.5: Display Package Architecture Summary
+
+**After analyzing all packages, display a summary:**
+
+```markdown
+## 📦 Package Architecture Analysis
+
+**Package Repositories Detected:** {count}
+
+### Package: harborSharedModels
+- Type: Shared Library
+- Lifecycle: Manual version, no build, install required
+- Consumers: 3 repositories
+  - harborUserSvc (version-based: ^1.2.3)
+  - harborJobSvc (version-based: ^1.2.3)
+  - harborNotificationSvc (version-based: ^1.2.3)
+
+### Package: harborUIComponents
+- Type: Built Library (TypeScript)
+- Lifecycle: Manual version, TypeScript build, install required
+- Consumers: 2 repositories
+  - harborWebsite (version-based: ^2.0.0)
+  - harborApp (version-based: ^2.0.0)
+
+### Propagation Requirements
+
+**Task affects:** harborSharedModels
+
+**Propagation required:** YES
+
+**Implementation order:**
+1. harborSharedModels (source)
+   - Update models
+   - Bump version
+   - Commit changes
+
+2. harborUserSvc (consumer)
+   - Update dependency version
+   - Run npm install
+   - Update code to use new models
+
+3. harborJobSvc (consumer)
+   - Update dependency version
+   - Run npm install
+   - Update code to use new models
+
+4. harborNotificationSvc (consumer)
+   - Update dependency version
+   - Run npm install
+   - Update code to use new models
+
+**Validation:**
+- All consumers use same version
+- All imports resolve correctly
+- All builds pass
+```
+
+---
+
 ### Phase 6: Analysis Completion Verification
 
 **🚨 CRITICAL: Verify analysis is complete before proceeding.**
@@ -698,7 +924,15 @@ const analysisChecklist = {
   dependencySyncRulesDetected: false,
   installationRulesDetected: false,
   buildRulesDetected: false,
-  testingRulesDetected: false
+  testingRulesDetected: false,
+
+  // Package-Based Architecture Detection ✨ NEW
+  packageRepositoriesDetected: false,
+  packageTypesClassified: false,
+  packageLifecycleMapsBuilt: false,
+  packageConsumersIdentified: false,
+  propagationRequirementsDetected: false,
+  propagationStrategiesBuilt: false
 };
 
 // Verify ALL items are true before proceeding
