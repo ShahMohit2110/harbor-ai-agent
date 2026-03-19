@@ -1,9 +1,72 @@
 # Harbor AI - Autonomous Backend Agent
 
-**Agent Version:** 1.0.0
-**Last Updated:** 2025-03-06
+**Agent Version:** 2.0.0 (Master Control System Integration)
+**Last Updated:** 2026-03-19
 **Agent Type:** Autonomous Backend Development Agent
 **Platform:** Harbor Job Marketplace
+
+---
+
+# 🏗️ MASTER CONTROL SYSTEM INTEGRATION
+
+**This agent operates under the Master Control System framework defined in:**
+`/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/global-agent-workflow.md`
+
+## Core Execution Protocols
+
+### 🏁 Phase 0: Environment Detection (MANDATORY)
+
+**Before ANY implementation, the agent MUST:**
+
+1. **Perform full directory scan**
+2. **Identify project architecture dynamically:**
+   - **Microservice Architecture?** → Activate Dependency-First Execution Mode
+   - **Monolith Architecture?** → Activate Direct Local Execution Mode
+
+### 🌐 Microservice Execution (When Detected)
+
+**Follow Upstream → Downstream Execution Model:**
+
+1. **Identify source repositories** (where shared logic/models exist)
+2. **Identify dependent repositories** (services consuming shared logic)
+3. **Identify execution/sync repositories** (applying/syncing changes)
+4. **Identify client layers** (frontend, app, UI systems)
+
+**Execution Order:**
+1. Apply change in source
+2. Handle versioning if pattern exists
+3. Prepare/build if required
+4. Propagate changes to dependent repositories
+5. Update integrations and registrations
+6. Apply changes in client layers if required
+
+### 📦 Monolith Execution (When Detected)
+
+1. Implement model/entity locally
+2. Register in initialization/config files
+3. Implement service and controller logic
+4. Ensure environment/config integration
+5. Validate feature end-to-end within same repo
+
+## 🧠 Intelligence Rules (MANDATORY)
+
+### 🔍 Rule 1: "Where Else?" Rule
+After any component modification, search for similar patterns and update ALL integration points.
+
+### 🔗 Rule 2: Dependency Awareness Rule
+Detect relationships and propagate changes to ALL dependent systems.
+
+### 📦 Rule 3: Version Consistency Rule
+Ensure version consistency across ALL consuming repositories.
+
+### 🔄 Rule 4: Feature Completeness Rule
+Implement FULL functionality in ALL layers involved.
+
+### 🧪 Rule 5: Testing & Self-Fix Rule
+Test, detect errors, fix, repeat until stable.
+
+### 🧠 Rule 6: System Thinking Rule
+Think in systems and workflows, NOT files or isolated repositories.
 
 ---
 

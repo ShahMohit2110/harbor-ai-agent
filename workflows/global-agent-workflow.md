@@ -1,16 +1,18 @@
-# Global Agent Workflow - Deep Repository Intelligence
+# Global Agent Workflow - Master Control System
 
-**Version:** 6.0.0
-**Last Updated:** 2026-03-18
-**Purpose:** System-aware engineering agent with dynamic workflow inference, automatic pipeline construction, and intelligent change propagation
+**Version:** 7.0.0
+**Last Updated:** 2026-03-19
+**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, and intelligent change propagation
 
-**What's New in v6.0:**
-- 🌊 **System Flow Discovery** - Understands how changes flow across the entire system ✨ NEW
-- ⚙️ **Dynamic Pipeline Construction** - Automatically builds execution pipelines based on system flow ✨ NEW
-- 🔄 **Workflow-Aware Execution** - Follows detected workflows instead of hardcoded rules ✨ NEW
-- 🎯 **System-Level Understanding** - Operates like a senior engineer who understands the entire system ✨ NEW
+**What's New in v7.0:**
+- 🏗️ **Master Control System** - Core execution framework for all agent operations ✨ NEW
+- 🔍 **Environment Detection** - Automatically detects microservice vs monolith architecture ✨ NEW
+- 🌊 **System Flow Discovery** - Understands how changes flow across the entire system
+- ⚙️ **Dynamic Pipeline Construction** - Automatically builds execution pipelines based on system flow
+- 🔄 **Workflow-Aware Execution** - Follows detected workflows instead of hardcoded rules
+- 🎯 **System-Level Understanding** - Operates like a senior engineer who understands the entire system
 
-**Previous Features (from v5.0):**
+**Previous Features (from v6.0):**
 - 🎁 Package-Based Architecture Support
 - 🔄 Automatic Package Propagation
 - 📦 Package Lifecycle Detection
@@ -19,6 +21,149 @@
 - 📊 Live Progress Table
 - 📝 Detailed Logs
 - 🔄 Sequential Processing
+
+---
+
+# 🏗️ MASTER CONTROL SYSTEM (CORE FRAMEWORK)
+
+**This is the MANDATORY operating protocol for ALL tasks.**
+
+## 🏁 Phase 0: Environment Detection (MANDATORY)
+
+**Before performing ANY implementation, the agent MUST:**
+
+### Step 0.1: Perform Full Directory Scan
+
+```bash
+# Scan workspace root
+WORKSPACE_ROOT=/Users/mohitshah/Documents/HarborService/
+
+# Detect project structure
+find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
+```
+
+### Step 0.2: Identify Project Architecture
+
+**CRITICAL: Determine which execution mode to activate.**
+
+---
+
+### 🌐 [SCENARIO A] Microservice Architecture Detected
+
+**Detection Criteria:**
+- ✅ Multiple root-level repositories/services detected
+- ✅ Independent `package.json` files across folders
+- ✅ Inter-service dependencies identified
+- ✅ Separate git repositories
+
+**👉 Action: ACTIVATE DEPENDENCY-FIRST EXECUTION MODE**
+
+**Required Behavior:**
+
+1. **Identify Repository Types:**
+   - **Source Repositories** - Where shared logic, models, or core definitions exist
+   - **Dependent Repositories** - Services consuming shared logic
+   - **Execution/Sync Repositories** - Responsible for applying or syncing changes
+   - **Client Layers** - Frontend, app, or UI-based systems
+
+2. **Follow Upstream → Downstream Execution Model:**
+   ```
+   Source Repositories
+       ↓ (version/build if required)
+   Dependent Repositories
+       ↓ (consume and integrate)
+   Execution/Sync Repositories
+       ↓ (apply changes)
+   Client Layers
+       ↓ (UI updates if required)
+   ```
+
+3. **Dynamic Inference (NO Hardcoding):**
+   - Infer flow from repository analysis
+   - Detect dependency relationships automatically
+   - Build execution pipeline dynamically
+
+---
+
+### 📦 [SCENARIO B] Monolith Architecture Detected
+
+**Detection Criteria:**
+- ✅ Single repository structure
+- ✅ Centralized `src/` directory
+- ✅ Single `package.json` at root
+- ✅ One git repository
+
+**👉 Action: ACTIVATE DIRECT LOCAL EXECUTION MODE**
+
+**Required Behavior:**
+
+1. **Implement Locally:**
+   - Create/modify entities/models locally
+   - Register in initialization/config files
+   - Implement service and controller logic
+   - Ensure environment/config integration
+
+2. **Validate End-to-End:**
+   - Test within same repository
+   - Verify all integrations work
+   - No cross-repository propagation needed
+
+---
+
+## 🧠 Intelligence Rules (CRITICAL)
+
+### 🔍 Rule 1: The "Where Else?" Rule
+
+**After creating or modifying ANY component, the agent MUST:**
+- ✅ Search for similar patterns across the repository
+- ✅ Identify ALL required integration points
+- ✅ Update ALL related files (index, registry, config, loaders, etc.)
+- ❌ NEVER leave a module partially integrated
+
+### 🔗 Rule 2: Dependency Awareness Rule
+
+**The agent MUST:**
+- ✅ Detect relationships between repositories
+- ✅ Identify which repos depend on others
+- ✅ Propagate changes accordingly
+- ❌ NEVER consider a task complete if dependent systems are not updated
+
+### 📦 Rule 3: Version Consistency Rule
+
+**If the project uses versioned dependencies:**
+- ✅ Ensure updated versions are reflected in ALL consuming repositories
+- ❌ NEVER allow outdated or broken references
+
+### 🔄 Rule 4: Feature Completeness Rule
+
+**If a task describes a feature:**
+- ✅ Implement FULL functionality (not partial)
+- ✅ Implement ALL required operations (e.g., CRUD if applicable)
+- ✅ Implement in ALL layers involved (backend, integration, UI if required)
+
+### 🧪 Rule 5: Testing & Self-Fix Rule
+
+**After implementation:**
+1. Generate test scenarios
+2. Execute or simulate functionality
+3. Detect errors
+4. Fix issues
+5. Repeat until stable
+
+### 🧠 Rule 6: System Thinking Rule
+
+**The agent MUST think in terms of:**
+- ✅ Systems (not files)
+- ✅ Workflows (not single repository)
+- ✅ Dependencies (not isolated changes)
+
+## 🚫 Critical Restrictions
+
+- ❌ Do NOT hardcode repository names or file names
+- ❌ Do NOT assume architecture
+- ❌ Do NOT skip analysis
+- ❌ Do NOT partially implement features
+- ❌ Do NOT stop before full system integration
 
 ---
 
