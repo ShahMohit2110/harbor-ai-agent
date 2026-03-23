@@ -36,6 +36,7 @@ Harbor AI is designed to automate the end-to-end software development lifecycle 
 ### Purpose
 
 Harbor AI exists to:
+
 - **Reduce manual development work** through intelligent automation
 - **Enforce consistent architecture** across all code changes
 - **Accelerate development velocity** by handling routine tasks autonomously
@@ -47,36 +48,43 @@ Harbor AI exists to:
 ## ✨ Key Features
 
 ### Autonomous Task Execution
+
 - Fully automated development workflow from task intake to completion
 - No manual intervention required for standard development tasks
 - Continuous operation through multiple queued tasks
 
 ### Azure DevOps Integration
+
 - Direct API integration for work item retrieval and updates
 - Automatic filtering for `State = Active` tickets only
 - Seamless ticket lifecycle management
 
 ### Architecture-Aware Code Generation
+
 - Deep understanding of Harbor microservices architecture
 - Service map awareness for dependency management
 - Consistent implementation of architectural patterns
 
 ### Automated Git Workflow
+
 - Automatic branch creation from `dev` branch
 - Semantic commit messages following project conventions
 - Clean branch management with standardized naming
 
 ### Automated Pull Request Generation
+
 - Comprehensive PR descriptions with implementation details
 - Automatic linking to Azure DevOps tickets
 - Consistent PR formatting and structure
 
 ### Development Standards Enforcement
+
 - Adherence to Harbor coding rules and best practices
 - TypeScript type safety and error handling
 - Consistent code structure across services
 
 ### Reduced Developer Workload
+
 - Eliminates repetitive development tasks
 - Frees developers to focus on complex feature work
 - Reduces context switching between tasks
@@ -149,6 +157,7 @@ harborJobSvc/                    # Job Service implementation
 The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 
 ### Phase 1: Task Intake
+
 1. Connect to Azure DevOps using configured credentials
 2. Fetch work items where `State = Active`
 3. Parse ticket details, requirements, and acceptance criteria
@@ -156,6 +165,7 @@ The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 5. Classify task type (feature, bug fix, enhancement, refactoring)
 
 ### Phase 2: Architecture Analysis
+
 1. Study the architecture overview and service map
 2. Analyze service dependencies and integration points
 3. Identify database schema changes (if applicable)
@@ -163,6 +173,7 @@ The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 5. Review architectural patterns and conventions
 
 ### Phase 3: Implementation Planning
+
 1. Create detailed implementation plan
 2. Define database schema changes
 3. Design API endpoints and contracts
@@ -170,6 +181,7 @@ The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 5. Document testing strategy
 
 ### Phase 4: Repository Impact Analysis 🚨 MANDATORY
+
 1. **Scan workspace** for all git repositories
 2. **Analyze each repository** for structure, technology, and purpose
 3. **Evaluate task impact** across ALL repositories
@@ -179,6 +191,7 @@ The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 **🚨 Critical:** This phase ensures that ALL repositories affected by the task are identified BEFORE implementation begins. This prevents incomplete implementations where only one repository is modified when multiple repositories contain related code.
 
 ### Phase 5: Code Implementation
+
 1. Generate TypeScript models and interfaces
 2. Implement repository layer with data access logic
 3. Create service layer with business logic
@@ -187,6 +200,7 @@ The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 6. Follow Harbor coding standards and conventions
 
 ### Phase 6: Testing & Validation
+
 1. Run unit tests for implemented code
 2. Execute integration tests
 3. Validate API responses and error handling
@@ -194,6 +208,7 @@ The Harbor AI agent follows a strict **7-phase autonomous workflow**:
 5. Fix any failing tests
 
 ### Phase 7: Git Operations & PR Creation
+
 1. Create feature branch from `dev` branch
 2. Stage and commit changes with semantic messages
 3. Push branch to remote repository
@@ -242,6 +257,7 @@ feature/<ticket-id>-<short-description>
 ```
 
 **Examples:**
+
 - `feature/83-fetch-users-without-cv`
 - `feature/86-user-profile-endpoint`
 - `feature/92-payment-integration`
@@ -291,12 +307,14 @@ docs: update API documentation
 ### Installation Steps
 
 1. **Clone the Repository**
+
    ```bash
    git clone <repository-url>
    cd harbor-ai
    ```
 
 2. **Install Dependencies**
+
    ```bash
    cd harborJobSvc
    npm install
@@ -325,6 +343,7 @@ docs: update API documentation
    ```
 
 4. **Run Development Service**
+
    ```bash
    cd harborJobSvc
    npm run dev
@@ -337,18 +356,18 @@ docs: update API documentation
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `AZURE_DEVOPS_ORG` | Azure DevOps organization name | Yes |
-| `AZURE_DEVOPS_PROJECT` | Azure DevOps project name | Yes |
-| `AZURE_DEVOPS_PAT` | Personal Access Token for authentication | Yes |
-| `DATABASE_HOST` | Database server host | Yes |
-| `DATABASE_PORT` | Database server port | Yes |
-| `DATABASE_NAME` | Database name | Yes |
-| `DATABASE_USER` | Database user | Yes |
-| `DATABASE_PASSWORD` | Database password | Yes |
-| `PORT` | Service port number | Yes |
-| `NODE_ENV` | Environment (development/production) | Yes |
+| Variable               | Description                              | Required |
+| ---------------------- | ---------------------------------------- | -------- |
+| `AZURE_DEVOPS_ORG`     | Azure DevOps organization name           | Yes      |
+| `AZURE_DEVOPS_PROJECT` | Azure DevOps project name                | Yes      |
+| `AZURE_DEVOPS_PAT`     | Personal Access Token for authentication | Yes      |
+| `DATABASE_HOST`        | Database server host                     | Yes      |
+| `DATABASE_PORT`        | Database server port                     | Yes      |
+| `DATABASE_NAME`        | Database name                            | Yes      |
+| `DATABASE_USER`        | Database user                            | Yes      |
+| `DATABASE_PASSWORD`    | Database password                        | Yes      |
+| `PORT`                 | Service port number                      | Yes      |
+| `NODE_ENV`             | Environment (development/production)     | Yes      |
 
 ---
 
@@ -396,6 +415,7 @@ open agent-progress/index.html
 ```
 
 Or navigate to:
+
 ```
 file:///path/to/harbor-ai/agent-progress/index.html
 ```
@@ -407,6 +427,7 @@ file:///path/to/harbor-ai/agent-progress/index.html
 ## 🚀 New Features (v2.0 - Dynamic Multi-Repository Agent)
 
 ### Dynamic Repository Discovery ⚡
+
 - **Runtime workspace scanning** - Discovers all git repositories **when agent starts**
 - **Repository analysis** - Analyzes structure, framework, and purpose **at startup**
 - **Technology detection** - Identifies languages, frameworks, and build tools **automatically**
@@ -415,12 +436,14 @@ file:///path/to/harbor-ai/agent-progress/index.html
 **🚨 Critical:** Repository analysis happens as a **runtime workflow step** when the agent starts, NOT during setup. See `AGENT_STARTUP_WORKFLOW.md` for the complete startup sequence.
 
 ### Memory System
+
 - **Persistent repository memory** - Stores discovered repository information
 - **Repository map** - Maintains relationships between repositories
 - **Auto-generated documentation** - Creates analysis for each repository
 - **Knowledge base** - Builds understanding over time
 
 ### Testing Mode
+
 - **Safe testing environment** - Run without external changes
 - **Local branch creation** - Creates feature branches locally
 - **No automatic pushes** - Prevents unwanted remote changes
@@ -428,6 +451,7 @@ file:///path/to/harbor-ai/agent-progress/index.html
 - **Summary reports** - Generates detailed implementation summaries
 
 ### Multi-Repository Coordination
+
 - **Cross-repository planning** - Plans changes across multiple repos
 - **Dependency resolution** - Identifies implementation order
 - **Dynamic service routing** - Determines affected repositories automatically
@@ -440,32 +464,38 @@ file:///path/to/harbor-ai/agent-progress/index.html
 Planned enhancements for the Harbor AI system:
 
 ### AI Planning Capabilities
+
 - Advanced natural language understanding for complex requirements
 - Multi-step task decomposition and planning
 - Learning from previous implementations
 
 ### Automated Testing
+
 - Expanded test coverage with automated test generation
 - Performance testing integration
 - Security vulnerability scanning
 
 ### CI/CD Pipeline Integration
+
 - Automatic deployment to staging environments
 - Production deployment automation
 - Rollback capabilities
 
 ### Monitoring & Observability
+
 - Real-time agent execution monitoring
 - Performance metrics and analytics
 - Error tracking and alerting
 - Dashboard for agent status and history
 
 ### Enhanced Architecture Understanding
+
 - ✅ **Dynamic architecture discovery** (Implemented)
 - ✅ **Automatic dependency mapping** (Implemented)
 - Architecture compliance validation
 
 ### Collaboration Features
+
 - Integration with code review processes
 - Automated documentation generation
 - Knowledge base integration

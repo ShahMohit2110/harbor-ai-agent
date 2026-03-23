@@ -310,6 +310,14 @@ This workflow integrates the following deep analysis systems:
     - Build and test verification
     - End-to-end integration verification
 
+14. **Repository Role Detection** (`intelligence/repository-role-detection.md`) 🏷️ ✨ NEW (2026-03-19)
+    - **Automatic detection of repository roles from code patterns**
+    - PUBLISHABLE_PACKAGE detection - Identifies packages that need publishing
+    - DATABASE_SYNC_SERVICE detection - Identifies services that sync database schemas
+    - Role-based execution ordering - Ensures correct dependency flow
+    - Validation gates - Prevents incomplete task completion
+    - **Non-breaking enhancement** - Purely additive, no existing logic modified
+
 ---
 
 ---
@@ -1264,6 +1272,213 @@ async function buildPropagationStrategy(packageRepo, task) {
 
 ---
 
+### Phase 5.6: Repository Role Detection (NEW - MANDATORY) 🏷️ ✨ (2026-03-19)
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/intelligence/repository-role-detection.md`
+
+**🚨 CRITICAL: This phase automatically detects repository roles from code patterns, NOT from configuration.**
+
+**This is a NON-BREAKING enhancement.** It adds intelligent role detection without modifying existing behavior.
+
+#### What This Phase Does
+
+After understanding packages and their lifecycles, this phase:
+1. **Detects PUBLISHABLE_PACKAGE** - Repositories that require publishing after changes
+2. **Detects DATABASE_SYNC_SERVICE** - Repositories that sync database schemas
+3. **Builds execution order** - Determines correct sequence of operations
+4. **Creates validation gates** - Ensures no steps are skipped
+
+#### Step 5.6.1: Detect Publishable Packages
+
+**For EACH repository, detect if it requires publishing:**
+
+```javascript
+async function detectPublishablePackages(repositories) {
+  const results = [];
+
+  for (const repo of repositories) {
+    const signals = {
+      // Strong indicators
+      hasPublishScript: await hasScript(repo, 'publish'),
+      isNotPrivate: await checkPackagePrivate(repo) === false,
+      hasPublishConfig: await hasField(repo, 'publishConfig'),
+
+      // Supporting indicators
+      exportsModules: await hasExports(repo),
+      hasConsumers: await hasDependents(repo),
+      hasVersion: await hasVersionField(repo),
+      noServerEntry: await lacksServerCode(repo)
+    };
+
+    const score = calculatePublishableScore(signals);
+    const isPackage = score >= 70;
+
+    if (isPackage) {
+      console.log(`📦 ${repo.name}`);
+      console.log(`   ✅ PUBLISHABLE_PACKAGE detected (${score}% confidence)`);
+      console.log(`   → Will publish after changes\n`);
+
+      results.push({
+        repository: repo,
+        role: 'PUBLISHABLE_PACKAGE',
+        confidence: score,
+        requiredActions: ['version-update', 'build', 'publish'],
+        blocking: true
+      });
+    }
+  }
+
+  return results;
+}
+```
+
+#### Step 5.6.2: Detect Database Sync Services
+
+**For EACH repository, detect if it performs database synchronization:**
+
+```javascript
+async function detectDatabaseSyncServices(repositories) {
+  const results = [];
+
+  for (const repo of repositories) {
+    const signals = {
+      // Strong indicators
+      hasSequelizeSync: await codeContains(repo, 'sequelize.sync('),
+      hasSyncScript: await hasScript(repo, 'sync') ||
+                     await hasScript(repo, 'db:sync'),
+
+      // Supporting indicators
+      hasModels: await hasDirectory(repo, 'models'),
+      hasMigrations: await hasDirectory(repo, 'migrations'),
+      hasDatabaseConnection: await hasDatabaseSetup(repo),
+      ormType: await detectOrm(repo)
+    };
+
+    const score = calculateDatabaseSyncScore(signals);
+    const isDbSync = score >= 50;
+
+    if (isDbSync) {
+      console.log(`🗄️  ${repo.name}`);
+      console.log(`   ✅ DATABASE_SYNC_SERVICE detected (${score}% confidence)`);
+      console.log(`   → Will sync database if models change\n`);
+
+      results.push({
+        repository: repo,
+        role: 'DATABASE_SYNC_SERVICE',
+        confidence: score,
+        requiredActions: ['database-sync'],
+        trigger: 'model-changes'
+      });
+    }
+  }
+
+  return results;
+}
+```
+
+#### Step 5.6.3: Build Execution Order
+
+**Automatically determine execution order from detected roles:**
+
+```javascript
+async function buildExecutionOrder(repositories) {
+  // Detect all roles
+  const packages = await detectPublishablePackages(repositories);
+  const dbServices = await detectDatabaseSyncServices(repositories);
+  const backends = await detectBackendServices(repositories);
+  const frontends = await detectFrontendServices(repositories);
+
+  const stages = [];
+
+  // Stage 1: Publishable packages (must be first)
+  if (packages.length > 0) {
+    stages.push({
+      stage: 1,
+      name: 'Package Publishing',
+      repositories: packages,
+      reason: 'Shared code must be published before consumers can use it',
+      blocking: true
+    });
+  }
+
+  // Stage 2: Database sync (after packages, if models changed)
+  if (dbServices.length > 0) {
+    stages.push({
+      stage: 2,
+      name: 'Database Synchronization',
+      repositories: dbServices,
+      reason: 'Database schema must match updated models',
+      trigger: 'model-changes',
+      blocking: false
+    });
+  }
+
+  // Stage 3: Backend services (consume packages)
+  if (backends.length > 0) {
+    stages.push({
+      stage: 3,
+      name: 'Backend Services',
+      repositories: backends,
+      reason: 'Services consume published packages'
+    });
+  }
+
+  // Stage 4: Frontend (consume backend APIs)
+  if (frontends.length > 0) {
+    stages.push({
+      stage: 4,
+      name: 'Frontend Applications',
+      repositories: frontends,
+      reason: 'Frontend consumes backend APIs'
+    });
+  }
+
+  return stages;
+}
+```
+
+#### Step 5.6.4: Display Role Detection Summary
+
+**🚨 CRITICAL: Display the role detection summary to the user:**
+
+```markdown
+## 🏷️ Repository Role Detection Complete
+
+### Detected Roles
+
+**Publishable Packages (2):**
+- harborSharedModels (95% confidence)
+  - Actions: version-update → build → publish
+- harborTranslations (82% confidence)
+  - Actions: version-update → build → publish
+
+**Database Sync Services (1):**
+- harborUserSvc (88% confidence)
+  - Trigger: model-changes
+  - Action: database-sync
+
+### Execution Flow
+
+**Stage 1:** Package Publishing
+├─ harborSharedModels → BLOCKING (must complete before Stage 2)
+└─ harborTranslations → BLOCKING (must complete before Stage 2)
+
+**Stage 2:** Database Synchronization
+└─ harborUserSvc → runs if models changed
+
+**Stage 3:** Backend Services
+├─ harborUserSvc
+└─ harborJobSvc
+
+**Stage 4:** Frontend Applications
+├─ harborWebsite
+└─ harborApp
+
+✨ All roles detected automatically from code patterns!
+```
+
+---
+
 ### Phase 6: Analysis Completion Verification
 
 **🚨 CRITICAL: Verify analysis is complete before proceeding.**
@@ -1314,7 +1529,13 @@ const analysisChecklist = {
   packageLifecycleMapsBuilt: false,
   packageConsumersIdentified: false,
   propagationRequirementsDetected: false,
-  propagationStrategiesBuilt: false
+  propagationStrategiesBuilt: false,
+
+  // Repository Role Detection ✨ NEW (2026-03-19)
+  publishablePackagesDetected: false,
+  databaseSyncServicesDetected: false,
+  executionOrderDetermined: false,
+  roleValidationRulesDefined: false
 };
 
 // Verify ALL items are true before proceeding
@@ -2105,6 +2326,176 @@ Example verification:
    ✅ API client updated for new endpoints
    ✅ Components using new API
    ✅ Build passes
+```
+
+---
+
+### Phase 6.5: Role-Based Validation (NEW - MANDATORY) 🏷️ ✨ (2026-03-19)
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/intelligence/repository-role-detection.md`
+
+**🚨 CRITICAL: Before task completion, validate that all role-based requirements were met.**
+
+#### 6.5.1: Validate Publishable Packages
+
+**For each repository with PUBLISHABLE_PACKAGE role:**
+
+```javascript
+async function validatePublishablePackages(repositories, task) {
+  const results = [];
+
+  for (const repo of repositories) {
+    const role = await detectPublishablePackage(repo);
+
+    if (role.role === 'PUBLISHABLE_PACKAGE') {
+      const wasModified = await checkIfModified(repo, task);
+      const wasPublished = await checkIfPublished(repo);
+
+      if (wasModified && !wasPublished) {
+        results.push({
+          repository: repo.name,
+          status: 'FAILED',
+          reason: 'Package was modified but not published',
+          requiredAction: 'Execute publish workflow before proceeding'
+        });
+      } else {
+        results.push({
+          repository: repo.name,
+          status: 'PASSED',
+          reason: wasModified ? 'Package was modified and published' : 'Package not modified, no action required'
+        });
+      }
+    }
+  }
+
+  return results;
+}
+```
+
+#### 6.5.2: Validate Database Sync Services
+
+**For each repository with DATABASE_SYNC_SERVICE role:**
+
+```javascript
+async function validateDatabaseSyncServices(repositories, task) {
+  const results = [];
+
+  for (const repo of repositories) {
+    const role = await detectDatabaseSyncService(repo);
+
+    if (role.role === 'DATABASE_SYNC_SERVICE') {
+      const modelsChanged = await checkModelsChanged(repo, task);
+      const syncExecuted = await checkSyncExecuted(repo);
+
+      if (modelsChanged && !syncExecuted) {
+        results.push({
+          repository: repo.name,
+          status: 'FAILED',
+          reason: 'Models changed but database sync not executed',
+          requiredAction: 'Run database sync before proceeding'
+        });
+      } else {
+        results.push({
+          repository: repo.name,
+          status: 'PASSED',
+          reason: modelsChanged ? 'Models changed and database synced' : 'No model changes, no sync required'
+        });
+      }
+    }
+  }
+
+  return results;
+}
+```
+
+#### 6.5.3: Execute Validation and Auto-Fix
+
+**🚨 CRITICAL: If validation fails, automatically execute missing steps:**
+
+```javascript
+async function executeRoleBasedValidation(repositories, task) {
+  console.log('\n🏷️  Role-Based Validation\n');
+
+  // Validate publishable packages
+  const packageResults = await validatePublishablePackages(repositories, task);
+  const dbResults = await validateDatabaseSyncServices(repositories, task);
+
+  const allResults = [...packageResults, ...dbResults];
+  const failures = allResults.filter(r => r.status === 'FAILED');
+
+  if (failures.length > 0) {
+    console.log('❌ Validation Failed. Missing steps detected:\n');
+
+    for (const failure of failures) {
+      console.log(`   ${failure.repository}:`);
+      console.log(`   ❌ ${failure.reason}`);
+      console.log(`   → Action: ${failure.requiredAction}\n`);
+    }
+
+    console.log('🔧 Executing missing steps...\n');
+
+    // Auto-fix: Execute missing steps
+    for (const failure of failures) {
+      if (failure.requiredAction.includes('publish')) {
+        const repo = repositories.find(r => r.name === failure.repository);
+        console.log(`📤 Publishing ${failure.repository}...`);
+        await executePublishablePackageWorkflow(repo);
+      }
+
+      if (failure.requiredAction.includes('database sync')) {
+        const repo = repositories.find(r => r.name === failure.repository);
+        console.log(`🗄️  Syncing database for ${failure.repository}...`);
+        await executeDatabaseSyncWorkflow(repo);
+      }
+    }
+
+    // Re-validate
+    console.log('\n🔄 Re-validating...\n');
+    return await executeRoleBasedValidation(repositories, task);
+  }
+
+  console.log('✅ All role-based validations passed!\n');
+  return allResults;
+}
+```
+
+#### 6.5.4: Display Validation Summary
+
+```markdown
+## 🏷️  Role-Based Validation Complete
+
+### Publishable Packages
+
+✅ harborSharedModels
+   - Status: Modified and published
+   - Version: 1.2.3 → 1.2.4
+
+✅ harborTranslations
+   - Status: No changes detected
+   - Action: Not required
+
+### Database Sync Services
+
+✅ harborUserSvc
+   - Status: Models changed, database synced
+   - Sync: Completed successfully
+
+### Validation Result
+
+✅ ALL CHECKS PASSED
+→ No steps were skipped
+→ All role requirements were met
+→ Task is complete
+
+```
+
+**🚨 ENFORCEMENT RULE:**
+
+```
+IF ANY validation fails → DO NOT mark task as complete
+IF ANY step was skipped → Execute missing step
+IF re-validation fails → Continue until all pass
+ONLY when ALL pass → Task can be marked complete
 ```
 
 ---
