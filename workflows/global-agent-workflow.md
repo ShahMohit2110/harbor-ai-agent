@@ -1,15 +1,24 @@
 # Global Agent Workflow - Master Control System
 
-**Version:** 7.1.0
+**Version:** 7.2.0
 **Last Updated:** 2026-03-23
-**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, and cross-repository dependency intelligence
+**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, and evidence-based validation
 
-**What's New in v7.1:**
-- 🧠 **Cross-Repository Dependency Intelligence** - Builds dependency chains, detects critical path, validates completeness ✨ NEW
-- 🔴 **Critical Path Detection** - Identifies which repos block feature completion vs. optional updates ✨ NEW
-- ✅ **Completeness Validation** - Ensures feature is runnable end-to-end before marking complete ✨ NEW
-- 🚫 **Partial Implementation Prevention** - No more 30% missing work - ALL gaps detected and fixed ✨ NEW
-- 🧘 **Testing Constraints** - Validates logical correctness without git operations ✨ NEW
+**What's New in v7.2:**
+- 🔍 **Evidence-Based Validation** - Transforms validation from assumption-based to evidence-based ✨ NEW
+- ✅ **No Assumptions Rule** - Requires reading actual files to verify implementation ✨ NEW
+- 📁 **File Change Verification** - Confirms actual files were modified with expected changes ✨ NEW
+- 🚨 **Silent Failure Detection** - Catches missing implementations in required repositories ✨ NEW
+- 🎨 **Pattern Matching Validation** - Verifies new code follows existing patterns ✨ NEW
+- 🎯 **Final Evidence Validation** - Last gate before task completion - zero partial implementation ✨ NEW
+- 🧪 **Zero "Probably Done"** - No more assumptions - only proven complete with code evidence ✨ NEW
+
+**Features from v7.1:**
+- 🧠 **Cross-Repository Dependency Intelligence** - Builds dependency chains, detects critical path, validates completeness
+- 🔴 **Critical Path Detection** - Identifies which repos block feature completion vs. optional updates
+- ✅ **Completeness Validation** - Ensures feature is runnable end-to-end before marking complete
+- 🚫 **Partial Implementation Prevention** - No more 30% missing work - ALL gaps detected and fixed
+- 🧘 **Testing Constraints** - Validates logical correctness without git operations
 
 **Features from v7.0:**
 - 🏗️ **Master Control System** - Core execution framework for all agent operations
@@ -337,6 +346,17 @@ This workflow integrates the following deep analysis systems:
     - **Partial Implementation Prevention** - Detects and fixes ALL gaps before completion
     - **Risk Assessment** - Identifies missing database sync, package builds, etc.
     - **Non-breaking enhancement** - Purely additive intelligence layer
+
+16. **Evidence-Based Validation** (Phase 6.9) 🔍 ✨ NEW (2026-03-23)
+    - **Transforms validation from assumption-based to evidence-based**
+    - **No Assumptions Rule** - Requires reading actual files to verify implementation
+    - **Evidence Requirement Per Check** - Each check needs specific proof (imports, registrations, exports)
+    - **File Change Verification** - Confirms actual files were modified with expected changes
+    - **Silent Failure Detection** - Catches missing implementations in required repositories
+    - **Pattern Matching Validation** - Verifies new code follows existing patterns
+    - **Final Evidence Validation** - Last gate before task completion
+    - **Zero Partial Implementation** - No more "probably done" - only proven complete
+    - **Non-breaking enhancement** - Purely additive validation layer
 
 ---
 
@@ -2454,7 +2474,15 @@ const analysisChecklist = {
   rescannedForMissingImplementations: false,
   gapsDetected: false,
   gapsAutoFixed: false,
-  reValidatedAfterFixes: false
+  reValidatedAfterFixes: false,
+
+  // Evidence-Based Validation ✨ NEW (2026-03-23)
+  noAssumptionsValidated: false,
+  evidenceGatheredForAllChecks: false,
+  fileChangesVerified: false,
+  silentFailuresDetected: false,
+  patternMatchingValidated: false,
+  finalEvidenceValidationPassed: false
 };
 
 // Verify ALL items are true before proceeding
@@ -3415,6 +3443,754 @@ IF ANY validation fails → DO NOT mark task as complete
 IF ANY step was skipped → Execute missing step
 IF re-validation fails → Continue until all pass
 ONLY when ALL pass → Task can be marked complete
+```
+
+---
+
+### Phase 6.9: Evidence-Based Validation (MANDATORY) 🔍 ✨ (2026-03-23)
+
+**🚨 CRITICAL: This phase transforms validation from assumption-based to evidence-based.**
+
+**Reference:** `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/evidence-based-validation.md`
+
+**🚨 CRITICAL: This phase runs AFTER ALL other validation phases and BEFORE marking task as complete.**
+
+#### What This Phase Does
+
+After all implementation and validation is complete, this phase:
+1. **Rejects assumptions** - No more "probably done" checks
+2. **Requires evidence** - Every check must be proven with actual code
+3. **Detects silent failures** - Catches missing implementations that previous checks missed
+4. **Enforces pattern matching** - Verifies new code follows existing patterns
+5. **Validates with file changes** - Requires actual file modifications as proof
+
+#### Step 6.9.1: No Assumptions Rule
+
+**🚨 CRITICAL: Do NOT assume something is implemented.**
+
+```javascript
+async function validateNoAssumptions(checks, repositories) {
+  console.log('\n🔍 Step 6.9.1: No Assumptions Validation\n');
+
+  const evidenceChecks = [];
+
+  for (const check of checks) {
+    console.log(`❓ Check: ${check.description}`);
+
+    // DO NOT assume - VERIFY by reading actual files
+    const evidence = await gatherEvidence(check, repositories);
+
+    if (!evidence.hasEvidence) {
+      console.log(`❌ FAIL: No evidence found\n`);
+      evidenceChecks.push({
+        check: check.description,
+        status: 'FAIL',
+        reason: 'No implementation evidence found',
+        requiredAction: check.requiredAction
+      });
+    } else {
+      console.log(`✅ PASS: Evidence verified\n`);
+      evidenceChecks.push({
+        check: check.description,
+        status: 'PASS',
+        evidence: evidence.files
+      });
+    }
+  }
+
+  return evidenceChecks;
+}
+
+async function gatherEvidence(check, repositories) {
+  const evidence = {
+    hasEvidence: false,
+    files: []
+  };
+
+  // Check 1: Does the file exist?
+  if (check.expectedFile) {
+    for (const repo of repositories) {
+      const filePath = path.join(repo.path, check.expectedFile);
+      if (await fileExists(filePath)) {
+        evidence.files.push(filePath);
+        evidence.hasEvidence = true;
+      }
+    }
+  }
+
+  // Check 2: Is the code present in the file?
+  if (check.expectedCode && evidence.files.length > 0) {
+    for (const file of evidence.files) {
+      const content = await readFile(file);
+      if (content.includes(check.expectedCode)) {
+        evidence.hasEvidence = true;
+      } else {
+        evidence.hasEvidence = false;
+        break;
+      }
+    }
+  }
+
+  // Check 3: Is the integration present?
+  if (check.expectedIntegration) {
+    for (const repo of repositories) {
+      const integrationFile = path.join(repo.path, check.integrationFile);
+      if (await fileExists(integrationFile)) {
+        const content = await readFile(integrationFile);
+        if (content.includes(check.expectedIntegration)) {
+          evidence.hasEvidence = true;
+          evidence.files.push(integrationFile);
+        }
+      }
+    }
+  }
+
+  return evidence;
+}
+```
+
+#### Step 6.9.2: Evidence Requirement Per Check
+
+**🚨 CRITICAL: Each check requires SPECIFIC evidence.**
+
+```javascript
+async function validateDatabaseSyncIntegration(repositories, task) {
+  console.log('\n🧾 Step 6.9.2: Evidence-Based Database Sync Validation\n');
+
+  const checks = [
+    {
+      description: 'New model is imported in database sync service',
+      evidenceType: 'IMPORT_STATEMENT',
+      required: (task) => task.includesNewModel,
+      gatherEvidence: async (repo, task) => {
+        const syncFile = await findDatabaseSyncFile(repo);
+        if (!syncFile) return { hasEvidence: false };
+
+        const content = await readFile(syncFile);
+        const modelName = extractModelName(task);
+
+        // Check for import statement
+        const hasImport = content.includes(`import ${modelName}`)
+                      || content.includes(`require('./${modelName}')`)
+                      || content.includes(`from './${modelName}'`);
+
+        return {
+          hasEvidence: hasImport,
+          file: syncFile,
+          evidence: hasImport ? `Found import for ${modelName}` : 'No import found'
+        };
+      }
+    },
+    {
+      description: 'Model is registered in sync configuration',
+      evidenceType: 'REGISTRATION',
+      required: (task) => task.includesNewModel,
+      gatherEvidence: async (repo, task) => {
+        const syncFile = await findDatabaseSyncFile(repo);
+        if (!syncFile) return { hasEvidence: false };
+
+        const content = await readFile(syncFile);
+        const modelName = extractModelName(task);
+
+        // Check for model registration pattern
+        // Examples: sync(), models.push(), db[modelName]
+        const patterns = [
+          `${modelName}.sync`,
+          `models.${modelName}`,
+          `${modelName}.init`,
+          `sequelize.import('${modelName}')`,
+          `require('./${modelName}')`
+        ];
+
+        const hasRegistration = patterns.some(p => content.includes(p));
+
+        return {
+          hasEvidence: hasRegistration,
+          file: syncFile,
+          evidence: hasRegistration ? `Found registration for ${modelName}` : 'No registration found'
+        };
+      }
+    },
+    {
+      description: 'Model is included in Sequelize/ORM initialization',
+      evidenceType: 'ORM_INIT',
+      required: (task) => task.includesNewModel,
+      gatherEvidence: async (repo, task) => {
+        const initFile = await findOrmInitFile(repo);
+        if (!initFile) return { hasEvidence: false };
+
+        const content = await readFile(initFile);
+        const modelName = extractModelName(task);
+
+        // Check if model is in initialization
+        const hasInit = content.includes(modelName);
+
+        return {
+          hasEvidence: hasInit,
+          file: initFile,
+          evidence: hasInit ? `Found ${modelName} in ORM init` : 'Model not in ORM init'
+        };
+      }
+    }
+  ];
+
+  const results = [];
+
+  for (const check of checks) {
+    if (check.required(task)) {
+      console.log(`🔍 Checking: ${check.description}`);
+
+      for (const repo of repositories) {
+        const evidence = await check.gatherEvidence(repo, task);
+
+        if (evidence.hasEvidence) {
+          console.log(`✅ PASS: ${evidence.evidence}`);
+          console.log(`   File: ${evidence.file}\n`);
+          results.push({ check: check.description, status: 'PASS', evidence });
+        } else {
+          console.log(`❌ FAIL: ${check.description}`);
+          console.log(`   Reason: No evidence found\n`);
+          results.push({ check: check.description, status: 'FAIL', evidence });
+        }
+      }
+    }
+  }
+
+  return results;
+}
+```
+
+#### Step 6.9.3: File Change Verification
+
+**🚨 CRITICAL: Verify actual files were modified.**
+
+```javascript
+async function verifyFileChanges(repositories, task) {
+  console.log('\n📁 Step 6.9.3: File Change Verification\n');
+
+  const verificationResults = [];
+
+  for (const repo of repositories) {
+    console.log(`🔍 Repository: ${repo.name}`);
+
+    // Get list of files that SHOULD have been modified
+    const expectedChanges = await getExpectedChanges(repo, task);
+
+    console.log(`   Expected changes: ${expectedChanges.length} files`);
+
+    let actualChanges = [];
+    let missingChanges = [];
+
+    for (const expectedFile of expectedChanges) {
+      const filePath = path.join(repo.path, expectedFile.path);
+
+      if (await fileExists(filePath)) {
+        // Check if file was actually modified
+        const wasModified = await checkFileModified(filePath, task);
+
+        if (wasModified) {
+          actualChanges.push(filePath);
+          console.log(`   ✅ Modified: ${expectedFile.path}`);
+        } else {
+          missingChanges.push(filePath);
+          console.log(`   ❌ Not modified: ${expectedFile.path}`);
+        }
+      } else {
+        missingChanges.push(filePath);
+        console.log(`   ❌ Missing: ${expectedFile.path}`);
+      }
+    }
+
+    if (missingChanges.length > 0) {
+      console.log(`\n   ⚠️  WARNING: ${missingChanges.length} expected changes not found\n`);
+      verificationResults.push({
+        repository: repo.name,
+        status: 'INCOMPLETE',
+        actualChanges,
+        missingChanges
+      });
+    } else {
+      console.log(`\n   ✅ All expected changes verified\n`);
+      verificationResults.push({
+        repository: repo.name,
+        status: 'COMPLETE',
+        actualChanges
+      });
+    }
+  }
+
+  return verificationResults;
+}
+
+async function checkFileModified(filePath, task) {
+  // Check if file contains expected changes from task
+  const content = await readFile(filePath);
+
+  // Check for task-specific indicators
+  const taskKeywords = extractTaskKeywords(task);
+
+  for (const keyword of taskKeywords) {
+    if (content.includes(keyword)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+```
+
+#### Step 6.9.4: Silent Failure Detection
+
+**🚨 CRITICAL: Detect missing implementations in required repositories.**
+
+```javascript
+async function detectSilentFailures(repositories, task, validationResults) {
+  console.log('\n🚨 Step 6.9.4: Silent Failure Detection\n');
+
+  const failures = [];
+
+  // Rule 1: If feature includes new database entity, database-sync repo is REQUIRED
+  if (task.includesNewModel) {
+    const dbSyncRepo = repositories.find(r => r.role === 'DATABASE_SYNC_SERVICE');
+
+    if (!dbSyncRepo) {
+      failures.push({
+        severity: 'CRITICAL',
+        type: 'MISSING_REQUIRED_REPO',
+        message: 'No database-sync service found, but task requires new model',
+        impact: 'Database table will not exist - feature will fail'
+      });
+    } else {
+      // Check if database-sync was actually modified
+      const wasModified = validationResults.some(r =>
+        r.repository === dbSyncRepo.name && r.status === 'COMPLETE'
+      );
+
+      if (!wasModified) {
+        failures.push({
+          severity: 'CRITICAL',
+          type: 'MISSING_DATABASE_SYNC',
+          repository: dbSyncRepo.name,
+          message: 'Database sync service not modified, but task requires new model',
+          impact: 'Database table will not exist - feature will fail',
+          requiredAction: `Add ${task.modelName} to database sync in ${dbSyncRepo.name}`
+        });
+      }
+    }
+  }
+
+  // Rule 2: If feature includes shared model, shared-models repo is REQUIRED
+  if (task.includesSharedModel) {
+    const sharedModelRepo = repositories.find(r => r.type === 'Shared Library');
+
+    if (!sharedModelRepo) {
+      failures.push({
+        severity: 'HIGH',
+        type: 'MISSING_REQUIRED_REPO',
+        message: 'No shared models repository found',
+        impact: 'Model will not be available to other services'
+      });
+    }
+  }
+
+  // Rule 3: If package was modified, version MUST be updated
+  for (const repo of repositories) {
+    if (repo.role === 'PUBLISHABLE_PACKAGE' && repo.wasModified) {
+      const versionUpdated = await checkVersionUpdated(repo);
+
+      if (!versionUpdated) {
+        failures.push({
+          severity: 'HIGH',
+          type: 'MISSING_VERSION_UPDATE',
+          repository: repo.name,
+          message: 'Package was modified but version not updated',
+          impact: 'Dependent services will not receive updates',
+          requiredAction: `Bump version in ${repo.name}/package.json`
+        });
+      }
+    }
+  }
+
+  // Rule 4: If package was modified, build MUST be executed
+  for (const repo of repositories) {
+    if (repo.role === 'PUBLISHABLE_PACKAGE' && repo.wasModified) {
+      const buildExecuted = await checkBuildExecuted(repo);
+
+      if (!buildExecuted) {
+        failures.push({
+          severity: 'HIGH',
+          type: 'MISSING_BUILD',
+          repository: repo.name,
+          message: 'Package was modified but not built',
+          impact: 'Package will not be usable by dependent services',
+          requiredAction: `Run build in ${repo.name}`
+        });
+      }
+    }
+  }
+
+  if (failures.length > 0) {
+    console.log(`⚠️  Detected ${failures.length} silent failures:\n`);
+
+    for (const failure of failures) {
+      console.log(`   ${failure.severity}: ${failure.type}`);
+      if (failure.repository) console.log(`   Repository: ${failure.repository}`);
+      console.log(`   Message: ${failure.message}`);
+      console.log(`   Impact: ${failure.impact}`);
+      if (failure.requiredAction) console.log(`   Action: ${failure.requiredAction}`);
+      console.log('');
+    }
+  } else {
+    console.log('✅ No silent failures detected\n');
+  }
+
+  return failures;
+}
+```
+
+#### Step 6.9.5: Pattern Matching Validation
+
+**🚨 CRITICAL: Verify new code follows existing patterns.**
+
+```javascript
+async function validatePatternMatching(repositories, task) {
+  console.log('\n🎨 Step 6.9.5: Pattern Matching Validation\n');
+
+  const patternChecks = [];
+
+  for (const repo of repositories) {
+    // Find existing models in this repository
+    const existingModels = await findExistingModels(repo);
+
+    if (existingModels.length > 0) {
+      console.log(`🔍 Repository: ${repo.name}`);
+      console.log(`   Analyzing patterns from ${existingModels.length} existing models\n`);
+
+      // Identify the pattern used by existing models
+      const pattern = await identifyPattern(repo, existingModels[0]);
+
+      console.log(`   Detected pattern: ${pattern.name}`);
+      console.log(`   Pattern elements: ${pattern.elements.join(', ')}\n`);
+
+      // Check if new implementation follows the same pattern
+      const newImplementations = await getNewImplementations(repo, task);
+
+      for (const impl of newImplementations) {
+        console.log(`   Checking: ${impl.name}`);
+
+        const followsPattern = await checkFollowsPattern(impl, pattern);
+
+        if (followsPattern.matches) {
+          console.log(`   ✅ Follows pattern\n`);
+          patternChecks.push({
+            repository: repo.name,
+            implementation: impl.name,
+            status: 'PASS',
+            pattern: pattern.name
+          });
+        } else {
+          console.log(`   ❌ Does not follow pattern`);
+          console.log(`   Missing: ${followsPattern.missing.join(', ')}\n`);
+          patternChecks.push({
+            repository: repo.name,
+            implementation: impl.name,
+            status: 'FAIL',
+            pattern: pattern.name,
+            missing: followsPattern.missing
+          });
+        }
+      }
+    }
+  }
+
+  return patternChecks;
+}
+
+async function identifyPattern(repo, referenceModel) {
+  const pattern = {
+    name: 'unknown',
+    elements: []
+  };
+
+  // Check for common pattern elements
+
+  // 1. Model file in models/ directory
+  const modelsDir = path.join(repo.path, 'src/models');
+  const modelFile = path.join(modelsDir, `${referenceModel}.model.ts`);
+  if (await fileExists(modelFile)) {
+    pattern.elements.push('model-file');
+  }
+
+  // 2. Export in models/index.ts
+  const indexFile = path.join(repo.path, 'src/models/index.ts');
+  if (await fileExists(indexFile)) {
+    const content = await readFile(indexFile);
+    if (content.includes(referenceModel)) {
+      pattern.elements.push('index-export');
+    }
+  }
+
+  // 3. Service file in services/ directory
+  const serviceFile = path.join(repo.path, `src/services/${referenceModel}.service.ts`);
+  if (await fileExists(serviceFile)) {
+    pattern.elements.push('service-file');
+  }
+
+  // 4. Controller in controllers/ directory
+  const controllerFile = path.join(repo.path, `src/controllers/${referenceModel}.controller.ts`);
+  if (await fileExists(controllerFile)) {
+    pattern.elements.push('controller-file');
+  }
+
+  // 5. Routes registration
+  const routesFile = path.join(repo.path, 'src/routes/index.ts');
+  if (await fileExists(routesFile)) {
+    const content = await readFile(routesFile);
+    if (content.includes(referenceModel)) {
+      pattern.elements.push('routes-registration');
+    }
+  }
+
+  // Identify pattern name based on elements
+  if (pattern.elements.includes('model-file') && pattern.elements.includes('index-export')) {
+    pattern.name = 'MVC-with-index-export';
+  } else if (pattern.elements.includes('model-file')) {
+    pattern.name = 'basic-model';
+  }
+
+  return pattern;
+}
+
+async function checkFollowsPattern(implementation, pattern) {
+  const result = {
+    matches: true,
+    missing: []
+  };
+
+  // Check if implementation has all pattern elements
+  for (const element of pattern.elements) {
+    switch (element) {
+      case 'model-file':
+        if (!implementation.hasModelFile) {
+          result.matches = false;
+          result.missing.push('model-file');
+        }
+        break;
+      case 'index-export':
+        if (!implementation.hasIndexExport) {
+          result.matches = false;
+          result.missing.push('index-export');
+        }
+        break;
+      case 'service-file':
+        if (!implementation.hasServiceFile) {
+          result.matches = false;
+          result.missing.push('service-file');
+        }
+        break;
+      case 'controller-file':
+        if (!implementation.hasControllerFile) {
+          result.matches = false;
+          result.missing.push('controller-file');
+        }
+        break;
+      case 'routes-registration':
+        if (!implementation.hasRoutesRegistration) {
+          result.matches = false;
+          result.missing.push('routes-registration');
+        }
+        break;
+    }
+  }
+
+  return result;
+}
+```
+
+#### Step 6.9.6: Final Evidence Validation
+
+**🚨 CRITICAL: Final gate before task completion.**
+
+```javascript
+async function finalEvidenceValidation(repositories, task, previousResults) {
+  console.log('\n🎯 Step 6.9.6: Final Evidence Validation\n');
+
+  const allChecks = {
+    databaseSync: await validateDatabaseSyncIntegration(repositories, task),
+    fileChanges: await verifyFileChanges(repositories, task),
+    silentFailures: await detectSilentFailures(repositories, task, previousResults),
+    patternMatching: await validatePatternMatching(repositories, task)
+  };
+
+  // Count failures
+  const failures = {
+    databaseSync: allChecks.databaseSync.filter(c => c.status === 'FAIL'),
+    fileChanges: allChecks.fileChanges.filter(r => r.status === 'INCOMPLETE'),
+    silentFailures: allChecks.silentFailures,
+    patternMatching: allChecks.patternMatching.filter(c => c.status === 'FAIL')
+  };
+
+  const totalFailures = failures.databaseSync.length +
+                       failures.fileChanges.length +
+                       failures.silentFailures.length +
+                       failures.patternMatching.length;
+
+  if (totalFailures > 0) {
+    console.log(`\n❌ EVIDENCE VALIDATION FAILED`);
+    console.log(`   Total failures: ${totalFailures}\n`);
+
+    console.log('📋 Failure Summary:\n');
+
+    if (failures.databaseSync.length > 0) {
+      console.log(`Database Sync Integration (${failures.databaseSync.length}):`);
+      failures.databaseSync.forEach(f => {
+        console.log(`  ❌ ${f.check}`);
+        console.log(`     ${f.evidence.evidence}\n`);
+      });
+    }
+
+    if (failures.fileChanges.length > 0) {
+      console.log(`File Changes (${failures.fileChanges.length}):`);
+      failures.fileChanges.forEach(f => {
+        console.log(`  ❌ ${f.repository}: Incomplete`);
+        console.log(`     Missing: ${f.missingChanges.length} files\n`);
+      });
+    }
+
+    if (failures.silentFailures.length > 0) {
+      console.log(`Silent Failures (${failures.silentFailures.length}):`);
+      failures.silentFailures.forEach(f => {
+        console.log(`  ${f.severity}: ${f.type}`);
+        console.log(`  ${f.message}`);
+        console.log(`  Action: ${f.requiredAction}\n`);
+      });
+    }
+
+    if (failures.patternMatching.length > 0) {
+      console.log(`Pattern Matching (${failures.patternMatching.length}):`);
+      failures.patternMatching.forEach(f => {
+        console.log(`  ❌ ${f.repository}: ${f.implementation}`);
+        console.log(`     Missing: ${f.missing.join(', ')}\n`);
+      });
+    }
+
+    console.log('🚨 TASK CANNOT BE MARKED COMPLETE\n');
+    console.log('Required actions:');
+    console.log('1. Fix all identified failures');
+    console.log('2. Re-run evidence validation');
+    console.log('3. Only mark complete when ALL checks PASS\n');
+
+    return {
+      status: 'FAILED',
+      failures,
+      totalFailures
+    };
+  }
+
+  console.log('✅ ALL EVIDENCE VALIDATIONS PASSED\n');
+  console.log('📋 Validation Summary:\n');
+  console.log(`✅ Database Sync Integration: ${allChecks.databaseSync.length} checks passed`);
+  console.log(`✅ File Changes: ${allChecks.fileChanges.filter(r => r.status === 'COMPLETE').length} repositories complete`);
+  console.log(`✅ Silent Failures: 0 detected`);
+  console.log(`✅ Pattern Matching: ${allChecks.patternMatching.length} implementations verified`);
+  console.log('\n✨ TASK IS EVIDENTIALLY COMPLETE\n');
+
+  return {
+    status: 'PASSED',
+    allChecks
+  };
+}
+```
+
+#### Step 6.9.7: Display Evidence Validation Summary
+
+**🚨 CRITICAL: Display the evidence validation summary to the user:**
+
+```markdown
+## 🔍 Evidence-Based Validation Complete
+
+### Database Sync Integration
+
+✅ New model is imported in database sync service
+   File: harborUserSvc/src/database/sync.ts
+   Evidence: Found import for UserAvailability
+
+✅ Model is registered in sync configuration
+   File: harborUserSvc/src/database/sync.ts
+   Evidence: Found registration for UserAvailability
+
+✅ Model is included in Sequelize/ORM initialization
+   File: harborUserSvc/src/models/index.ts
+   Evidence: Found UserAvailability in ORM init
+
+### File Change Verification
+
+✅ harborSharedModels: 3/3 files modified
+   ✅ src/models/UserAvailability.model.ts (created)
+   ✅ src/models/index.ts (modified - export added)
+   ✅ package.json (modified - version bumped)
+
+✅ harborUserSvc: 5/5 files modified
+   ✅ src/models/UserAvailability.model.ts (imported)
+   ✅ src/database/sync.ts (registration added)
+   ✅ src/services/user-availability.service.ts (created)
+   ✅ src/controllers/user-availability.controller.ts (created)
+   ✅ src/routes/index.ts (routes registered)
+
+### Silent Failure Detection
+
+✅ No silent failures detected
+
+### Pattern Matching
+
+✅ harborSharedModels: UserAvailability follows pattern
+   Pattern: MVC-with-index-export
+   Elements: model-file, index-export ✅
+
+✅ harborUserSvc: UserAvailability follows pattern
+   Pattern: MVC-with-index-export
+   Elements: model-file, index-export, service-file, controller-file, routes-registration ✅
+
+### Final Result
+
+✅ ALL EVIDENCE VALIDATIONS PASSED
+→ Task is evidentially complete
+→ All code exists
+→ All patterns followed
+→ All integrations verified
+
+---
+
+✨ **Evidence-Based Validation Complete - Zero assumptions, 100% proof!**
+```
+
+**🚨 ENFORCEMENT RULE:**
+
+```
+IF ANY evidence check fails → DO NOT mark task as complete
+IF file changes missing → Fix and re-validate
+IF silent failures detected → Fix and re-validate
+IF pattern matching fails → Fix and re-validate
+ONLY when ALL evidence checks PASS → Task can be marked complete
+
+NO EXCEPTIONS
+NO ASSUMPTIONS
+NO PROBABLY
+EVIDENCE ONLY
+```
+
+**🎯 Core Philosophy:**
+
+```
+Your job is NOT to feel correct
+Your job is to PROVE correctness with code evidence
+
+PASS is allowed ONLY IF:
+✅ Code exists
+✅ Pattern followed
+✅ Integration verified
+
+Else → FAIL (even if agent thinks it's correct)
 ```
 
 ---
