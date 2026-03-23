@@ -1,12 +1,19 @@
 # Global Agent Workflow - Master Control System
 
-**Version:** 7.0.0
-**Last Updated:** 2026-03-19
-**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, and intelligent change propagation
+**Version:** 7.1.0
+**Last Updated:** 2026-03-23
+**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, and cross-repository dependency intelligence
 
-**What's New in v7.0:**
-- 🏗️ **Master Control System** - Core execution framework for all agent operations ✨ NEW
-- 🔍 **Environment Detection** - Automatically detects microservice vs monolith architecture ✨ NEW
+**What's New in v7.1:**
+- 🧠 **Cross-Repository Dependency Intelligence** - Builds dependency chains, detects critical path, validates completeness ✨ NEW
+- 🔴 **Critical Path Detection** - Identifies which repos block feature completion vs. optional updates ✨ NEW
+- ✅ **Completeness Validation** - Ensures feature is runnable end-to-end before marking complete ✨ NEW
+- 🚫 **Partial Implementation Prevention** - No more 30% missing work - ALL gaps detected and fixed ✨ NEW
+- 🧘 **Testing Constraints** - Validates logical correctness without git operations ✨ NEW
+
+**Features from v7.0:**
+- 🏗️ **Master Control System** - Core execution framework for all agent operations
+- 🔍 **Environment Detection** - Automatically detects microservice vs monolith architecture
 - 🌊 **System Flow Discovery** - Understands how changes flow across the entire system
 - ⚙️ **Dynamic Pipeline Construction** - Automatically builds execution pipelines based on system flow
 - 🔄 **Workflow-Aware Execution** - Follows detected workflows instead of hardcoded rules
@@ -317,6 +324,19 @@ This workflow integrates the following deep analysis systems:
     - Role-based execution ordering - Ensures correct dependency flow
     - Validation gates - Prevents incomplete task completion
     - **Non-breaking enhancement** - Purely additive, no existing logic modified
+
+15. **Cross-Repository Dependency Intelligence** (Phase 5.7) 🧠 ✨ NEW (2026-03-23)
+    - **Builds complete dependency chains from source to consumer**
+    - Identifies source of truth repositories
+    - Identifies dependent repositories that consume shared logic
+    - Identifies database realization services (CRITICAL for models)
+    - Identifies entry points (API, frontend, app)
+    - **Critical Path Detection** - Marks repos as 🔴 CRITICAL, 🟡 DEPENDENT, 🟢 OPTIONAL
+    - **Intelligent Decision Making** - Determines required actions for each repo type
+    - **Completeness Validation** - Ensures feature is runnable end-to-end
+    - **Partial Implementation Prevention** - Detects and fixes ALL gaps before completion
+    - **Risk Assessment** - Identifies missing database sync, package builds, etc.
+    - **Non-breaking enhancement** - Purely additive intelligence layer
 
 ---
 
@@ -1479,6 +1499,891 @@ async function buildExecutionOrder(repositories) {
 
 ---
 
+### Phase 5.7: Cross-Repository Dependency Intelligence (NEW - MANDATORY) 🧠 ✨ (2026-03-23)
+
+**🚨 CRITICAL: This phase transforms the agent from file-editor to system-level architect.**
+
+**This is a NON-BREAKING enhancement.** It adds deep dependency intelligence without modifying existing detection logic.
+
+#### What This Phase Does
+
+After detecting repository roles and understanding packages, this phase:
+1. **Builds dependency chains** - Understands the complete flow from source to consumer
+2. **Identifies critical path** - Detects which repos are blocking vs. optional
+3. **Validates completeness** - Ensures feature is runnable end-to-end
+4. **Prevents partial implementation** - No more 30% missing work
+
+#### Step 5.7.1: Identify Dependency Flow
+
+**For the given task, build a complete dependency chain:**
+
+```javascript
+async function identifyDependencyFlow(task, repositories, roles) {
+  console.log('\n🧠 Identifying Dependency Flow...\n');
+
+  const flow = {
+    sourceOfTruth: null,      // Where core logic/models live
+    dependentRepos: [],        // Services consuming the core
+    databaseRealization: null, // Service responsible for DB schema
+    entryPoints: [],           // API, frontend, app layers
+    criticalPath: [],          // Repos that BLOCK the feature
+    optionalPath: []           // Nice-to-have updates
+  };
+
+  // 1. Find source of truth
+  flow.sourceOfTruth = await findSourceOfTruth(repositories, task);
+  console.log(`📍 Source of Truth: ${flow.sourceOfTruth.name}`);
+
+  // 2. Find dependents
+  flow.dependentRepos = await findDependents(flow.sourceOfTruth, repositories);
+  console.log(`🔗 Dependent Repositories: ${flow.dependentRepos.map(r => r.name).join(', ')}`);
+
+  // 3. Find database sync service
+  flow.databaseRealization = await findDatabaseSyncService(repositories, roles);
+  if (flow.databaseRealization) {
+    console.log(`🗄️  Database Realization: ${flow.databaseRealization.name}`);
+  }
+
+  // 4. Find entry points
+  flow.entryPoints = await findEntryPoints(repositories, task);
+  console.log(`🚪 Entry Points: ${flow.entryPoints.map(r => r.name).join(', ')}`);
+
+  return flow;
+}
+
+async function findSourceOfTruth(repositories, task) {
+  // Check for shared models, types, or core definitions
+  for (const repo of repositories) {
+    const isSource = await checkIfSourceRepository(repo, task);
+    if (isSource) return repo;
+  }
+  return null;
+}
+
+async function findDependents(sourceRepo, allRepos) {
+  const dependents = [];
+  for (const repo of allRepos) {
+    if (repo.name === sourceRepo.name) continue;
+    const depends = await checkDependency(repo, sourceRepo);
+    if (depends) dependents.push(repo);
+  }
+  return dependents;
+}
+
+async function findDatabaseSyncService(repositories, roles) {
+  // Find repo with DATABASE_SYNC_SERVICE role
+  return roles.find(r => r.role === 'DATABASE_SYNC_SERVICE')?.repository;
+}
+
+async function findEntryPoints(repositories, task) {
+  return repositories.filter(repo =>
+    repo.type === 'Frontend' ||
+    repo.type === 'Mobile App' ||
+    repo.type === 'API Gateway' ||
+    repo.purpose?.includes('API')
+  );
+}
+```
+
+#### Step 5.7.2: Build Dependency Chain
+
+**Construct the logical dependency chain:**
+
+```javascript
+async function buildDependencyChain(flow) {
+  console.log('\n🔗 Building Dependency Chain...\n');
+
+  const chain = {
+    stages: [],
+    visualization: ''
+  };
+
+  // Stage 1: Source
+  if (flow.sourceOfTruth) {
+    chain.stages.push({
+      stage: 1,
+      name: 'Source Package',
+      repository: flow.sourceOfTruth.name,
+      action: 'Update models/types',
+      blocking: true
+    });
+  }
+
+  // Stage 2: Package Build (if applicable)
+  const isPackage = await checkIfPackageRepository(flow.sourceOfTruth);
+  if (isPackage) {
+    chain.stages.push({
+      stage: 2,
+      name: 'Package Build',
+      repository: flow.sourceOfTruth.name,
+      action: 'Version → Build → Publish',
+      blocking: true
+    });
+  }
+
+  // Stage 3: Dependent Services
+  for (const dep of flow.dependentRepos) {
+    chain.stages.push({
+      stage: chain.stages.length + 1,
+      name: 'Dependent Service',
+      repository: dep.name,
+      action: 'Update dependency → Install → Integrate',
+      blocking: true
+    });
+  }
+
+  // Stage 4: Database Sync (CRITICAL if models changed)
+  if (flow.databaseRealization) {
+    chain.stages.push({
+      stage: chain.stages.length + 1,
+      name: 'Database Synchronization',
+      repository: flow.databaseRealization.name,
+      action: 'Register models → Sync schema',
+      blocking: true,
+      critical: 'THIS STEP CANNOT BE SKIPPED'
+    });
+  }
+
+  // Stage 5: Entry Points
+  for (const entry of flow.entryPoints) {
+    chain.stages.push({
+      stage: chain.stages.length + 1,
+      name: 'Entry Point',
+      repository: entry.name,
+      action: 'Update UI/API integration',
+      blocking: false
+    });
+  }
+
+  // Build visualization
+  chain.visualization = chain.stages.map(s =>
+    `${s.blocking ? '🔴' : '🟡'} Stage ${s.stage}: ${s.name}\n` +
+    `   └─ Repository: ${s.repository}\n` +
+    `   └─ Action: ${s.action}${s.critical ? `\n   └─ ${s.critical}` : ''}`
+  ).join('\n\n');
+
+  return chain;
+}
+```
+
+#### Step 5.7.3: Detect Critical Path
+
+**Mark repositories by criticality:**
+
+```javascript
+async function detectCriticalPath(chain, task) {
+  console.log('\n⚠️  Detecting Critical Path...\n');
+
+  const criticality = {
+    critical: [],    // 🔴 Feature will break if not updated
+    dependent: [],   // 🟡 Uses updated logic
+    optional: []     // 🟢 UI or indirect usage
+  };
+
+  for (const stage of chain.stages) {
+    const repo = stage.repository;
+
+    // 🔴 CRITICAL: Source packages
+    if (stage.name === 'Source Package' || stage.name === 'Package Build') {
+      criticality.critical.push({
+        repository: repo,
+        reason: 'Source of truth - all others depend on this',
+        impact: 'BLOCKING'
+      });
+    }
+
+    // 🔴 CRITICAL: Database sync
+    if (stage.critical?.includes('CANNOT BE SKIPPED')) {
+      criticality.critical.push({
+        repository: repo,
+        reason: 'Database schema must match models - feature will fail without this',
+        impact: 'BLOCKING'
+      });
+    }
+
+    // 🟡 DEPENDENT: Services consuming source
+    if (stage.name === 'Dependent Service' && stage.blocking) {
+      criticality.dependent.push({
+        repository: repo,
+        reason: 'Consumes source package - must integrate changes',
+        impact: 'HIGH PRIORITY'
+      });
+    }
+
+    // 🟢 OPTIONAL: UI layers
+    if (stage.name === 'Entry Point' && !stage.blocking) {
+      criticality.optional.push({
+        repository: repo,
+        reason: 'User-facing layer - important but not blocking',
+        impact: 'MEDIUM PRIORITY'
+      });
+    }
+  }
+
+  return criticality;
+}
+```
+
+#### Step 5.7.4: Intelligent Decision Making
+
+**Make decisions based on dependency intelligence:**
+
+```javascript
+async function makeIntelligentDecisions(flow, chain, criticality) {
+  console.log('\n🧠 Making Intelligent Decisions...\n');
+
+  const decisions = {
+    packageActions: [],
+    consumerActions: [],
+    databaseActions: [],
+    risks: [],
+    completenessChecks: []
+  };
+
+  // Decision 1: Package Handling
+  const sourceIsPackage = await checkIfPackageRepository(flow.sourceOfTruth);
+  if (sourceIsPackage) {
+    console.log('📦 Source is a package repository');
+
+    decisions.packageActions = [
+      'Update version',
+      'Build package',
+      'Simulate publish (do not push)'
+    ];
+
+    console.log('→ REQUIRED: Version update, build, and publish simulation');
+  }
+
+  // Decision 2: Consumer Synchronization
+  if (flow.dependentRepos.length > 0) {
+    console.log(`\n🔗 Found ${flow.dependentRepos.length} dependent consumers`);
+
+    for (const consumer of flow.dependentRepos) {
+      decisions.consumerActions.push({
+        repository: consumer.name,
+        actions: [
+          'Update package version usage',
+          'Ensure compatibility',
+          'Install updated dependency'
+        ]
+      });
+    }
+  }
+
+  // Decision 3: Database Sync (CRITICAL)
+  if (flow.databaseRealization) {
+    console.log('\n🗄️  Database sync service detected');
+
+    decisions.databaseActions = [
+      'Register new model in database sync',
+      'Ensure sync logic includes new entity',
+      'THIS STEP CANNOT BE SKIPPED'
+    ];
+
+    console.log('→ CRITICAL: Database sync is REQUIRED for feature to work');
+  }
+
+  // Decision 4: Risk Assessment
+  decisions.risks = await assessRisks(chain, criticality);
+
+  // Decision 5: Completeness Checks
+  decisions.completenessChecks = [
+    'Model exists in shared package',
+    'Package version updated',
+    'Package usable by other services',
+    'Database sync includes new model',
+    'API uses correct model',
+    'Feature is runnable end-to-end'
+  ];
+
+  return decisions;
+}
+
+async function assessRisks(chain, criticality) {
+  const risks = [];
+
+  // Risk 1: Missing database sync
+  if (criticality.critical.some(c => c.reason.includes('Database'))) {
+    const hasDbSync = chain.stages.some(s => s.name.includes('Database'));
+    if (!hasDbSync) {
+      risks.push({
+        severity: 'CRITICAL',
+        risk: 'Database sync not in chain',
+        impact: 'Feature will not work - tables will not exist',
+        mitigation: 'Add database sync stage to chain'
+      });
+    }
+  }
+
+  // Risk 2: Missing package build
+  const sourceStage = chain.stages.find(s => s.name === 'Source Package');
+  if (sourceStage && !chain.stages.some(s => s.name === 'Package Build')) {
+    const isPackage = await checkIfPackageRepository(sourceStage.repository);
+    if (isPackage) {
+      risks.push({
+        severity: 'HIGH',
+        risk: 'Package not built after changes',
+        impact: 'Dependent services cannot use updated code',
+        mitigation: 'Add package build stage'
+      });
+    }
+  }
+
+  return risks;
+}
+```
+
+#### Step 5.7.5: Avoid Incomplete Work
+
+**Before proceeding, validate completeness:**
+
+```javascript
+async function validateCompleteness(decisions, task) {
+  console.log('\n✅ Step 6: Completeness Validation\n');
+
+  const questions = [
+    {
+      question: 'If I run the system locally, will the database table exist?',
+      critical: true
+    },
+    {
+      question: 'If I run the system locally, will the API recognize the new model?',
+      critical: true
+    },
+    {
+      question: 'If I run the system locally, will the frontend display the feature?',
+      critical: false
+    }
+  ];
+
+  for (const q of questions) {
+    console.log(`❓ ${q.question}`);
+
+    if (q.critical) {
+      // Check if chain ensures this
+      const ensured = await checkIfChainEnsures(chain, q.question);
+      if (!ensured) {
+        console.log(`❌ NO - Feature will be incomplete!\n`);
+        throw new Error(`Critical validation failed: ${q.question}`);
+      } else {
+        console.log(`✅ YES - Chain ensures this\n`);
+      }
+    }
+  }
+
+  return true;
+}
+```
+
+#### Step 5.7.6: Completion Validation (MANDATORY)
+
+**Final checklist before finishing task:**
+
+```javascript
+async function finalCompletionValidation(decisions, chain) {
+  console.log('\n🎯 Final Completion Validation\n');
+
+  const checklist = [
+    { item: 'Model exists in shared package', check: () => checkModelExists(decisions) },
+    { item: 'Package version updated', check: () => checkVersionUpdated(decisions) },
+    { item: 'Package usable by other services', check: () => checkPackageUsable(decisions) },
+    { item: 'Database sync includes new model', check: () => checkDatabaseSync(decisions) },
+    { item: 'API uses correct model', check: () => checkApiModel(decisions) },
+    { item: 'Feature is runnable end-to-end', check: () => checkEndToEnd(decisions) }
+  ];
+
+  const results = [];
+
+  for (const item of checklist) {
+    const passed = await item.check();
+    results.push({ item: item.item, passed });
+    console.log(`${passed ? '✅' : '❌'} ${item.item}`);
+  }
+
+  const allPassed = results.every(r => r.passed);
+
+  if (!allPassed) {
+    console.log('\n❌ VALIDATION FAILED - Feature is incomplete!\n');
+    console.log('Missing steps:');
+    results.filter(r => !r.passed).forEach(r => {
+      console.log(`  - ${r.item}`);
+    });
+    throw new Error('Feature validation failed - incomplete implementation');
+  }
+
+  console.log('\n✅ All validations passed - Feature is complete!\n');
+  return results;
+}
+```
+
+#### Step 5.7.7: Display Dependency Intelligence Summary
+
+**🚨 CRITICAL: Display the dependency intelligence summary to the user:**
+
+```markdown
+## 🧠 Cross-Repository Dependency Intelligence
+
+### Dependency Flow Detected
+
+**Source of Truth:**
+📍 harborSharedModels - Shared Library (User, Job, Notification models)
+
+**Dependent Repositories:**
+🔗 harborUserSvc - Backend Service (consumes User model)
+🔗 harborJobSvc - Backend Service (consumes Job model)
+🔗 harborNotificationSvc - Backend Service (consumes Notification model)
+
+**Database Realization:**
+🗄️  harborUserSvc - DATABASE_SYNC_SERVICE (syncs all models to database)
+
+**Entry Points:**
+🚪 harborWebsite - Frontend (consumes User/Job APIs)
+🚪 harborApp - Mobile (consumes User/Job APIs)
+
+### Dependency Chain
+
+```
+1. 🔴 harborSharedModels (Source)
+   └─ Action: Update models
+   └─ Blocking: YES - all others depend on this
+
+2. 🔴 harborSharedModels (Package Build)
+   └─ Action: Version → Build → Publish
+   └─ Blocking: YES - consumers need published package
+
+3. 🟡 harborUserSvc (Consumer)
+   └─ Action: Update dependency → Install → Integrate
+   └─ Blocking: YES - API must use updated models
+
+4. 🟡 harborJobSvc (Consumer)
+   └─ Action: Update dependency → Install → Integrate
+   └─ Blocking: YES - API must use updated models
+
+5. 🔴 harborUserSvc (Database Sync)
+   └─ Action: Register models → Sync schema
+   └─ Blocking: YES - THIS STEP CANNOT BE SKIPPED
+   └─ Critical: Database tables must exist
+
+6. 🟢 harborWebsite (Entry Point)
+   └─ Action: Update UI/API integration
+   └─ Blocking: NO - UI updates
+
+7. 🟢 harborApp (Entry Point)
+   └─ Action: Update UI/API integration
+   └─ Blocking: NO - UI updates
+```
+
+### Critical Path Analysis
+
+**🔴 CRITICAL (3 repositories):**
+- harborSharedModels - Source of truth, must be first
+- harborSharedModels (package) - Must build and publish
+- harborUserSvc (database sync) - Tables won't exist without this
+
+**🟡 DEPENDENT (2 repositories):**
+- harborUserSvc - Consumes shared models
+- harborJobSvc - Consumes shared models
+
+**🟢 OPTIONAL (2 repositories):**
+- harborWebsite - UI layer
+- harborApp - UI layer
+
+### Intelligent Decisions
+
+**Package Actions:**
+✅ Update version in harborSharedModels
+✅ Build harborSharedModels package
+✅ Simulate publish (do not push to git)
+
+**Consumer Actions:**
+✅ harborUserSvc: Update dependency version, install, integrate
+✅ harborJobSvc: Update dependency version, install, integrate
+
+**Database Actions:**
+✅ harborUserSvc: Register new models in database sync
+✅ harborUserSvc: Ensure sync logic includes new entities
+⚠️  CRITICAL: This step cannot be skipped
+
+### Completeness Checks
+
+✅ Model exists in shared package
+✅ Package version updated
+✅ Package usable by other services
+✅ Database sync includes new model
+✅ API uses correct model
+✅ Feature is runnable end-to-end
+
+### Risk Assessment
+
+**No risks detected** - All dependencies understood and planned
+
+### Execution Mode
+
+**🧘 Testing Constraints:**
+- ✅ Perform code implementation
+- ✅ Run validation and testing
+- ✅ Verify functionality locally
+- ❌ DO NOT push code to git
+- ❌ DO NOT deploy services
+- ❌ DO NOT create commits/PRs
+
+**Focus:** Logical completeness and dependency correctness
+
+---
+
+✨ **Dependency Intelligence Complete - System fully understood!**
+```
+
+---
+
+### Enforcement Rules
+
+**🚨 Rule: Partial Implementation is FAILURE**
+
+```
+IF ANY of these are true → Task is NOT complete:
+❌ Missing database sync
+❌ Missing model registration
+❌ Missing package version update
+❌ Missing package build
+❌ Missing consumer dependency updates
+❌ Feature not runnable end-to-end
+
+Agent MUST:
+✅ Fix ALL gaps before finishing
+✅ Re-validate until ALL checks pass
+✅ NEVER mark incomplete work as complete
+```
+
+**🧘 Execution Constraint:**
+
+```
+During TESTING mode:
+✅ Simulate build + dependency correctness
+✅ Verify logical flow
+✅ Validate all integration points
+❌ DO NOT push to git
+❌ DO NOT deploy services
+❌ DO NOT create commits
+
+Purpose:
+- Prevent unwanted commits during testing
+- Allow safe validation of dependency correctness
+- Enable testing without manual reverts
+```
+
+---
+
+### Phase 5.8: Missed Implementation Recovery (OPTIONAL BOOSTER) 🔁 ✨ (2026-03-23)
+
+**🚨 CRITICAL: This phase eliminates partial implementation by scanning for missing integrations.**
+
+**This is an OPTIONAL but HIGHLY RECOMMENDED enhancement.** It acts as a safety net to catch any missed implementations.
+
+#### What This Phase Does
+
+After all implementation phases are complete, this phase:
+1. **Re-scans all repositories** for patterns where new entities should exist
+2. **Detects missing implementations** automatically
+3. **Auto-fixes gaps** without user intervention
+4. **Ensures zero partial implementation**
+
+#### Step 5.8.1: Re-Scan for Missing Implementations
+
+**After all changes, scan for gaps:**
+
+```javascript
+async function reScanForMissingImplementations(repositories, task) {
+  console.log('\n🔁 Scanning for Missed Implementations...\n');
+
+  const gaps = [];
+
+  // 1. Check for model registration gaps
+  for (const repo of repositories) {
+    const models = await extractModelsFromTask(task);
+    const registrations = await findModelRegistrationPatterns(repo);
+
+    for (const model of models) {
+      const isRegistered = registrations.some(r => r.includes(model));
+      if (!isRegistered) {
+        gaps.push({
+          repository: repo.name,
+          type: 'MODEL_REGISTRATION',
+          missing: model,
+          severity: 'HIGH',
+          pattern: registrations[0] || 'unknown'
+        });
+      }
+    }
+  }
+
+  // 2. Check for export/index gaps
+  for (const repo of repositories) {
+    const exports = await findExportPatterns(repo);
+    const newFiles = await getNewlyCreatedFiles(repo, task);
+
+    for (const file of newFiles) {
+      const isExported = exports.some(e => e.includes(file));
+      if (!isExported) {
+        gaps.push({
+          repository: repo.name,
+          type: 'EXPORT_MISSING',
+          missing: file,
+          severity: 'MEDIUM',
+          pattern: exports[0] || 'index.ts'
+        });
+      }
+    }
+  }
+
+  // 3. Check for database sync gaps
+  const dbSyncRepo = repositories.find(r =>
+    await hasDatabaseSyncRole(r)
+  );
+
+  if (dbSyncRepo) {
+    const models = await extractModelsFromTask(task);
+    const syncedModels = await getSyncedModels(dbSyncRepo);
+
+    for (const model of models) {
+      if (!syncedModels.includes(model)) {
+        gaps.push({
+          repository: dbSyncRepo.name,
+          type: 'DATABASE_SYNC_MISSING',
+          missing: model,
+          severity: 'CRITICAL',
+          reason: 'Database table will not exist - feature will fail'
+        });
+      }
+    }
+  }
+
+  // 4. Check for API registration gaps
+  for (const repo of repositories) {
+    if (repo.type === 'Backend Service') {
+      const apis = await extractApisFromTask(task);
+      const registeredApis = await getRegisteredApis(repo);
+
+      for (const api of apis) {
+        const isRegistered = registeredApis.some(r => r.includes(api));
+        if (!isRegistered) {
+          gaps.push({
+            repository: repo.name,
+            type: 'API_REGISTRATION_MISSING',
+            missing: api,
+            severity: 'HIGH',
+            reason: 'API endpoint will not be accessible'
+          });
+        }
+      }
+    }
+  }
+
+  return gaps;
+}
+```
+
+#### Step 5.8.2: Auto-Fix Detected Gaps
+
+**Automatically fix all detected gaps:**
+
+```javascript
+async function autoFixGaps(gaps) {
+  console.log('\n🔧 Auto-Fixing Detected Gaps...\n');
+
+  const fixed = [];
+
+  for (const gap of gaps) {
+    console.log(`Fixing: ${gap.type} in ${gap.repository}`);
+    console.log(`Missing: ${gap.missing}`);
+    console.log(`Severity: ${gap.severity}\n`);
+
+    let result;
+
+    switch (gap.type) {
+      case 'MODEL_REGISTRATION':
+        result = await fixModelRegistration(gap);
+        break;
+      case 'EXPORT_MISSING':
+        result = await fixExportMissing(gap);
+        break;
+      case 'DATABASE_SYNC_MISSING':
+        result = await fixDatabaseSyncMissing(gap);
+        break;
+      case 'API_REGISTRATION_MISSING':
+        result = await fixApiRegistrationMissing(gap);
+        break;
+    }
+
+    if (result.success) {
+      console.log(`✅ Fixed: ${gap.missing}\n`);
+      fixed.push(gap);
+    } else {
+      console.log(`❌ Failed to fix: ${gap.missing}\n`);
+      console.log(`Error: ${result.error}\n`);
+    }
+  }
+
+  return fixed;
+}
+
+async function fixModelRegistration(gap) {
+  // Find the registration pattern (e.g., models/index.ts)
+  const repo = await getRepository(gap.repository);
+  const pattern = gap.pattern;
+
+  // Read the registration file
+  const registrationFile = await findRegistrationFile(repo, pattern);
+
+  // Add the missing model
+  const content = await readFile(registrationFile);
+  const updated = addExport(content, gap.missing);
+
+  await writeFile(registrationFile, updated);
+
+  return { success: true };
+}
+
+async function fixDatabaseSyncMissing(gap) {
+  // Find the database sync file
+  const repo = await getRepository(gap.repository);
+  const syncFile = await findDatabaseSyncFile(repo);
+
+  // Read the sync file
+  const content = await readFile(syncFile);
+
+  // Add the missing model to sync
+  const updated = addModelToSync(content, gap.missing);
+
+  await writeFile(syncFile, updated);
+
+  return { success: true };
+}
+```
+
+#### Step 5.8.3: Re-Validate After Fixes
+
+**After fixing gaps, re-validate everything:**
+
+```javascript
+async function reValidateAfterFixes(repositories, task) {
+  console.log('\n🔄 Re-Validating After Fixes...\n');
+
+  // Re-scan for any remaining gaps
+  const remainingGaps = await reScanForMissingImplementations(repositories, task);
+
+  if (remainingGaps.length > 0) {
+    console.log(`⚠️  ${remainingGaps.length} gaps remaining:\n`);
+
+    for (const gap of remainingGaps) {
+      console.log(`  - ${gap.repository}: ${gap.type} (${gap.missing})`);
+      console.log(`    Severity: ${gap.severity}\n`);
+    }
+
+    // Try fixing remaining gaps
+    const fixed = await autoFixGaps(remainingGaps);
+
+    // Re-validate again
+    return await reValidateAfterFixes(repositories, task);
+  }
+
+  console.log('✅ No gaps detected - Implementation is complete!\n');
+  return { complete: true, gaps: [] };
+}
+```
+
+#### Step 5.8.4: Display Recovery Summary
+
+**🚨 CRITICAL: Display the recovery summary to the user:**
+
+```markdown
+## 🔁 Missed Implementation Recovery
+
+### Scan Results
+
+**Repositories Scanned:** 7
+**Patterns Checked:** 4
+**Gaps Detected:** 3
+
+### Detected Gaps
+
+**1. CRITICAL: Database Sync Missing**
+- Repository: harborUserSvc
+- Type: DATABASE_SYNC_MISSING
+- Missing: UserAvailability model
+- Reason: Database table will not exist - feature will fail
+- Action: Adding model to database sync...
+
+**2. HIGH: Model Registration Missing**
+- Repository: harborSharedModels
+- Type: MODEL_REGISTRATION
+- Missing: UserAvailability
+- Pattern: models/index.ts
+- Action: Adding export to index.ts...
+
+**3. MEDIUM: Export Missing**
+- Repository: harborUserSvc
+- Type: EXPORT_MISSING
+- Missing: user-availability.service.ts
+- Pattern: services/index.ts
+- Action: Adding export to index.ts...
+
+### Auto-Fix Results
+
+✅ Fixed: UserAvailability added to database sync
+✅ Fixed: UserAvailability added to models/index.ts
+✅ Fixed: user-availability.service.ts added to exports
+
+### Re-Validation
+
+🔄 Re-scanning for remaining gaps...
+✅ No gaps detected - Implementation is complete!
+
+### Recovery Summary
+
+**Before Recovery:** 3 gaps detected (1 CRITICAL, 1 HIGH, 1 MEDIUM)
+**After Recovery:** 0 gaps detected
+**Status:** ✅ Implementation is complete and consistent
+
+---
+
+✨ **Missed Implementation Recovery Complete - Zero partial implementation!**
+```
+
+---
+
+### Enforcement Rules
+
+**🚨 Rule: Zero Partial Implementation**
+
+```
+AFTER all implementation phases:
+1. Re-scan ALL repositories
+2. Detect ALL missing integrations
+3. Auto-fix ALL detected gaps
+4. Re-validate until zero gaps remain
+
+IF gaps remain after first fix:
+→ Re-run auto-fix
+→ Continue until zero gaps
+
+ONLY when zero gaps detected:
+→ Mark implementation as complete
+```
+
+**🎯 Goal:**
+
+```
+Eliminate partial implementation entirely:
+✅ No missing model registrations
+✅ No missing database sync entries
+✅ No missing exports
+✅ No missing API registrations
+✅ Feature works end-to-end
+```
+
+---
+
 ### Phase 6: Analysis Completion Verification
 
 **🚨 CRITICAL: Verify analysis is complete before proceeding.**
@@ -1535,7 +2440,21 @@ const analysisChecklist = {
   publishablePackagesDetected: false,
   databaseSyncServicesDetected: false,
   executionOrderDetermined: false,
-  roleValidationRulesDefined: false
+  roleValidationRulesDefined: false,
+
+  // Cross-Repository Dependency Intelligence ✨ NEW (2026-03-23)
+  dependencyFlowIdentified: false,
+  dependencyChainBuilt: false,
+  criticalPathDetected: false,
+  intelligentDecisionsMade: false,
+  completenessValidated: false,
+  riskAssessmentComplete: false,
+
+  // Missed Implementation Recovery ✨ NEW (2026-03-23)
+  rescannedForMissingImplementations: false,
+  gapsDetected: false,
+  gapsAutoFixed: false,
+  reValidatedAfterFixes: false
 };
 
 // Verify ALL items are true before proceeding
