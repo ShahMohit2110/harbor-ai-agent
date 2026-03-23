@@ -1,17 +1,26 @@
 # Global Agent Workflow - Master Control System
 
-**Version:** 7.2.0
+**Version:** 7.3.0
 **Last Updated:** 2026-03-23
-**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, and evidence-based validation
+**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, implicit requirement inference, and evidence-based validation
 
-**What's New in v7.2:**
-- 🔍 **Evidence-Based Validation** - Transforms validation from assumption-based to evidence-based ✨ NEW
-- ✅ **No Assumptions Rule** - Requires reading actual files to verify implementation ✨ NEW
-- 📁 **File Change Verification** - Confirms actual files were modified with expected changes ✨ NEW
-- 🚨 **Silent Failure Detection** - Catches missing implementations in required repositories ✨ NEW
-- 🎨 **Pattern Matching Validation** - Verifies new code follows existing patterns ✨ NEW
-- 🎯 **Final Evidence Validation** - Last gate before task completion - zero partial implementation ✨ NEW
-- 🧪 **Zero "Probably Done"** - No more assumptions - only proven complete with code evidence ✨ NEW
+**What's New in v7.3:**
+- 🧠 **Implicit Requirement Inference** - Agent thinks like a senior engineer who infers system requirements NOT explicitly mentioned ✨ NEW
+- 🔴 **Model → Database Obligation Rule** - Automatically detects when models need database sync registration ✨ NEW
+- 🔄 **Model Lifecycle Awareness** - Enforces complete lifecycle from definition to database table ✨ NEW
+- 🎯 **Critical Thinking Enhancement** - "If I create something, I must ensure it actually WORKS" ✨ NEW
+- 🔗 **Auto-Trigger Dependent Repos** - Database-sync automatically updated when models are created ✨ NEW
+- 🔣 **Pattern-Based Implementation** - Replicates existing patterns instead of guessing ✨ NEW
+- 🛑 **Task Description ≠ Complete Truth** - Agent infers missing requirements from system architecture ✨ NEW
+
+**Features from v7.2:**
+- 🔍 **Evidence-Based Validation** - Transforms validation from assumption-based to evidence-based
+- ✅ **No Assumptions Rule** - Requires reading actual files to verify implementation
+- 📁 **File Change Verification** - Confirms actual files were modified with expected changes
+- 🚨 **Silent Failure Detection** - Catches missing implementations in required repositories
+- 🎨 **Pattern Matching Validation** - Verifies new code follows existing patterns
+- 🎯 **Final Evidence Validation** - Last gate before task completion - zero partial implementation
+- 🧪 **Zero "Probably Done"** - No more assumptions - only proven complete with code evidence
 
 **Features from v7.1:**
 - 🧠 **Cross-Repository Dependency Intelligence** - Builds dependency chains, detects critical path, validates completeness
@@ -172,6 +181,73 @@ find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
 - ✅ Systems (not files)
 - ✅ Workflows (not single repository)
 - ✅ Dependencies (not isolated changes)
+
+### 🔄 Rule 7: Model Lifecycle Awareness (NEW - MANDATORY) 🔄 ✨ (2026-03-23)
+
+**Every model MUST go through a complete lifecycle to be functional:**
+
+```
+1. ✅ Defined in shared-model repository
+   ↓
+2. ✅ Published as package (version + build)
+   ↓
+3. ✅ Consumed by services (package install)
+   ↓
+4. ✅ Registered in database-sync
+   ↓
+5. ✅ Materialized as DB table (ORM registration)
+```
+
+**❗ CRITICAL RULE:**
+
+```
+If ANY step in the lifecycle is missing → System is INCOMPLETE
+
+Examples of broken lifecycles:
+❌ Model defined but not in database-sync → No table created
+❌ Model in database-sync but not in ORM → Table not created
+❌ Model in ORM but package not built → Services can't consume
+❌ Package built but not installed → Services use old version
+```
+
+**Enforcement:**
+
+```
+When agent creates/modifies a model:
+
+1. Agent MUST detect current lifecycle stage
+2. Agent MUST identify missing stages
+3. Agent MUST complete ALL remaining stages
+4. Agent MUST validate end-to-end lifecycle
+
+Only then → Task is complete
+```
+
+**Example - Blog Model Creation:**
+
+```
+❌ WRONG (Incomplete Lifecycle):
+   - Created Blog model in shared-model
+   - Published package
+   - Stopped → System broken
+
+✅ CORRECT (Complete Lifecycle):
+   - Created Blog model in shared-model ✅
+   - Updated version (1.0.0 → 1.1.0) ✅
+   - Built package ✅
+   - Registered in database-sync ✅
+   - Added to ORM entities ✅
+   - Updated dependent services ✅
+   - Validated table will be created ✅
+   - System is functional ✅
+```
+
+**Integration with Implicit Requirement Inference:**
+
+This rule works with Phase 5.75 (Implicit Requirement Inference):
+- Phase 5.75 detects model creation
+- Rule 7 enforces complete lifecycle
+- Together → No incomplete features
 
 ## 🚫 Critical Restrictions
 
@@ -357,6 +433,17 @@ This workflow integrates the following deep analysis systems:
     - **Final Evidence Validation** - Last gate before task completion
     - **Zero Partial Implementation** - No more "probably done" - only proven complete
     - **Non-breaking enhancement** - Purely additive validation layer
+
+17. **Implicit Requirement Inference** (Phase 5.75) 🧠 ✨ NEW (2026-03-23)
+    - **Teaches agent to think like a senior engineer who infers system requirements**
+    - **Domain Event Detection** - Automatically detects new models, entities, services
+    - **System Obligation Enforcement** - Infers database sync, ORM registration, etc.
+    - **Model → Database Obligation Rule** - Models are NOT usable until registered in database-sync
+    - **Auto-Trigger Dependent Repositories** - Database-sync automatically updated when models created
+    - **Pattern-Based Implementation** - Replicates existing patterns instead of guessing
+    - **Task Description ≠ Complete Truth** - Agent infers missing requirements from architecture
+    - **Critical Thinking Enhancement** - "If I create something, I must ensure it actually WORKS"
+    - **Non-breaking enhancement** - Purely additive intelligence layer
 
 ---
 
@@ -2091,6 +2178,502 @@ Purpose:
 - Allow safe validation of dependency correctness
 - Enable testing without manual reverts
 ```
+
+---
+
+### Phase 5.75: Implicit Requirement Inference (MANDATORY) 🧠 ✨ (2026-03-23)
+
+**🚨 CRITICAL: This phase teaches the agent to think like a senior engineer who infers system requirements that are NOT explicitly mentioned in the task.**
+
+**This is a MANDATORY enhancement that prevents incomplete feature implementation.**
+
+---
+
+## 🔥 Core Philosophy
+
+**The agent does NOT follow instructions. The agent completes the SYSTEM.**
+
+**Current Thinking (BEFORE this phase):**
+> "Task didn't mention database-sync → I won't touch it"
+
+**Senior Engineer Thinking (AFTER this phase):**
+> "New model = DB table needed → database-sync MUST be updated"
+
+This is called **Implicit Requirement Inference**.
+
+---
+
+## 🎯 What This Phase Does
+
+After analyzing dependencies and before implementation, this phase:
+1. **Detects domain events** (new models, entities, services)
+2. **Infers system obligations** (database sync, registrations, integrations)
+3. **Auto-triggers dependent repositories** (even if not mentioned in task)
+4. **Enforces completeness** (feature is NOT complete until ALL obligations are met)
+
+---
+
+## 📋 Step 5.75.1: Detect Domain Events
+
+**While analyzing changes, the agent MUST detect:**
+
+```javascript
+async function detectDomainEvents(task, changes) {
+  console.log('\n🔍 Detecting Domain Events...\n');
+
+  const events = [];
+
+  // 1. Detect New Model Creation
+  const newModels = changes.filter(c =>
+    c.type === 'NEW_ENTITY' ||
+    c.type === 'NEW_MODEL' ||
+    c.file?.includes('model') ||
+    c.file?.includes('entity')
+  );
+
+  if (newModels.length > 0) {
+    events.push({
+      type: 'MODEL_CREATED',
+      entities: newModels,
+      severity: 'CRITICAL',
+      inferredRequirements: ['DATABASE_SYNC', 'MODEL_REGISTRATION']
+    });
+
+    console.log(`🔴 Detected: ${newModels.length} new model(s) created`);
+    console.log(`Models: ${newModels.map(m => m.name).join(', ')}\n`);
+  }
+
+  // 2. Detect Model Modifications
+  const modifiedModels = changes.filter(c =>
+    c.type === 'MODIFIED_ENTITY' ||
+    c.type === 'MODIFIED_MODEL'
+  );
+
+  if (modifiedModels.length > 0) {
+    events.push({
+      type: 'MODEL_MODIFIED',
+      entities: modifiedModels,
+      severity: 'HIGH',
+      inferredRequirements: ['DATABASE_SYNC_UPDATE']
+    });
+
+    console.log(`🟡 Detected: ${modifiedModels.length} model(s) modified`);
+    console.log(`Models: ${modifiedModels.map(m => m.name).join(', ')}\n`);
+  }
+
+  // 3. Detect New Service Creation
+  const newServices = changes.filter(c =>
+    c.type === 'NEW_SERVICE' ||
+    c.file?.includes('service')
+  );
+
+  if (newServices.length > 0) {
+    events.push({
+      type: 'SERVICE_CREATED',
+      entities: newServices,
+      severity: 'HIGH',
+      inferredRequirements: ['SERVICE_REGISTRATION', 'API_INTEGRATION']
+    });
+
+    console.log(`🟡 Detected: ${newServices.length} new service(s) created`);
+    console.log(`Services: ${newServices.map(s => s.name).join(', ')}\n`);
+  }
+
+  return events;
+}
+```
+
+---
+
+## 🚨 Step 5.75.2: Enforce System Obligations
+
+**If a NEW MODEL is created, the agent MUST automatically infer:**
+
+### 🔴 Database Obligation (MANDATORY)
+
+**A model is NOT usable until:**
+- ✅ It is registered in database sync system
+- ✅ It is included in ORM initialization
+- ✅ It can create/sync table in database
+
+**❗ CRITICAL THINKING RULE:**
+
+```
+Creating a model WITHOUT database sync = INCOMPLETE FEATURE
+
+Even if:
+- APIs are written ✅
+- Frontend is ready ✅
+
+System will FAIL at runtime ❌
+
+Table does not exist → Database error → Feature broken
+```
+
+---
+
+## 🧩 Step 5.75.3: Auto-Trigger Dependent Repositories
+
+**If a model is created in a shared repository, the agent MUST automatically:**
+
+```javascript
+async function autoTriggerDependentRepos(domainEvents, repositories) {
+  console.log('\n🔗 Auto-Triggering Dependent Repositories...\n');
+
+  const actions = [];
+
+  for (const event of domainEvents) {
+    // For MODEL_CREATED events
+    if (event.type === 'MODEL_CREATED') {
+
+      // 1. Locate database-sync repository
+      const dbSyncRepo = repositories.find(r =>
+        r.roles?.includes('DATABASE_SYNC_SERVICE') ||
+        r.name?.toLowerCase().includes('databasesync') ||
+        r.name?.toLowerCase().includes('db-sync')
+      );
+
+      if (dbSyncRepo) {
+        console.log(`🔴 Database Sync Repository Found: ${dbSyncRepo.name}`);
+        console.log(`⚠️  ACTION REQUIRED: Register new model(s) in database sync\n`);
+
+        actions.push({
+          repository: dbSyncRepo.name,
+          action: 'REGISTER_MODEL',
+          entities: event.entities,
+          reason: 'Model requires database table to function',
+          severity: 'CRITICAL',
+          blocking: true
+        });
+      } else {
+        console.log(`⚠️  WARNING: No database-sync repository found`);
+        console.log(`🔎 Searched for: DATABASE_SYNC_SERVICE role or similar naming pattern\n`);
+      }
+
+      // 2. Locate ORM/TypeORM configuration repository
+      const ormRepo = repositories.find(r =>
+        r.roles?.includes('ORM_CONFIGURATION') ||
+        r.hasTypeORMConfig === true
+      );
+
+      if (ormRepo) {
+        console.log(`🔴 ORM Configuration Repository Found: ${ormRepo.name}`);
+        console.log(`⚠️  ACTION REQUIRED: Register model in ORM entities\n`);
+
+        actions.push({
+          repository: ormRepo.name,
+          action: 'REGISTER_ORM_ENTITY',
+          entities: event.entities,
+          reason: 'ORM must recognize model to create database table',
+          severity: 'CRITICAL',
+          blocking: true
+        });
+      }
+
+      // 3. Locate dependent services that consume models
+      const dependentServices = repositories.filter(r =>
+        r.dependencies?.includes('shared-models') ||
+        r.dependencies?.includes('harborSharedModels')
+      );
+
+      if (dependentServices.length > 0) {
+        console.log(`🟡 Found ${dependentServices.length} dependent service(s):`);
+        dependentServices.forEach(s => console.log(`   - ${s.name}`));
+        console.log(`⚠️  ACTION REQUIRED: Update model imports and dependencies\n`);
+
+        actions.push({
+          repositories: dependentServices.map(r => r.name),
+          action: 'UPDATE_MODEL_DEPENDENCY',
+          entities: event.entities,
+          reason: 'Services must consume updated model package',
+          severity: 'HIGH',
+          blocking: false
+        });
+      }
+    }
+  }
+
+  return actions;
+}
+```
+
+---
+
+## 🔁 Step 5.75.4: Pattern-Based Implementation
+
+**🚨 DO NOT GUESS. The agent MUST:**
+
+```javascript
+async function patternBasedImplementation(actions, repositories) {
+  console.log('\n🔣 Executing Pattern-Based Implementation...\n');
+
+  for (const action of actions) {
+    console.log(`\n📋 Action: ${action.action}`);
+    console.log(`📍 Repository: ${action.repository}`);
+    console.log(`🎯 Entities: ${action.entities.map(e => e.name).join(', ')}\n`);
+
+    const repo = repositories.find(r => r.name === action.repository);
+
+    switch (action.action) {
+      case 'REGISTER_MODEL':
+
+        // Find existing model registration pattern
+        const existingModels = await findExistingModelsInDatabaseSync(repo);
+        console.log(`🔍 Found ${existingModels.length} existing model(s) registered`);
+        console.log(`Pattern: ${existingModels[0]?.pattern || 'unknown'}\n`);
+
+        // Replicate the SAME pattern for new model
+        const registrationCode = await generateRegistrationCode(
+          action.entities[0],
+          existingModels[0]
+        );
+
+        await addModelToDatabaseSync(repo, action.entities[0], registrationCode);
+        console.log(`✅ Model registered in database sync\n`);
+
+        break;
+
+      case 'REGISTER_ORM_ENTITY':
+
+        // Find existing ORM entity pattern
+        const existingEntities = await findExistingOrmEntities(repo);
+        console.log(`🔍 Found ${existingEntities.length} existing ORM entity(ies) registered`);
+        console.log(`Pattern: ${existingEntities[0]?.pattern || 'unknown'}\n`);
+
+        // Replicate the SAME pattern
+        await addOrmEntity(repo, action.entities[0], existingEntities[0]);
+        console.log(`✅ Entity registered in ORM configuration\n`);
+
+        break;
+
+      case 'UPDATE_MODEL_DEPENDENCY':
+
+        // Update package version in dependent services
+        await updatePackageVersion(repo, action.entities[0]);
+        await installUpdatedPackage(repo);
+        console.log(`✅ Model dependency updated in ${repo.name}\n`);
+
+        break;
+    }
+  }
+}
+```
+
+---
+
+## 🚫 Step 5.75.5: Task Description is NOT Complete Truth
+
+**The agent MUST understand:**
+
+```
+The task description may be incomplete.
+
+The agent MUST:
+✅ Think beyond instructions
+✅ Consider system architecture
+✅ Fill missing steps
+✅ Infer implicit requirements
+
+The agent MUST NOT:
+❌ Only do what's explicitly mentioned
+❌ Assume "not mentioned = not required"
+❌ Leave system in broken state
+```
+
+---
+
+## 🧠 Step 5.75.6: Final Thinking Model
+
+**You are not following instructions. You are completing the SYSTEM.**
+
+### Before This Phase (WRONG):
+```
+"I created Blog model → done"
+"Task didn't mention database-sync → not my job"
+```
+
+### After This Phase (CORRECT):
+```
+"Wait… where does this model become a table?"
+"→ Oh database-sync → I must update it"
+"→ How are existing models registered?"
+"→ Let me replicate that pattern"
+"→ Now the feature is complete"
+```
+
+---
+
+## 🛑 Step 5.75.7: Completion Rule
+
+**Task is NOT complete until:**
+
+```
+✔ Model exists in source repository
+✔ Model is registered in database sync
+✔ Model is included in ORM configuration
+✔ Model can create table in database
+✔ Dependent services are updated
+✔ System can run without failure
+
+If ANY step missing → Continue execution
+```
+
+---
+
+## 🎯 Example: Blogs Module Implementation
+
+### Task Description:
+```
+"Create a Blogs module with Blog model"
+```
+
+### Agent Thinking (WITH Implicit Requirement Inference):
+
+```
+🔍 Domain Event Detected:
+   → NEW MODEL: Blog
+
+🧠 Implicit Requirements Inferred:
+   → Database sync needed (CRITICAL)
+   → ORM registration needed (CRITICAL)
+   → Model export needed (HIGH)
+   → Dependent services may need updates (MEDIUM)
+
+🔗 Repositories Auto-Triggered:
+   → harborDatabaseSync (REGISTER_MODEL)
+   → harborOrmConfig (REGISTER_ORM_ENTITY)
+   → harborBlogService (CONSUME_MODEL)
+
+🔣 Pattern-Based Implementation:
+   → Found existing User model in database-sync
+   → Replicated registration pattern for Blog
+   → Found existing ORM entity pattern
+   → Replicated entity registration for Blog
+
+✅ Completion Status:
+   → Blog model created ✅
+   → Database sync updated ✅
+   → ORM configuration updated ✅
+   → Table will be created on next sync ✅
+   → Feature is runnable end-to-end ✅
+```
+
+---
+
+### WITHOUT Implicit Requirement Inference (WRONG):
+
+```
+❌ Blog model created
+❌ Database sync NOT updated
+❌ Table NOT created
+❌ Feature FAILS at runtime
+```
+
+---
+
+## 🔄 Integration with Dependency Intelligence
+
+**This phase works AFTER Phase 5.7 (Cross-Repository Dependency Intelligence):**
+
+1. **Phase 5.7** identifies:
+   - Source repositories (where models are defined)
+   - Database realization services (database-sync)
+   - Dependent services
+
+2. **Phase 5.75** uses this information to:
+   - Detect domain events (model creation)
+   - Infer system obligations (database sync required)
+   - Auto-trigger dependent repositories (database-sync)
+   - Enforce completeness (feature not complete until all obligations met)
+
+---
+
+## 🚨 Enforcement Rules
+
+**Rule: Implicit Requirements are MANDATORY**
+
+```
+IF domain event detected (model created):
+   → All inferred requirements are MANDATORY
+   → Not optional, not "if mentioned in task"
+   → Required for system to function
+
+Agent MUST:
+✅ Detect all domain events
+✅ Infer all system obligations
+✅ Execute all required actions
+✅ Validate completeness
+
+Agent MUST NOT:
+❌ Skip inferred requirements
+❌ Wait for explicit instructions
+❌ Leave system in broken state
+```
+
+---
+
+## 📊 Output Format
+
+**After completing this phase, the agent MUST output:**
+
+```
+## 🧠 Implicit Requirement Inference Complete
+
+### 🔍 Domain Events Detected:
+- MODEL_CREATED: Blog, Post, Comment
+
+### 🎯 Inferred Requirements:
+✅ DATABASE_SYNC (CRITICAL) → harborDatabaseSync
+✅ ORM_REGISTRATION (CRITICAL) → harborOrmConfig
+✅ MODEL_EXPORT (HIGH) → harborSharedModels
+✅ DEPENDENT_UPDATE (MEDIUM) → harborBlogService
+
+### 🔗 Repositories Auto-Triggered:
+✅ harborDatabaseSync - REGISTER_MODEL (Blocking)
+✅ harborOrmConfig - REGISTER_ORM_ENTITY (Blocking)
+⏳ harborBlogService - UPDATE_DEPENDENCY (Non-blocking)
+
+### 🔣 Pattern-Based Implementation:
+✅ Replicated User model registration pattern for Blog
+✅ Replicated existing ORM entity pattern
+✅ All registrations follow existing conventions
+
+### 🛑 Completion Validation:
+✅ Model exists in source
+✅ Model registered in database sync
+✅ Model registered in ORM
+✅ Dependent services updated
+✅ System is runnable
+
+Status: Ready for implementation
+```
+
+---
+
+## 🔥 Key Insight
+
+**This enhancement solves the core problem:**
+
+> "Agent does what's asked, but doesn't complete the system"
+
+**Now the agent thinks:**
+
+> "If I create something, I must ensure it actually WORKS in the system."
+
+---
+
+## 🎯 Non-Breaking Enhancement
+
+**This phase:**
+- ✅ Is purely additive
+- ✅ Does not modify existing logic
+- ✅ Adds intelligence layer on top
+- ✅ Prevents incomplete implementation
+- ✅ Automatically enforces system completeness
+
+---
+
+✨ **Implicit Requirement Inference Complete - Agent now thinks like a senior engineer!**
 
 ---
 

@@ -2,6 +2,32 @@
 
 **🚨 CRITICAL: These rules apply ONLY to `harborSharedModels` service. All other services follow the standard Harbor AI workflow.**
 
+---
+
+## 🧪 TESTING PHASE CONFIGURATION (2025-03-18)
+
+**Current Mode:** **TESTING** 🧪
+
+**Git Operations:** **COMPLETELY DISABLED** ❌
+
+During testing phase, this workflow:
+- ✅ Performs all implementation work
+- ✅ Verifies builds succeed
+- ✅ Executes validation
+- ❌ **NOT** create Git branches
+- ❌ **NOT** commit changes
+- ❌ **NOT** push to remote repositories
+
+**Workflow Behavior:**
+After completing implementation and validation, the agent **STOPS** without Git operations.
+
+**Purpose:**
+- Prevent unwanted commits or pushes during testing
+- Allow safe validation of code changes locally
+- Enable testing without manual reverts
+
+---
+
 ## Purpose
 
 `harborSharedModels` is a **shared model library** containing common data models used across multiple Harbor services. Any change requires **version updates and strict handling**.
@@ -162,8 +188,10 @@ After updating dependencies, verify:
 # Update package.json: 1.0.0 → 1.0.1
 git checkout -b update/user-model-add-phone
 git add .
-git commit -m "feat: Add phone field to User model"
-git push origin update/user-model-add-phone
+
+# ⚠️ TESTING MODE: Git commit/push DISABLED
+# git commit -m "feat: Add phone field to User model"
+# git push origin update/user-model-add-phone
 # NO PR created
 ```
 
@@ -175,7 +203,9 @@ git push origin update/user-model-add-phone
 # Update package.json: 1.0.0 → 1.1.0
 git checkout -b add/job-application-model
 git add .
-git commit -m "feat: Add JobApplication shared model"
-git push origin add/job-application-model
+
+# ⚠️ TESTING MODE: Git commit/push DISABLED
+# git commit -m "feat: Add JobApplication shared model"
+# git push origin add/job-application-model
 # NO PR created
 ```

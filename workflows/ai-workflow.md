@@ -6,6 +6,31 @@
 
 ---
 
+## 🧪 TESTING PHASE CONFIGURATION (2025-03-18)
+
+**Current Mode:** **TESTING** 🧪
+
+**Git Operations:** **COMPLETELY DISABLED** ❌
+
+During testing phase, this workflow:
+- ✅ Performs all implementation work
+- ✅ Verifies builds succeed
+- ✅ Executes validation
+- ❌ **NOT** create Git branches
+- ❌ **NOT** commit changes
+- ❌ **NOT** create Pull Requests
+- ❌ **NOT** push to remote repositories
+
+**Workflow Behavior:**
+After completing implementation and validation, the agent **STOPS** without Git operations.
+
+**Purpose:**
+- Prevent unwanted commits or pushes during testing
+- Allow safe validation of code changes locally
+- Enable testing without manual reverts
+
+---
+
 ## Table of Contents
 
 1. [Purpose and Scope](#purpose-and-scope)
@@ -1302,22 +1327,24 @@ git add harborJobSvc/tests/
 
 **Step 4: Commit Changes**
 ```bash
-# Create commit with proper message
-git commit -m "HARBOR-XXX: Add job filtering API
-
-Implemented job filtering by location and salary range.
-Added validation, pagination, and error handling.
-
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+# ⚠️ TESTING MODE: Git commit DISABLED
+# # Create commit with proper message
+# git commit -m "HARBOR-XXX: Add job filtering API
+#
+# Implemented job filtering by location and salary range.
+# Added validation, pagination, and error handling.
+#
+# Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 ```
 
 **Step 5: Push Branch**
 ```bash
-# Push to remote
-git push -u origin feature/HARBOR-XXX-short-description
-
-# Verify push
-git branch -r
+# ⚠️ TESTING MODE: Git push DISABLED
+# # Push to remote
+# git push -u origin feature/HARBOR-XXX-short-description
+#
+# # Verify push
+# git branch -r
 ```
 
 **Step 6: Create Pull Request**
@@ -2087,14 +2114,15 @@ git checkout -b feature/HARBOR-XXX-description
 # Stage changes
 git add <files>
 
-# Commit changes
-git commit -m "HARBOR-XXX: Description"
-
-# Push branch
-git push -u origin feature/HARBOR-XXX-description
-
-# Create PR
-gh pr create --base dev --title "HARBOR-XXX: Description"
+# ⚠️ TESTING MODE: Git commit DISABLED
+# # Commit changes
+# git commit -m "HARBOR-XXX: Description"
+#
+# # Push branch
+# git push -u origin feature/HARBOR-XXX-description
+#
+# # Create PR
+# gh pr create --base dev --title "HARBOR-XXX: Description"
 ```
 
 ### Success Criteria Quick Reference

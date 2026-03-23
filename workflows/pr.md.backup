@@ -294,8 +294,7 @@ git branch
 ```bash
 # If there are uncommitted changes, commit them first
 git add .
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "WIP: Temporary commit before branch creation"
+git commit -m "WIP: Temporary commit before branch creation"
 ```
 
 #### 2.3 Verify Branch Status
@@ -572,8 +571,7 @@ git remote -v
 **Push Feature Branch:**
 ```bash
 # Push current branch to remote
-# ⚠️ TESTING MODE: DISABLED
-#git push -u origin feature/HARBOR-123-add-job-filter
+git push -u origin feature/HARBOR-123-add-job-filter
 
 # Expected output:
 # Username for 'https://github.com': your-username
@@ -592,8 +590,7 @@ git remote -v
 **If Push Fails:**
 ```bash
 # If remote branch exists and has diverged
-# ⚠️ TESTING MODE: DISABLED
-#git push --force-with-lease origin feature/HARBOR-123-add-job-filter
+git push --force-with-lease origin feature/HARBOR-123-add-job-filter
 
 # ⚠️ WARNING: Only use force push if you're sure
 # Prefer: git pull --rebase, then push
@@ -2000,29 +1997,25 @@ git checkout -b feature/83-fetch-users-without-cv
 git add <files>
 
 # Commit with descriptive message
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "[<ticket-id>] Short description"
+git commit -m "[<ticket-id>] Short description"
 ```
 
 **Example:**
 ```bash
 git add harborUsersSvc/controllers/userController.ts
 git add harborUsersSvc/services/userService.ts
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "[83] Add endpoint to fetch users without CV"
+git commit -m "[83] Add endpoint to fetch users without CV"
 ```
 
 **Step 3 — Push Branch to Remote**
 ```bash
 # Push newly created branch to remote
-# ⚠️ TESTING MODE: DISABLED
-#git push -u origin feature/<ticket-id>-short-description
+git push -u origin feature/<ticket-id>-short-description
 ```
 
 **Example:**
 ```bash
-# ⚠️ TESTING MODE: DISABLED
-#git push -u origin feature/83-fetch-users-without-cv
+git push -u origin feature/83-fetch-users-without-cv
 ```
 
 **Step 4 — Create Pull Request**
@@ -2623,22 +2616,19 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 **Example:**
 ```bash
 # Commit 1: Feature implementation
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "HARBOR-123: Add job filtering logic
+git commit -m "HARBOR-123: Add job filtering logic
 
 Implemented filtering by status, location, and salary.
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 
 # Commit 2: Tests
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "HARBOR-123: Add tests for job filtering
+git commit -m "HARBOR-123: Add tests for job filtering
 
 Added unit and integration tests for filter functionality.
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 
 # Commit 3: Documentation
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "HARBOR-123: Update API documentation
+git commit -m "HARBOR-123: Update API documentation
 
 Added filter parameters to API documentation.
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
@@ -2992,8 +2982,7 @@ Update API documentation for job endpoints
 
 **Symptoms:**
 ```bash
-# ⚠️ TESTING MODE: DISABLED
-#git push -u origin feature/HARBOR-123-add-job-filter
+git push -u origin feature/HARBOR-123-add-job-filter
 # Error: failed to push some refs to 'https://github.com/...'
 # To prevent from losing history, fast-forward was rejected
 ```
@@ -3003,12 +2992,10 @@ Update API documentation for job endpoints
 # Option 1: Fetch and rebase
 git fetch origin
 git rebase origin/feature/HARBOR-123-add-job-filter
-# ⚠️ TESTING MODE: DISABLED
-#git push -u origin feature/HARBOR-123-add-job-filter
+git push -u origin feature/HARBOR-123-add-job-filter
 
 # Option 2: Force push (use with caution)
-# ⚠️ TESTING MODE: DISABLED
-#git push --force-with-lease origin feature/HARBOR-123-add-job-filter
+git push --force-with-lease origin feature/HARBOR-123-add-job-filter
 ```
 
 ---
@@ -3039,8 +3026,7 @@ git add <resolved-files>
 git rebase --continue
 
 # Push updated branch
-# ⚠️ TESTING MODE: DISABLED
-#git push --force-with-lease origin feature/HARBOR-123-add-job-filter
+git push --force-with-lease origin feature/HARBOR-123-add-job-filter
 
 # Create PR
 gh pr create
@@ -3065,19 +3051,15 @@ git pull origin dev
 git checkout -b feature/HARBOR-123-part-1-add-filter-api
 # Make first set of changes
 git add .
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "HARBOR-123: Add filter API endpoint"
-# ⚠️ TESTING MODE: DISABLED
-#git push -u origin feature/HARBOR-123-part-1-add-filter-api
+git commit -m "HARBOR-123: Add filter API endpoint"
+git push -u origin feature/HARBOR-123-part-1-add-filter-api
 
 # Create second PR
 git checkout -b feature/HARBOR-123-part-2-add-filter-ui
 # Make second set of changes
 git add .
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "HARBOR-123: Add filter UI components"
-# ⚠️ TESTING MODE: DISABLED
-#git push -u origin feature/HARBOR-123-part-2-add-filter-ui
+git commit -m "HARBOR-123: Add filter UI components"
+git push -u origin feature/HARBOR-123-part-2-add-filter-ui
 ```
 
 ---
@@ -3092,15 +3074,13 @@ git add .
 **Solution:**
 ```bash
 # Amend most recent commit (not pushed)
-# ⚠️ TESTING MODE: DISABLED
-#git commit --amend -m "HARBOR-123: Correct commit message
+git commit --amend -m "HARBOR-123: Correct commit message
 
 Updated description.
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 
 # If already pushed, force push
-# ⚠️ TESTING MODE: DISABLED
-#git push --force-with-lease origin feature/HARBOR-123-add-job-filter
+git push --force-with-lease origin feature/HARBOR-123-add-job-filter
 ```
 
 ---
@@ -3122,17 +3102,14 @@ git reset HEAD unwanted-file.ts
 
 # Re-commit with correct files
 git add correct-files.ts
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "HARBOR-123: Correct commit message"
+git commit -m "HARBOR-123: Correct commit message"
 
 # Or create new commit for unwanted files
 git restore --staged unwanted-file.ts
-# ⚠️ TESTING MODE: DISABLED
-#git commit -m "HARBOR-123: Add correct files"
+git commit -m "HARBOR-123: Add correct files"
 
 # If already pushed
-# ⚠️ TESTING MODE: DISABLED
-#git push --force-with-lease origin feature/HARBOR-123-add-job-filter
+git push --force-with-lease origin feature/HARBOR-123-add-job-filter
 ```
 
 ---
@@ -3366,8 +3343,7 @@ Authentication bug has been resolved. The issue was in token validation logic wh
 **Failure Scenarios:**
 
 1. **Push Failure**
-# ⚠️ TESTING MODE: DISABLED
-#   - If `git push` fails → Do NOT update ticket
+   - If `git push` fails → Do NOT update ticket
    - If push times out → Do NOT update ticket
    - If authentication fails → Do NOT update ticket
    - Action: Report error to user, halt PR creation process
