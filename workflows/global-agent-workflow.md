@@ -56,7 +56,41 @@
 
 **Before performing ANY implementation, you MUST:**
 
-### Step 0.1: Check if `/docs` Folder Exists
+### Step 0.1: Multi-Repository Documentation Scan (NEW - MANDATORY)
+
+**🚨 CRITICAL: Scan ALL repositories in workspace, not just target repository.**
+
+**Reference:** `/harbor-ai/workflows/multi-repository-documentation-scan.md`
+
+```bash
+# Navigate to workspace root
+WORKSPACE_ROOT=/Users/mohitshah/Documents/HarborService/
+cd ${WORKSPACE_ROOT}
+
+# Find ALL git repositories
+find . -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
+```
+
+**For EACH discovered repository:**
+
+1. **Check if `docs` folder exists**
+2. **If EXISTS:**
+   - ✅ Read ALL `.md` files
+   - ✅ Store in agent memory
+   - ✅ Use as single source of truth
+   - ❌ DO NOT overwrite existing docs
+
+3. **If MISSING:**
+   - 🔄 Create `docs` folder
+   - 🔄 Generate ALL required `.md` files
+   - 🔄 Analyze repository structure
+   - 🔄 Populate with accurate information
+
+**Result:** All repositories have complete, standardized documentation in agent memory.
+
+---
+
+### Step 0.2: Check if `/docs` Folder Exists (For Target Repository)
 
 **For the target repository:**
 
@@ -65,7 +99,7 @@
 ls -la /path/to/repo/docs
 ```
 
-### Step 0.2: Documentation Status Detection
+### Step 0.3: Documentation Status Detection
 
 **IF `/docs` EXISTS:**
 - ✅ Read ALL `.md` files in `/docs`
@@ -92,7 +126,7 @@ ls -la /path/to/repo/docs
 - Ensure documentation completeness
 - Validate against actual codebase
 
-### Step 0.3: Required Documentation Files
+### Step 0.4: Required Documentation Files
 
 **Every repository MUST have:**
 
@@ -157,7 +191,7 @@ ls -la /path/to/repo/docs
     - 🚫 DO NOT create/switch branches
     - ✅ Only local changes
 
-### Step 0.4: Documentation Validation Rules
+### Step 0.5: Documentation Validation Rules
 
 **Before proceeding to Phase 1:**
 

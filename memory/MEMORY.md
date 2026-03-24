@@ -1,8 +1,74 @@
 # Harbor AI Agent Memory
 
-**Last Updated:** 2026-03-13
+**Last Updated:** 2026-03-24
 
-## 🆕 Dynamic Multi-Repository Agent (v2.0)
+---
+
+# 🚀 ENHANCED MULTI-REPOSITORY DOCUMENTATION SYSTEM (v11.0 - NEW)
+
+**🚨 CRITICAL: Enhanced documentation handling for ALL repositories.**
+
+**Reference:** `/harbor-ai/workflows/multi-repository-documentation-scan.md`
+
+## Key Enhancement: Universal Documentation Coverage
+
+**NEW in v11.0:**
+
+1. **Multi-Repository Documentation Scan** ⚡
+   - Scans ALL repositories in workspace (not just target)
+   - Validates `docs` folder existence for each repository
+   - Generates missing documentation automatically
+   - Stores documentation in agent memory for reuse
+
+2. **Documentation is Single Source of Truth** 📚
+   - If `docs` folder EXISTS → Read and use existing documentation
+   - If `docs` folder MISSING → Generate complete documentation
+   - NEVER overwrite existing documentation
+   - Documentation cache speeds up subsequent runs
+
+3. **Repository Documentation Index** 💾
+   - Maintains index of all repository documentation
+   - Cross-repository dependency mapping
+   - Quick access to any repository's architecture
+
+## Required Documentation Files (12 Total)
+
+**Every repository MUST have:**
+
+1. **ARCHITECTURE.md** (MANDATORY) - Service overview, relationships, dependencies
+2. **STRUCTURE.md** (MANDATORY) - Folder structure, layer responsibilities
+3. **DEPENDENCIES.md** (MANDATORY) - External and internal dependencies
+4. **DATABASE.md** (conditional) - DB type, ORM, schema
+5. **MODEL_FLOW.md** (conditional) - Data flow: controller → service → repository → DB
+6. **API_PATTERNS.md** (conditional) - Request/response, error handling
+7. **AUTH.md** (conditional) - Authentication & authorization
+8. **SERVICE_RULES.md** (CRITICAL) - DOs and DON'Ts, service boundaries
+9. **SHARED_SERVICES.md** (CRITICAL) - Shared services list and usage
+10. **CHANGE_IMPACT.md** (CRITICAL) - Impact analysis for changes
+11. **DEVELOPMENT_RULES.md** (MANDATORY) - Coding standards
+12. **GIT_RULES.md** (MANDATORY) - 🚫 DO NOT push, create branches
+
+## Workflow Integration
+
+**Phase 0 (Documentation Gate) now includes:**
+
+1. **Multi-Repository Scan** - Scan ALL repositories in workspace
+2. **Validation** - Check `docs` folder for each repository
+3. **Generation** - Create missing documentation
+4. **Caching** - Store in memory for reuse
+5. **Prioritization** - Use existing docs over re-analysis
+
+## Benefits
+
+- ✅ **Complete documentation coverage** - Every repository has standardized docs
+- ✅ **Faster subsequent runs** - Reuse cached documentation
+- ✅ **Cross-repository awareness** - Understand relationships through docs
+- ✅ **Single source of truth** - Documentation is always authoritative
+- ✅ **No redundant analysis** - Don't re-analyze if docs exist
+
+---
+
+# 🆕 Dynamic Multi-Repository Agent (v2.0)
 
 The Harbor AI Agent has been upgraded to support **dynamic multi-repository development** without hardcoded service assumptions.
 

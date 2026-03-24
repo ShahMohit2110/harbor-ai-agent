@@ -53,8 +53,18 @@
 
 **Before ANY implementation, the agent MUST:**
 
-1. **Perform full directory scan**
-2. **Identify project architecture dynamically:**
+1. **📚 Multi-Repository Documentation Scan (NEW - v11.0)**
+   **Reference:** `/harbor-ai/workflows/multi-repository-documentation-scan.md`
+
+   - Scan ALL repositories in workspace
+   - Validate `docs` folder exists for each repository
+   - If EXISTS: Read and use as single source of truth
+   - If MISSING: Generate complete documentation
+   - Store in agent memory for reuse
+   - **NEVER overwrite existing documentation**
+
+2. **Perform full directory scan**
+3. **Identify project architecture dynamically:**
    - **Microservice Architecture?** → Activate Dependency-First Execution Mode
    - **Monolith Architecture?** → Activate Direct Local Execution Mode
 
