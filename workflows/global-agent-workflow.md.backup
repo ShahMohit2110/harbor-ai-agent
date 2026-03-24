@@ -1,33 +1,22 @@
 # Global Agent Workflow - Master Control System
 
-**Version:** 9.0.0
-**Last Updated:** 2026-03-24
-**Purpose:** Documentation-first system-aware engineering agent with 12-phase autonomous execution, environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, implicit requirement inference, cross-service intelligence, documentation-driven execution, runtime validation, API testing, auto-debug loops, and evidence-based validation
+**Version:** 8.0.0
+**Last Updated:** 2026-03-23
+**Purpose:** System-aware engineering agent with 10-phase autonomous execution, environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, implicit requirement inference, runtime validation, API testing, auto-debug loops, and evidence-based validation
 
-**🚨 MAJOR UPDATE v9.0 - DOCUMENTATION-FIRST + CROSS-SERVICE INTELLIGENCE 🚨**
+**🚨 MAJOR UPDATE v8.0 - COMPLETE PROTOCOL OVERHAUL 🚨**
 
-**What's New in v9.0:**
-- 📚 **Documentation-First Approach** - /docs is the SINGLE SOURCE OF TRUTH ✨ CRITICAL NEW
-- 🌐 **Cross-Service Intelligence** - Understands full service relationships and dependencies ✨ MAJOR NEW
-- 🔍 **Full Repository Analysis Engine** - Deep analysis of architecture, models, data flow, and dependencies ✨ NEW
-- 🛡️ **Shared Service Safety** - Detects shared services and enforces safe change protocols ✨ CRITICAL NEW
-- 📋 **Auto-Documentation Generation** - Generates complete /docs for any repository ✨ NEW
-- 🎯 **Model Flow Intelligence** - Understands complete data flow from controller to DB ✨ NEW
-- 🔄 **Change Impact Analysis** - Predicts impact of changes across dependent services ✨ NEW
-- 🚨 **Documentation Gate** - Blocks execution until documentation is complete ✨ NEW
-- 🚀 **12-Phase Autonomous Execution Protocol** - Complete end-to-end workflow with mandatory phases ✨ UPDATED
-
-**Features from v8.0:**
-- 🛑 **STRICT NO GIT PUSH RULE** - Zero tolerance for git operations in autonomous mode
-- 🛑 **STRICT NO GIT PUSH RULE** - Zero tolerance for git operations in autonomous mode
-- ⚙️ **Runtime Execution MANDATORY** - Services MUST be started and verified
-- 🧪 **API Testing MANDATORY** - Real API calls with real payloads
-- 🔁 **Auto Debug & Fix Loop** - Repeat until zero errors
-- 🤖 **Fully Autonomous Execution** - NO questions, NO pauses, complete autonomy
-- ✅ **Evidence-Based Validation** - MUST have file proof for all claims
-- 🧠 **Implicit Requirement Inference** - Agent thinks like a senior engineer who infers system requirements
-- 🔴 **Model → Database Obligation Rule** - Automatically detects when models need database sync registration
-- 🔄 **Model Lifecycle Awareness** - Enforces complete lifecycle from definition to database table
+**What's New in v8.0:**
+- 🚀 **10-Phase Autonomous Execution Protocol** - Complete end-to-end workflow with mandatory phases ✨ MAJOR NEW
+- 🛑 **STRICT NO GIT PUSH RULE** - Zero tolerance for git operations in autonomous mode ✨ CRITICAL
+- ⚙️ **Runtime Execution MANDATORY** - Services MUST be started and verified ✨ NEW
+- 🧪 **API Testing MANDATORY** - Real API calls with real payloads ✨ NEW
+- 🔁 **Auto Debug & Fix Loop** - Repeat until zero errors ✨ NEW
+- 🤖 **Fully Autonomous Execution** - NO questions, NO pauses, complete autonomy ✨ NEW
+- ✅ **Evidence-Based Validation** - MUST have file proof for all claims ✨ ENHANCED
+- 🧠 **Implicit Requirement Inference** - Agent thinks like a senior engineer who infers system requirements ✨ ENHANCED
+- 🔴 **Model → Database Obligation Rule** - Automatically detects when models need database sync registration ✨ ENHANCED
+- 🔄 **Model Lifecycle Awareness** - Enforces complete lifecycle from definition to database table ✨ ENHANCED
 
 **Features from v7.2:**
 - 🔍 **Evidence-Based Validation** - Transforms validation from assumption-based to evidence-based
@@ -40,7 +29,7 @@
 
 ---
 
-# 🚀 12-PHASE AUTONOMOUS EXECUTION PROTOCOL (MANDATORY)
+# 🚀 10-PHASE AUTONOMOUS EXECUTION PROTOCOL (MANDATORY)
 
 **🚨 CRITICAL: This is the MANDATORY operating protocol for ALL Harbor AI Agent tasks.**
 
@@ -50,134 +39,9 @@
 
 ---
 
-## 📚 Phase 0: Documentation Gate (MANDATORY)
+## 🧠 Phase 1: System-Level Analysis (MANDATORY)
 
-**🚨 CRITICAL: Documentation-First Approach - /docs is the SINGLE SOURCE OF TRUTH**
-
-**Before performing ANY implementation, you MUST:**
-
-### Step 0.1: Check if `/docs` Folder Exists
-
-**For the target repository:**
-
-```bash
-# Check if docs folder exists
-ls -la /path/to/repo/docs
-```
-
-### Step 0.2: Documentation Status Detection
-
-**IF `/docs` EXISTS:**
-- ✅ Read ALL `.md` files in `/docs`
-- ✅ Extract and understand:
-  - Architecture
-  - Service responsibility
-  - Model flow
-  - Service dependencies
-  - Shared service usage
-  - Rules and constraints
-  - API patterns
-  - Database schema
-
-**IF `/docs` DOES NOT EXIST:**
-- 🚨 **BLOCK EXECUTION**
-- Trigger FULL REPOSITORY ANALYSIS
-- Generate all required `.md` files
-- Create complete `/docs` structure
-- DO NOT proceed until documentation is complete
-
-**IF `/docs` IS PARTIAL OR OUTDATED:**
-- Identify missing or outdated files
-- Update only what's needed
-- Ensure documentation completeness
-- Validate against actual codebase
-
-### Step 0.3: Required Documentation Files
-
-**Every repository MUST have:**
-
-1. **ARCHITECTURE.md** (MANDATORY)
-   - Service overview
-   - Microservice role
-   - Cross-service relationships
-   - Shared service classification
-   - Dependency graph
-
-2. **STRUCTURE.md** (MANDATORY)
-   - Folder structure
-   - Responsibilities of each layer
-   - File organization
-
-3. **DEPENDENCIES.md** (MANDATORY)
-   - External dependencies
-   - Internal dependencies
-   - Shared packages used
-
-4. **DATABASE.md** (IF APPLICABLE)
-   - DB type, ORM, schema
-   - Relationships and migrations
-
-5. **MODEL_FLOW.md** (CRITICAL - NEW)
-   - Data flow: controller → service → repository → DB
-   - Model lifecycle
-   - Validation and transformation logic
-
-6. **API_PATTERNS.md** (IF APPLICABLE)
-   - Request/response format
-   - Error handling patterns
-
-7. **AUTH.md** (IF APPLICABLE)
-   - Authentication & authorization flow
-   - Middleware and guards
-
-8. **SERVICE_RULES.md** (CRITICAL)
-   - Inter-service communication rules
-   - DOs and DON'Ts
-   - Service boundaries
-
-9. **SHARED_SERVICES.md** (CRITICAL - NEW)
-   - List of shared services/packages
-   - How they are used
-   - Dependency relationships
-   - Impact of changes
-
-10. **CHANGE_IMPACT.md** (CRITICAL - NEW)
-    - If this service is modified:
-      - Which services are affected
-      - Impact level (low/medium/high)
-      - Safe change guidelines
-
-11. **DEVELOPMENT_RULES.md**
-    - Coding standards
-    - Naming conventions
-    - Best practices
-
-12. **GIT_RULES.md**
-    - 🚫 DO NOT push code
-    - 🚫 DO NOT create/switch branches
-    - ✅ Only local changes
-
-### Step 0.4: Documentation Validation Rules
-
-**Before proceeding to Phase 1:**
-
-- ✅ Documentation reflects actual code (not assumptions)
-- ✅ Cross-service relationships are accurate
-- ✅ Model flow is completely documented
-- ✅ Shared service dependencies are listed
-- ✅ Change impact is understood
-- ✅ All rules and constraints are documented
-
-**If documentation is unclear or incomplete:**
-- 🚨 STOP execution
-- 🚨 Ask for clarification
-- 🚨 DO NOT guess
-
----
-
-## 🧠 Phase 1: Full Repository Analysis Engine (MANDATORY)
-
-**🚨 After documentation gate passes, perform deep repository analysis.**
+**Before performing ANY implementation:**
 
 ### Step 1.1: Perform Full Directory Scan
 
@@ -200,610 +64,9 @@ find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
 
 **Output:** Complete repository inventory
 
-### Step 1.3: Deep Repository Analysis
-
-**For EACH repository, extract:**
-
-#### A. CORE SERVICE INFO
-- Service name
-- Service purpose
-- Microservice or shared package
-- Entry point
-- Language & framework
-- Port configuration (if applicable)
-
-#### B. STRUCTURE ANALYSIS
-- Controllers/routes
-- Services layer
-- Repositories/DAOs
-- Models/entities
-- Middlewares/guards
-- Utilities/helpers
-
-#### C. MODEL & DATA FLOW (CRITICAL)
-- How models are defined
-- Complete data flow:
-  - controller → service → repository → database
-- Model relationships
-- Validation logic
-- Transformation logic
-- Data mapping
-
-#### D. DEPENDENCIES ANALYSIS
-- package.json / composer.json / requirements.txt
-- Build scripts (build/start/publish)
-- Internal/shared packages
-- External dependencies
-- Version constraints
-
-#### E. DATABASE ANALYSIS (IF APPLICABLE)
-- Database type (MSSQL, MongoDB, PostgreSQL, etc.)
-- ORM (Sequelize, TypeORM, Prisma, etc.)
-- Schema structure
-- Relationships and foreign keys
-- Migration strategy
-
-#### F. AUTH SYSTEM (IF APPLICABLE)
-- Authentication method (JWT, OAuth, Session, etc.)
-- Authorization middleware
-- Role-based access control
-- Guard implementations
-
-#### G. INTER-SERVICE COMMUNICATION
-- REST APIs
-- Event-driven (message queues, event bus)
-- gRPC
-- Direct service calls
-
-#### H. SHARED SERVICE DETECTION (VERY IMPORTANT)
-
-**Identify if this repository is:**
-- A **shared/common service** (e.g., common-utils, shared-models)
-- A **consumer** of shared services
-
-**For shared services, identify:**
-- Which services depend on this service
-- How it's consumed (import, API, etc.)
-- Version constraints (if any)
-- Breaking change potential
-
-**For service consumers, identify:**
-- Which shared services are used
-- Import patterns
-- Dependency versions
-
-### Step 1.4: Architecture Detection
-
-**Determine project architecture:**
-
-**SCENARIO A: Microservice Architecture**
-- Multiple root-level repositories/services
-- Independent package.json files
-- Inter-service dependencies
-- Clear service boundaries
-
-👉 **Action:** ACTIVATE Dependency-First Execution Mode
-
-**SCENARIO B: Monolith Architecture**
-- Single repository structure
-- Centralized src/ and single package.json
-
-👉 **Action:** ACTIVATE Direct Local Execution Mode
-
-### Step 1.5: Output Requirements
-
-**After analysis, MUST provide:**
-
-1. **Repository Inventory**
-   - All repositories detected
-   - Their purposes and roles
-
-2. **Architecture Classification**
-   - Microservice or Monolith
-   - Execution mode to use
-
-3. **Dependency Map**
-   - Which services depend on whom
-   - Shared services and their consumers
-
-4. **Model Flow Documentation**
-   - How data flows through each service
-   - Model lifecycle understanding
-
-5. **Service Relationships**
-   - Inter-service communication patterns
-   - API contracts
-
 ---
 
-## 🌐 Phase 2: Cross-Service Intelligence (MANDATORY)
-
-**🚨 CRITICAL: Understand service relationships before planning execution.**
-
-**Based on repository analysis, build comprehensive understanding of:**
-
-### Step 2.1: Dependency Mapping
-
-**Create complete dependency graph:**
-
-1. **Upstream Dependencies**
-   - Which services does this repository depend on?
-   - What shared packages are consumed?
-   - External service dependencies
-
-2. **Downstream Dependents**
-   - Which services depend on this repository?
-   - Who consumes this service's APIs/models?
-   - Impact radius of changes
-
-3. **Peer Dependencies**
-   - Services that share common dependencies
-   - Potential for shared state or conflicts
-
-### Step 2.2: Shared Service Classification
-
-**For each shared service detected:**
-
-1. **Mark as HIGH-IMPACT**
-   - Changes affect multiple services
-   - Requires careful coordination
-   - Breaking changes have system-wide impact
-
-2. **Identify Consumption Patterns**
-   - How is it imported/used?
-   - What APIs/models are exposed?
-   - What contracts must be maintained?
-
-3. **Version Strategy** (if applicable)
-   - How are versions managed?
-   - Compatibility requirements
-   - Deprecation policies
-
-### Step 2.3: Change Propagation Analysis
-
-**Before implementing changes:**
-
-1. **If modifying shared logic:**
-   - ✅ Identify ALL impacted services
-   - ✅ Ensure backward compatibility
-   - ✅ Avoid breaking changes
-   - ✅ Coordinate updates if needed
-
-2. **If modifying consumer service:**
-   - ✅ Check if shared service updates are needed
-   - ✅ Verify version compatibility
-   - ✅ Update imports/references
-
-3. **If adding new shared logic:**
-   - ✅ Follow existing patterns
-   - ✅ Document properly
-   - ✅ Consider all consumers
-
-### Step 2.4: Service Boundary Enforcement
-
-**🚨 CRITICAL RULES:**
-
-1. **NEVER access another service's database directly**
-   - Always use APIs
-   - Respect service boundaries
-   - No direct DB queries across services
-
-2. **NEVER bypass shared services**
-   - Use common utilities
-   - Don't duplicate code
-   - Follow established patterns
-
-3. **ALWAYS maintain contracts**
-   - API contracts must be stable
-   - Model changes must be backward compatible
-   - Document breaking changes
-
-### Step 2.5: Impact Prediction
-
-**For planned changes, predict:**
-
-1. **Impact Level**
-   - **LOW**: Single service, no shared logic
-   - **MEDIUM**: Multiple services, shared models
-   - **HIGH**: Shared services, system-wide changes
-
-2. **Affected Services**
-   - List all services that will be impacted
-   - Determine update sequence
-
-3. **Risk Assessment**
-   - Breaking change potential
-   - Rollback complexity
-   - Testing requirements
-
-### Step 2.6: Safe Change Guidelines
-
-**For each impact level:**
-
-**LOW Impact:**
-- ✅ Can proceed with standard implementation
-- ✅ Standard testing applies
-
-**MEDIUM Impact:**
-- ✅ Plan updates to dependent services
-- ✅ Ensure backward compatibility
-- ✅ Coordinate testing across services
-
-**HIGH Impact:**
-- ✅ Requires careful planning
-- ✅ May need feature flags
-- ✅ Extensive testing required
-- ✅ Consider phased rollout
-
-### Step 2.7: Output Requirements
-
-**After cross-service analysis, MUST provide:**
-
-1. **Dependency Graph**
-   - Visual or textual representation
-   - Upstream and downstream dependencies
-
-2. **Shared Service Inventory**
-   - All shared services and their consumers
-   - Impact levels for each
-
-3. **Change Impact Report**
-   - Which services are affected
-   - Impact level (LOW/MEDIUM/HIGH)
-   - Recommended approach
-
-4. **Execution Strategy**
-   - Safe order of changes
-   - Coordination points
-   - Testing checkpoints
-
----
-
-## 📝 Phase 3: Documentation Generation (MANDATORY)
-
-**🚨 If /docs is missing or incomplete, generate comprehensive documentation.**
-
-**Based on analysis and cross-service intelligence, generate:**
-
-### Step 3.1: Documentation Status Assessment
-
-**Check current state:**
-
-1. **If /docs exists and is complete:**
-   - ✅ Verify accuracy against analysis
-   - ✅ Update if needed
-   - ✅ Skip to Phase 4
-
-2. **If /docs missing or incomplete:**
-   - 🚨 Generate ALL required files
-   - 🚨 Block execution until complete
-
-### Step 3.2: Generate Required Documentation Files
-
-**Create/update each file with analysis findings:**
-
-#### 1. ARCHITECTURE.md
-```markdown
-# Service Architecture
-
-## Service Overview
-- Name: [Service Name]
-- Purpose: [What this service does]
-- Type: [Microservice/Shared Package/Monolith Module]
-
-## Microservice Role
-- [Role in the overall system]
-- [Responsibilities]
-- [Boundaries]
-
-## Cross-Service Relationships
-### Dependencies (Upstream)
-- [List of services this depends on]
-
-### Dependents (Downstream)
-- [List of services that depend on this]
-
-### Shared Service Classification
-- [If shared: HIGH-IMPACT service]
-- [List all consumers]
-
-## Dependency Graph
-[Visual or textual representation]
-```
-
-#### 2. STRUCTURE.md
-```markdown
-# Repository Structure
-
-## Folder Structure
-[Directory tree with explanations]
-
-## Layer Responsibilities
-- **controllers/**: [Responsibility]
-- **services/**: [Responsibility]
-- **repositories/**: [Responsibility]
-- **models/**: [Responsibility]
-- **middlewares/**: [Responsibility]
-```
-
-#### 3. DEPENDENCIES.md
-```markdown
-# Dependencies
-
-## External Dependencies
-[List from package.json with purposes]
-
-## Internal Dependencies
-[Shared packages and services used]
-
-## Build Scripts
-- npm start: [Purpose]
-- npm run build: [Purpose]
-```
-
-#### 4. DATABASE.md (IF APPLICABLE)
-```markdown
-# Database
-
-## Database Type
-- Type: [MSSQL/MongoDB/PostgreSQL/etc]
-- ORM: [Sequelize/TypeORM/etc]
-
-## Schema
-[Table structures and relationships]
-
-## Relationships
-[Entity relationships and foreign keys]
-```
-
-#### 5. MODEL_FLOW.md (CRITICAL - NEW)
-```markdown
-# Model Flow
-
-## Data Flow Architecture
-
-### Request Flow
-```
-Controller → Service → Repository → Database
-    ↓         ↓          ↓           ↓
-  Validate  Transform  Query    Return Data
-    ↓         ↓          ↓           ↓
-  Response  Response  Result    Entity
-```
-
-### Model Lifecycle
-1. **Definition**: Where models are defined
-2. **Validation**: How validation happens
-3. **Transformation**: Data transformation logic
-4. **Persistence**: How data is stored
-5. **Retrieval**: How data is retrieved
-
-### Detailed Flow
-
-#### Example: [EntityName] Flow
-1. **Controller Layer**
-   - Receives HTTP request
-   - Validates request format
-   - Calls service layer
-
-2. **Service Layer**
-   - Business logic
-   - Data transformation
-   - Calls repository
-
-3. **Repository Layer**
-   - Database queries
-   - ORM operations
-   - Returns entities
-
-4. **Database**
-   - Persistence
-   - Query execution
-
-### Validation Rules
-[Where and how validation happens]
-
-### Transformation Logic
-[How data is transformed between layers]
-```
-
-#### 6. API_PATTERNS.md (IF APPLICABLE)
-```markdown
-# API Patterns
-
-## Request Format
-- Standard request structure
-- Authentication method
-
-## Response Format
-- Success response structure
-- Error response structure
-
-## Error Handling
-- Error codes
-- Error messages
-- Error propagation
-```
-
-#### 7. AUTH.md (IF APPLICABLE)
-```markdown
-# Authentication & Authorization
-
-## Authentication
-- Method: [JWT/OAuth/Session/etc]
-- Implementation: [How it's implemented]
-
-## Authorization
-- Role-based access control
-- Guards and middleware
-- Permission checks
-
-## Middleware
-[Auth middleware implementations]
-```
-
-#### 8. SERVICE_RULES.md (CRITICAL)
-```markdown
-# Service Rules
-
-## Inter-Service Communication Rules
-- [Communication protocols]
-- [API contracts]
-- [Event patterns]
-
-## DOs and DON'Ts
-
-### ✅ DO
-- [Allowed actions]
-- [Best practices]
-
-### ❌ DON'T
-- [Forbidden actions]
-- [Anti-patterns]
-
-## Service Boundaries
-- [What this service owns]
-- [What it doesn't own]
-- [How to interact with other services]
-```
-
-#### 9. SHARED_SERVICES.md (CRITICAL - NEW)
-```markdown
-# Shared Services
-
-## Shared Services Used
-[If this is a consumer]
-
-| Service | Purpose | Version | Usage |
-|---------|---------|---------|-------|
-| [Name] | [Purpose] | [Version] | [How used] |
-
-## Service Consumers
-[If this is a shared service]
-
-| Service | How Used | Impact |
-|---------|----------|--------|
-| [Name] | [Usage pattern] | [High/Medium/Low] |
-
-## Dependency Relationships
-[Detailed dependency graph]
-
-## Impact of Changes
-- [What changes would affect]
-- [How to safely update]
-
-## Versioning Strategy
-[If applicable]
-```
-
-#### 10. CHANGE_IMPACT.md (CRITICAL - NEW)
-```markdown
-# Change Impact Analysis
-
-## Service Impact Level: [LOW/MEDIUM/HIGH]
-
-### Impact Assessment
-- **Scope**: [What this service affects]
-- **Dependents**: [Who depends on this]
-- **Risk Level**: [Low/Medium/High]
-
-### If This Service Is Modified:
-
-#### Affected Services
-| Service | Impact Type | Severity |
-|---------|-------------|----------|
-| [Name] | [API/Model/Behavior] | [High/Medium/Low] |
-
-#### Impact Categories
-1. **API Changes**: [What API changes would affect]
-2. **Model Changes**: [What model changes would affect]
-3. **Behavior Changes**: [What behavior changes would affect]
-
-### Safe Change Guidelines
-
-#### Low-Impact Changes
-- [Examples of safe changes]
-- [Testing required]
-
-#### Medium-Impact Changes
-- [Examples of medium changes]
-- [Testing required]
-- [Coordination needed]
-
-#### High-Impact Changes
-- [Examples of high-impact changes]
-- [Extensive testing required]
-- [Phased rollout recommended]
-- [Feature flags may be needed]
-
-### Breaking Change Protocol
-- [How to handle breaking changes]
-- [Communication requirements]
-- [Migration strategies]
-```
-
-#### 11. DEVELOPMENT_RULES.md
-```markdown
-# Development Rules
-
-## Coding Standards
-- [Language/framework standards]
-- [Linting rules]
-- [Formatting requirements]
-
-## Naming Conventions
-- Files: [Convention]
-- Variables: [Convention]
-- Functions: [Convention]
-- Classes: [Convention]
-
-## Best Practices
-- [Specific to this service]
-- [Error handling patterns]
-- [Logging patterns]
-```
-
-#### 12. GIT_RULES.md
-```markdown
-# Git Rules
-
-## 🚫 PROHIBITED ACTIONS
-- ❌ DO NOT push code (autonomous mode)
-- ❌ DO NOT create branches
-- ❌ DO NOT switch branches
-- ❌ DO NOT merge without approval
-
-## ✅ ALLOWED ACTIONS
-- ✅ Local commits
-- ✅ Local staging
-- ✅ Local branches (if needed)
-
-## Commit Message Format
-[Standard commit message format]
-```
-
-### Step 3.3: Documentation Validation
-
-**Before proceeding to Phase 4:**
-
-- ✅ All required files exist
-- ✅ Content is accurate (matches analysis)
-- ✅ Cross-references are correct
-- ✅ No assumptions without evidence
-- ✅ Documentation is readable and clear
-
-### Step 3.4: Documentation Output
-
-**After generation:**
-
-1. **List all files created/updated**
-2. **Confirm completeness**
-3. **Validate against actual codebase**
-4. **Ready for Phase 4 (Execution Planning)**
-
----
-
-## 🧠 Phase 4: Execution Planning (MANDATORY)
+## 🧠 Phase 2: Execution Planning (MANDATORY)
 
 **Before coding, you MUST create a full execution plan.**
 
@@ -830,7 +93,7 @@ Controller → Service → Repository → Database
 
 ---
 
-## 🧠 Phase 5: Implicit Requirement Inference (MANDATORY)
+## 🧠 Phase 3: Implicit Requirement Inference (MANDATORY)
 
 **You MUST think beyond the task description.**
 
@@ -857,7 +120,7 @@ Controller → Service → Repository → Database
 
 ---
 
-## 🧠 Phase 6: Pattern-Based Implementation (MANDATORY)
+## 🧠 Phase 4: Pattern-Based Implementation (MANDATORY)
 
 **NEVER guess implementation.**
 
@@ -874,7 +137,7 @@ Controller → Service → Repository → Database
 
 ---
 
-## ⚙️ Phase 7: Runtime Execution (MANDATORY)
+## ⚙️ Phase 5: Runtime Execution (MANDATORY)
 
 **After backend implementation:**
 
@@ -903,7 +166,7 @@ npm run dev
 
 ---
 
-## 🧪 Phase 8: API Testing (MANDATORY)
+## 🧪 Phase 6: API Testing (MANDATORY)
 
 **For ALL APIs:**
 
@@ -943,7 +206,7 @@ curl -X POST http://localhost:3000/api/endpoint \
 
 ---
 
-## 🔁 Phase 9: Auto Debug & Fix Loop (MANDATORY)
+## 🔁 Phase 7: Auto Debug & Fix Loop (MANDATORY)
 
 **If ANY error occurs:**
 
@@ -960,7 +223,7 @@ curl -X POST http://localhost:3000/api/endpoint \
 
 ---
 
-## 🔗 Phase 10: Dependency Integrity Check (MANDATORY)
+## 🔗 Phase 8: Dependency Integrity Check (MANDATORY)
 
 **After changes:**
 
@@ -985,7 +248,7 @@ curl -X POST http://localhost:3000/api/endpoint \
 
 ---
 
-## 🤖 Phase 11: Fully Autonomous Execution (MANDATORY)
+## 🤖 Phase 9: Fully Autonomous Execution (MANDATORY)
 
 **The agent MUST NOT ask:**
 - ❌ "Should I proceed?"
@@ -1005,7 +268,7 @@ curl -X POST http://localhost:3000/api/endpoint \
 
 ---
 
-## ✅ Phase 12: Evidence-Based Validation (MANDATORY)
+## ✅ Phase 10: Evidence-Based Validation (MANDATORY)
 
 **You MUST NOT mark anything as PASS without proof.**
 
@@ -1149,11 +412,11 @@ curl -X POST http://localhost:3000/api/endpoint \
 
 ---
 
-# 🏗️ DETAILED ANALYSIS PROTOCOLS (SUPPLEMENTARY)
+# 🏗️ MASTER CONTROL SYSTEM (CORE FRAMEWORK)
 
-**This section provides detailed protocols that supplement the 12-phase workflow above.**
+**This is the MANDATORY operating protocol for ALL tasks.**
 
-## 🏁 Environment Detection & Architecture Analysis (DETAILED)
+## 🏁 Phase 0: Environment Detection (MANDATORY)
 
 **Before performing ANY implementation, the agent MUST:**
 
