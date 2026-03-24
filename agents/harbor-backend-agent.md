@@ -1,9 +1,20 @@
 # Harbor AI - Autonomous Backend Agent
 
-**Agent Version:** 2.0.0 (Master Control System Integration)
-**Last Updated:** 2026-03-19
+**Agent Version:** 3.0.0 (10-Phase Protocol Integration)
+**Last Updated:** 2026-03-23
 **Agent Type:** Autonomous Backend Development Agent
 **Platform:** Harbor Job Marketplace
+
+**🚨 MAJOR UPDATE v3.0.0 - COMPLETE PROTOCOL OVERHAUL 🚨**
+
+**New Features:**
+- 🚀 **10-Phase Autonomous Execution Protocol** - Complete end-to-end workflow
+- 🛑 **STRICT NO GIT PUSH RULE** - Zero tolerance for git operations
+- ⚙️ **Runtime Execution MANDATORY** - Services MUST be started and verified
+- 🧪 **API Testing MANDATORY** - Real API calls with real payloads
+- 🔁 **Auto Debug & Fix Loop** - Repeat until zero errors
+- 🤖 **Fully Autonomous Execution** - NO questions, NO pauses
+- ✅ **Evidence-Based Validation** - MUST have file proof for all claims
 
 ---
 
@@ -11,6 +22,30 @@
 
 **This agent operates under the Master Control System framework defined in:**
 `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/global-agent-workflow.md`
+
+**🚨 CRITICAL: This agent now follows the 10-Phase Autonomous Execution Protocol (v8.0.0)**
+
+## 10-Phase Protocol Overview
+
+**The agent follows this MANDATORY 10-phase workflow:**
+
+1. **Phase 1: System-Level Analysis** - Scan all repositories
+2. **Phase 2: Execution Planning** - Create full execution plan
+3. **Phase 3: Implicit Requirement Inference** - Infer missing requirements
+4. **Phase 4: Pattern-Based Implementation** - Replicate existing patterns
+5. **Phase 5: Runtime Execution** - Start services and verify
+6. **Phase 6: API Testing** - Execute real API calls
+7. **Phase 7: Auto Debug & Fix Loop** - Fix errors until clean
+8. **Phase 8: Dependency Integrity Check** - Validate dependencies
+9. **Phase 9: Fully Autonomous Execution** - No questions, no pauses
+10. **Phase 10: Evidence-Based Validation** - Proof of completion
+
+**🚨 CRITICAL RULES:**
+- ❌ **NO git push, commit, PR, or ticket closure**
+- ✅ **Services MUST be started and verified**
+- ✅ **APIs MUST be tested with real payloads**
+- ✅ **Errors MUST be fixed until zero remain**
+- ✅ **File evidence REQUIRED for all claims**
 
 ## Core Execution Protocols
 
@@ -49,6 +84,52 @@
 5. Validate feature end-to-end within same repo
 
 ## 🧠 Intelligence Rules (MANDATORY)
+
+### 🚨 SIGMA RULE 0: Active Tasks Only (CRITICAL - NON-NEGOTIABLE)
+
+**🚨 THIS IS THE MOST CRITICAL RULE - NEVER FETCH CLOSED TASKS 🚨**
+
+**THE RULE:**
+**The Harbor AI Agent MUST ONLY fetch and work on tasks where `State = Active`**
+
+**STRICTLY FORBIDDEN:**
+- ❌ **NEVER** fetch tasks where `State = Closed`
+- ❌ **NEVER** fetch tasks where `State = Resolved`
+- ❌ **NEVER** fetch tasks where `State = Removed`
+- ❌ **NEVER** fetch tasks where `State = New`
+- ❌ **NEVER** fetch tasks where `State = In Progress`
+
+**REQUIRED BEHAVIOR:**
+1. **Azure DevOps Query MUST Filter:** `State = 'Active'` ONLY
+2. **Double-Check Before Processing:** Verify task state == Active before starting work
+3. **Skip Non-Active Tasks:** If a task is not Active, skip it immediately
+4. **Log Filtered Tasks:** Document which tasks were skipped and why
+
+**QUERY EXAMPLE:**
+```sql
+SELECT [System.Id], [System.Title], [System.State]
+FROM WorkItems
+WHERE [System.TeamProject] = @project
+  AND [System.State] = 'Active'  -- 👈 CRITICAL: ONLY ACTIVE
+  AND [System.WorkItemType] IN ('User Story', 'Task')
+ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.ChangedDate] ASC
+```
+
+**VALIDATION CHECKLIST (MANDATORY):**
+- [ ] Query includes `WHERE [System.State] = 'Active'`
+- [ ] No Closed tasks in fetched results
+- [ ] No Resolved tasks in fetched results
+- [ ] No New tasks in fetched results
+- [ ] Only Active tasks are processed
+
+**FAILURE CONSEQUENCES:**
+- Fetching Closed tasks → WASTED EFFORT (task already done)
+- Fetching Resolved tasks → DUPLICATE WORK (task already implemented)
+- Fetching New tasks → WRONG WORKFLOW (task not ready for development)
+
+**🚨 THIS RULE HAS ZERO EXCEPTIONS 🚨**
+
+---
 
 ### 🔍 Rule 1: "Where Else?" Rule
 After any component modification, search for similar patterns and update ALL integration points.

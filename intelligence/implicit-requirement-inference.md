@@ -1,12 +1,57 @@
 # Implicit Requirement Inference System
 
-**Version:** 1.0.0
+**Version:** 2.0.0
 **Last Updated:** 2026-03-23
 **Status:** MANDATORY for all Harbor AI Agent operations
+**Protocol:** 10-Phase Autonomous Execution (v8.0.0)
+
+---
+
+## 🚨 CRITICAL UPDATE v2.0.0
+
+**This system is now integrated with the 10-Phase Autonomous Execution Protocol.**
+
+**Key Enhancements:**
+- 🚀 **Runtime Execution MANDATORY** - Services MUST be started and verified
+- 🧪 **API Testing MANDATORY** - Real API calls with real payloads required
+- 🔁 **Auto Debug & Fix Loop** - Repeat until zero errors
+- 🤖 **Fully Autonomous Execution** - NO questions, NO pauses
+- ✅ **Evidence-Based Validation** - MUST have file proof for all claims
+- 🛑 **STRICT NO GIT PUSH** - ZERO tolerance for git operations
 
 ---
 
 ## 🎯 Purpose
+
+This system transforms the Harbor AI Agent from a **task follower** into a **system completer** by teaching it to infer requirements that are NOT explicitly mentioned in task descriptions.
+
+**🚨 This is Phase 3 of the 10-Phase Autonomous Execution Protocol.**
+
+---
+
+## 🚀 Integration with 10-Phase Protocol
+
+**The Implicit Requirement Inference System operates in Phase 3:**
+
+```
+Phase 1: System-Level Analysis → Identify all repositories
+Phase 2: Execution Planning → Create execution plan
+Phase 3: Implicit Requirement Inference → THIS SYSTEM 🎯
+Phase 4: Pattern-Based Implementation → Replicate existing patterns
+Phase 5: Runtime Execution → Start services and verify
+Phase 6: API Testing → Execute real API calls
+Phase 7: Auto Debug & Fix Loop → Fix errors until clean
+Phase 8: Dependency Integrity Check → Validate dependencies
+Phase 9: Fully Autonomous Execution → No questions, no pauses
+Phase 10: Evidence-Based Validation → Proof of completion
+```
+
+**Key Integration Points:**
+- **Phase 3** detects model creation → triggers database-sync requirement
+- **Phase 5** verifies services start → proves model is registered correctly
+- **Phase 6** tests APIs → validates model is accessible
+- **Phase 7** fixes errors → ensures model lifecycle is complete
+- **Phase 10** provides evidence → shows all files modified correctly
 
 This system transforms the Harbor AI Agent from a **task follower** into a **system completer** by teaching it to infer requirements that are NOT explicitly mentioned in task descriptions.
 
@@ -444,7 +489,141 @@ Status: Ready for implementation
 
 ---
 
-## 🚨 Enforcement Rules
+## 🚨 Enforcement Rules (Updated v2.0.0)
+
+**Rule: Implicit Requirements are MANDATORY**
+
+**🚨 STRICT ENFORCEMENT:**
+
+```
+IF domain event detected (model created):
+   → All inferred requirements are MANDATORY
+   → Not optional, not "if mentioned in task"
+   → Required for system to function
+
+Agent MUST:
+✅ Detect all domain events
+✅ Infer all system obligations
+✅ Execute all required actions
+✅ Validate completeness
+✅ START services and verify they run
+✅ TEST APIs with real payloads
+✅ FIX errors until zero remain
+✅ Provide file evidence for all claims
+
+Agent MUST NOT:
+❌ Skip inferred requirements
+❌ Wait for explicit instructions
+❌ Leave system in broken state
+❌ Assume "not mentioned = not required"
+❌ Proceed to next phase with errors
+❌ Mark task complete without proof
+❌ Perform ANY git operations
+```
+
+**🚨 CRITICAL: NO GIT PUSH RULE**
+
+**Under NO circumstances:**
+- ❌ Push code
+- ❌ Commit code
+- ❌ Create PRs
+- ❌ Close tickets
+
+**Allowed:**
+- ✅ Read code
+- ✅ Modify files locally
+- ✅ Run services locally
+- ✅ Test APIs locally
+
+**Violation = CRITICAL TASK FAILURE**
+
+---
+
+## 🔁 Auto Debug & Fix Loop (NEW v2.0.0)
+
+**If ANY error occurs during implementation:**
+
+1. ✅ Identify issue
+2. ✅ Fix code
+3. ✅ Restart service
+4. ✅ Re-test APIs
+5. ✅ Repeat until zero errors
+
+**🚨 NEVER proceed to next phase with errors.**
+
+**Example:**
+```
+❌ Error: Service fails to start
+   → Port 3000 already in use
+
+🔧 Fix: Identify conflicting service
+🔧 Fix: Stop conflicting service
+🔧 Fix: Restart target service
+🔧 Fix: Verify service starts cleanly
+
+✅ Continue to next phase
+```
+
+---
+
+## 🤖 Fully Autonomous Execution (NEW v2.0.0)
+
+**The agent MUST NOT ask:**
+- ❌ "Should I proceed?"
+- ❌ "Test backend or frontend?"
+- ❌ "Continue to next step?"
+- ❌ "Any questions before I continue?"
+
+**✅ Enforced Flow:**
+1. ✅ Backend implementation
+2. ✅ Run backend
+3. ✅ Test APIs
+4. ✅ Fix issues
+5. ✅ Move to frontend (if applicable)
+6. ✅ Integrate APIs
+7. ✅ Final validation
+
+**🚨 NO QUESTIONS. NO PAUSES. FULL AUTONOMY.**
+
+---
+
+## ✅ Evidence-Based Validation (NEW v2.0.0)
+
+**You MUST NOT mark anything as PASS without proof.**
+
+### File Evidence Required
+
+**For EACH claim, provide:**
+- ✅ File path
+- ✅ Code snippet
+- ✅ Change description
+
+**Example:**
+```
+✅ Database Sync Updated
+   File: /path/to/database-sync/service.ts
+   Change: Added Blog model registration
+   Code: export const BLOG_MODEL = {...}
+```
+
+### Validation Checklist
+
+**Task is COMPLETE ONLY IF:**
+- [ ] Model created (with file evidence)
+- [ ] Database sync updated (with file evidence)
+- [ ] Services run successfully (with startup log)
+- [ ] APIs tested with real data (with curl output)
+- [ ] No runtime errors (with clean log)
+- [ ] No broken dependencies (with test results)
+- [ ] Frontend integrated (if applicable, with file evidence)
+- [ ] Feature works end-to-end (with test output)
+- [ ] **NO git operations performed**
+
+**🚨 Rule: If no files changed in a repo → You CANNOT mark it as completed**
+
+---
+
+## 🚨 OLD Enforcement Rules (Kept for Reference)
 
 **Rule: Implicit Requirements are MANDATORY**
 

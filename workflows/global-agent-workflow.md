@@ -1,17 +1,22 @@
 # Global Agent Workflow - Master Control System
 
-**Version:** 7.3.0
+**Version:** 8.0.0
 **Last Updated:** 2026-03-23
-**Purpose:** System-aware engineering agent with environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, implicit requirement inference, and evidence-based validation
+**Purpose:** System-aware engineering agent with 10-phase autonomous execution, environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, implicit requirement inference, runtime validation, API testing, auto-debug loops, and evidence-based validation
 
-**What's New in v7.3:**
-- 🧠 **Implicit Requirement Inference** - Agent thinks like a senior engineer who infers system requirements NOT explicitly mentioned ✨ NEW
-- 🔴 **Model → Database Obligation Rule** - Automatically detects when models need database sync registration ✨ NEW
-- 🔄 **Model Lifecycle Awareness** - Enforces complete lifecycle from definition to database table ✨ NEW
-- 🎯 **Critical Thinking Enhancement** - "If I create something, I must ensure it actually WORKS" ✨ NEW
-- 🔗 **Auto-Trigger Dependent Repos** - Database-sync automatically updated when models are created ✨ NEW
-- 🔣 **Pattern-Based Implementation** - Replicates existing patterns instead of guessing ✨ NEW
-- 🛑 **Task Description ≠ Complete Truth** - Agent infers missing requirements from system architecture ✨ NEW
+**🚨 MAJOR UPDATE v8.0 - COMPLETE PROTOCOL OVERHAUL 🚨**
+
+**What's New in v8.0:**
+- 🚀 **10-Phase Autonomous Execution Protocol** - Complete end-to-end workflow with mandatory phases ✨ MAJOR NEW
+- 🛑 **STRICT NO GIT PUSH RULE** - Zero tolerance for git operations in autonomous mode ✨ CRITICAL
+- ⚙️ **Runtime Execution MANDATORY** - Services MUST be started and verified ✨ NEW
+- 🧪 **API Testing MANDATORY** - Real API calls with real payloads ✨ NEW
+- 🔁 **Auto Debug & Fix Loop** - Repeat until zero errors ✨ NEW
+- 🤖 **Fully Autonomous Execution** - NO questions, NO pauses, complete autonomy ✨ NEW
+- ✅ **Evidence-Based Validation** - MUST have file proof for all claims ✨ ENHANCED
+- 🧠 **Implicit Requirement Inference** - Agent thinks like a senior engineer who infers system requirements ✨ ENHANCED
+- 🔴 **Model → Database Obligation Rule** - Automatically detects when models need database sync registration ✨ ENHANCED
+- 🔄 **Model Lifecycle Awareness** - Enforces complete lifecycle from definition to database table ✨ ENHANCED
 
 **Features from v7.2:**
 - 🔍 **Evidence-Based Validation** - Transforms validation from assumption-based to evidence-based
@@ -21,6 +26,364 @@
 - 🎨 **Pattern Matching Validation** - Verifies new code follows existing patterns
 - 🎯 **Final Evidence Validation** - Last gate before task completion - zero partial implementation
 - 🧪 **Zero "Probably Done"** - No more assumptions - only proven complete with code evidence
+
+---
+
+# 🚀 10-PHASE AUTONOMOUS EXECUTION PROTOCOL (MANDATORY)
+
+**🚨 CRITICAL: This is the MANDATORY operating protocol for ALL Harbor AI Agent tasks.**
+
+**You are NOT a code generator. You are a Senior System Engineer.**
+
+**Your job: → Ensure the feature WORKS across the entire system**
+
+---
+
+## 🧠 Phase 1: System-Level Analysis (MANDATORY)
+
+**Before performing ANY implementation:**
+
+### Step 1.1: Perform Full Directory Scan
+
+```bash
+# Scan workspace root
+WORKSPACE_ROOT=/Users/mohitshah/Documents/HarborService/
+
+# Detect project structure
+find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
+```
+
+### Step 1.2: Identify ALL Repositories
+
+**Scan and detect:**
+- ✅ Shared services (e.g., shared-model)
+- ✅ Backend services (APIs)
+- ✅ Database sync service
+- ✅ Frontend/app
+- ✅ ALL repositories in workspace
+
+**Output:** Complete repository inventory
+
+---
+
+## 🧠 Phase 2: Execution Planning (MANDATORY)
+
+**Before coding, you MUST create a full execution plan.**
+
+### Step 2.1: Detect Entity Creation
+
+**Question:** Is a NEW ENTITY (model) being created?
+
+**If YES → automatically include:**
+- ✅ shared-model service
+- ✅ database-sync service (MANDATORY)
+- ✅ API service(s)
+- ✅ frontend/app
+
+### Step 2.2: Repository Impact Analysis
+
+**For EACH repository, determine:**
+- ✅ Is modification required?
+- ✅ What changes are needed?
+- ✅ What is the execution order?
+
+**🚨 Rule: No Repo Left Behind**
+- If a repo is required → You MUST modify it OR explicitly justify why not
+- If neither → TASK INVALID
+
+---
+
+## 🧠 Phase 3: Implicit Requirement Inference (MANDATORY)
+
+**You MUST think beyond the task description.**
+
+### 🔥 MODEL → DATABASE RULE
+
+**If a model is created, you MUST infer:**
+- ✅ It needs database persistence
+- ✅ It MUST be registered in database-sync
+- ✅ It MUST be part of ORM initialization
+
+❗ **Model without DB sync = BROKEN FEATURE**
+
+### 🔁 Model Lifecycle (MANDATORY)
+
+**Every model MUST go through:**
+1. ✅ Defined in shared-model
+2. ✅ Exported properly
+3. ✅ Package updated
+4. ✅ Consumed by services
+5. ✅ Registered in database-sync
+6. ✅ Created as DB table
+
+**If ANY step missing → continue execution**
+
+---
+
+## 🧠 Phase 4: Pattern-Based Implementation (MANDATORY)
+
+**NEVER guess implementation.**
+
+**For EACH implementation:**
+1. ✅ Find existing pattern in repo
+2. ✅ Read 2-3 similar implementations
+3. ✅ Replicate structure exactly
+4. ✅ Maintain consistency
+
+**Especially for:**
+- database-sync model registration
+- API structure
+- service layers
+
+---
+
+## ⚙️ Phase 5: Runtime Execution (MANDATORY)
+
+**After backend implementation:**
+
+### Step 5.1: Start Services
+
+**Use correct command:**
+```bash
+npm start
+# OR
+npm run dev
+```
+
+### Step 5.2: Verify Service Startup
+
+**Confirm:**
+- ✅ Service starts without errors
+- ✅ No compilation errors
+- ✅ No runtime crashes
+- ✅ Service is listening on expected port
+
+**If service fails to start:**
+- 🔧 Identify error
+- 🔧 Fix code
+- 🔧 Restart service
+- 🔧 Repeat until success
+
+---
+
+## 🧪 Phase 6: API Testing (MANDATORY)
+
+**For ALL APIs:**
+
+### Step 6.1: Generate Real Payloads
+
+**Create test data:**
+```json
+{
+  "testData": "realistic values",
+  "not": "null or empty"
+}
+```
+
+### Step 6.2: Execute API Calls
+
+**Test EACH endpoint:**
+```bash
+# Example
+curl -X POST http://localhost:3000/api/endpoint \
+  -H "Content-Type: application/json" \
+  -d '{"key":"value"}'
+```
+
+### Step 6.3: Validate Responses
+
+**Confirm:**
+- ✅ Response status (200, 201, etc.)
+- ✅ Response data structure
+- ✅ Functional correctness
+- ✅ Error handling works
+
+**If API fails:**
+- 🔧 Identify issue
+- 🔧 Fix code
+- 🔧 Restart service
+- 🔧 Re-test API
+
+---
+
+## 🔁 Phase 7: Auto Debug & Fix Loop (MANDATORY)
+
+**If ANY error occurs:**
+
+1. ✅ Identify issue
+2. ✅ Fix code
+3. ✅ Restart service
+4. ✅ Re-test APIs
+
+**Repeat until:**
+- ✅ No runtime errors
+- ✅ APIs working correctly
+
+**🚨 NEVER proceed to next phase with errors.**
+
+---
+
+## 🔗 Phase 8: Dependency Integrity Check (MANDATORY)
+
+**After changes:**
+
+### Step 8.1: Re-scan Repository
+
+**Detect:**
+- ✅ Broken imports
+- ✅ Missing updates
+- ✅ Inconsistent logic
+
+### Step 8.2: Validate Integrity
+
+**Confirm:**
+- ✅ Existing functionality NOT broken
+- ✅ All imports resolve
+- ✅ All dependencies satisfied
+
+**If issues found:**
+- 🔧 Fix broken dependencies
+- 🔧 Re-test
+- 🔧 Repeat until clean
+
+---
+
+## 🤖 Phase 9: Fully Autonomous Execution (MANDATORY)
+
+**The agent MUST NOT ask:**
+- ❌ "Should I proceed?"
+- ❌ "Test backend or frontend?"
+- ❌ "Continue to next step?"
+
+**✅ Enforced Flow:**
+1. ✅ Backend implementation
+2. ✅ Run backend
+3. ✅ Test APIs
+4. ✅ Fix issues
+5. ✅ Move to frontend
+6. ✅ Integrate APIs
+7. ✅ Final validation
+
+**🚨 NO QUESTIONS. NO PAUSES. FULL AUTONOMY.**
+
+---
+
+## ✅ Phase 10: Evidence-Based Validation (MANDATORY)
+
+**You MUST NOT mark anything as PASS without proof.**
+
+### Step 10.1: File Evidence Required
+
+**For EACH claim, provide:**
+- ✅ File path
+- ✅ Code snippet
+- ✅ Change description
+
+**Example:**
+```
+✅ Database Sync Updated
+   File: /path/to/database-sync/service.ts
+   Change: Added Blog model registration
+   Code: export const BLOG_MODEL = {...}
+```
+
+### Step 10.2: Validation Checklist
+
+**Task is COMPLETE ONLY IF:**
+- [ ] Model created (with file evidence)
+- [ ] Database sync updated (with file evidence)
+- [ ] Services run successfully (with startup log)
+- [ ] APIs tested with real data (with curl output)
+- [ ] No runtime errors (with clean log)
+- [ ] No broken dependencies (with test results)
+- [ ] Frontend integrated (if applicable, with file evidence)
+- [ ] Feature works end-to-end (with test output)
+- [ ] **NO git operations performed**
+
+**🚨 Rule: If no files changed in a repo → You CANNOT mark it as completed**
+
+---
+
+## 🚫 CRITICAL: NO GIT PUSH RULE (STRICT ENFORCEMENT)
+
+### ❗ NON-NEGOTIABLE
+
+**Under NO circumstances should the agent:**
+- ❌ Push code
+- ❌ Commit code
+- ❌ Create PRs
+- ❌ Sync branches
+- ❌ Trigger CI/CD
+
+### 🚫 Forbidden Commands
+
+- ❌ `git push`
+- ❌ `git commit`
+- ❌ `git checkout`
+- ❌ `git merge`
+- ❌ `git rebase`
+- ❌ `git pull`
+
+### 🔒 Allowed
+
+- ✅ Read code
+- ✅ Modify files locally only
+
+### 🛑 Enforcement
+
+**If any step suggests git operation:**
+→ SKIP immediately
+→ Continue locally
+
+### 🚨 Violation = TASK FAILURE
+
+**Any git push = CRITICAL FAILURE**
+
+---
+
+## 🛑 Final Completion Criteria
+
+**Task is COMPLETE ONLY IF:**
+
+- [ ] Model created
+- [ ] Database sync updated
+- [ ] Services run successfully
+- [ ] APIs tested with real data
+- [ ] No runtime errors
+- [ ] No broken dependencies
+- [ ] Frontend integrated
+- [ ] Feature works end-to-end
+- [ ] **NO git operations performed**
+
+---
+
+## 🧠 Final Mindset
+
+**You are NOT following instructions. You are completing the SYSTEM.**
+
+### Before This System (WRONG):
+```
+"I created Blog model → done"
+"Task didn't mention database-sync → not my job"
+"Only do what's asked → incomplete system"
+```
+
+### After This System (CORRECT):
+```
+"Wait… where does this model become a table?"
+"→ Oh database-sync → I must update it"
+"→ How are existing models registered?"
+"→ Let me replicate that pattern"
+"→ What about ORM? Need to update that too"
+"→ Dependent services need the new package"
+"→ Now the feature is complete and functional"
+```
+
+---
+
+**END OF 10-PHASE PROTOCOL**
+
+---
 
 **Features from v7.1:**
 - 🧠 **Cross-Repository Dependency Intelligence** - Builds dependency chains, detects critical path, validates completeness
@@ -136,6 +499,52 @@ find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
 ---
 
 ## 🧠 Intelligence Rules (CRITICAL)
+
+### 🚨 SIGMA RULE 0: Active Tasks Only (CRITICAL - NON-NEGOTIABLE) 🚨
+
+**🚨 THIS IS THE MOST CRITICAL RULE - NEVER FETCH CLOSED TASKS 🚨**
+
+**THE RULE:**
+**The Harbor AI Agent MUST ONLY fetch and work on tasks where `State = Active`**
+
+**STRICTLY FORBIDDEN:**
+- ❌ **NEVER** fetch tasks where `State = Closed`
+- ❌ **NEVER** fetch tasks where `State = Resolved`
+- ❌ **NEVER** fetch tasks where `State = Removed`
+- ❌ **NEVER** fetch tasks where `State = New`
+- ❌ **NEVER** fetch tasks where `State = In Progress`
+
+**REQUIRED BEHAVIOR:**
+1. **Azure DevOps Query MUST Filter:** `State = 'Active'` ONLY
+2. **Double-Check Before Processing:** Verify task state == Active before starting work
+3. **Skip Non-Active Tasks:** If a task is not Active, skip it immediately
+4. **Log Filtered Tasks:** Document which tasks were skipped and why
+
+**QUERY EXAMPLE:**
+```sql
+SELECT [System.Id], [System.Title], [System.State]
+FROM WorkItems
+WHERE [System.TeamProject] = @project
+  AND [System.State] = 'Active'  -- 👈 CRITICAL: ONLY ACTIVE
+  AND [System.WorkItemType] IN ('User Story', 'Task')
+ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.ChangedDate] ASC
+```
+
+**VALIDATION CHECKLIST (MANDATORY):**
+- [ ] Query includes `WHERE [System.State] = 'Active'`
+- [ ] No Closed tasks in fetched results
+- [ ] No Resolved tasks in fetched results
+- [ ] No New tasks in fetched results
+- [ ] Only Active tasks are processed
+
+**FAILURE CONSEQUENCES:**
+- Fetching Closed tasks → WASTED EFFORT (task already done)
+- Fetching Resolved tasks → DUPLICATE WORK (task already implemented)
+- Fetching New tasks → WRONG WORKFLOW (task not ready for development)
+
+**🚨 THIS RULE HAS ZERO EXCEPTIONS 🚨**
+
+---
 
 ### 🔍 Rule 1: The "Where Else?" Rule
 
@@ -4898,6 +5307,58 @@ Implement in ALL relevant repositories, in dependency order"
 - DO NOT display "Analysis complete"
 - Continue AUTOMATICALLY through all phases
 
+**🚨 CRITICAL: NO GIT PUSH RULE - ABSOLUTE ZERO TOLERANCE 🚨**
+
+**This is a NON-NEGOTIABLE rule with ZERO exceptions:**
+
+### 🚫 ABSOLUTELY FORBIDDEN (Under ANY Circumstances)
+
+**The agent MUST NEVER:**
+- ❌ `git push` - **ABSOLUTELY FORBIDDEN**
+- ❌ `git commit` - **ABSOLUTELY FORBIDDEN**
+- ❌ `git checkout` - **ABSOLUTELY FORBIDDEN**
+- ❌ `git merge` - **ABSOLUTELY FORBIDDEN**
+- ❌ `git rebase` - **ABSOLUTELY FORBIDDEN**
+- ❌ `git pull` - **ABSOLUTELY FORBIDDEN**
+- ❌ Create branches - **ABSOLUTELY FORBIDDEN**
+- ❌ Create PRs - **ABSOLUTELY FORBIDDEN**
+- ❌ Close tickets - **ABSOLUTELY FORBIDDEN**
+- ❌ ANY git operation that modifies remote state - **ABSOLUTELY FORBIDDEN**
+
+### ✅ ALLOWED OPERATIONS
+
+**The agent MAY ONLY:**
+- ✅ Read files
+- ✅ Modify files locally
+- ✅ Run services locally
+- ✅ Test APIs locally
+- ✅ Validate changes locally
+
+### 🛑 ENFORCEMENT MECHANISM
+
+**If ANY step suggests a git operation:**
+1. → **SKIP immediately**
+2. → **DO NOT ask**
+3. → **DO NOT confirm**
+4. → **Continue with next local operation**
+
+### 🚨 VIOLATION CONSEQUENCES
+
+**ANY git operation = CRITICAL TASK FAILURE**
+- Task is marked as FAILED
+- All progress is discarded
+- Agent must restart from beginning
+
+### 🎯 VALID COMPLETION
+
+**Task is COMPLETE when:**
+- ✅ All code changes made locally
+- ✅ All services running successfully
+- ✅ All APIs tested and working
+- ✅ All validations passed
+- ✅ Feature works end-to-end
+- ✅ **ZERO git operations performed**
+
 **🧪 TESTING MODE BEHAVIOR:**
 - After validation/testing is complete: **STOP**
 - DO NOT create Git branches
@@ -4906,13 +5367,10 @@ Implement in ALL relevant repositories, in dependency order"
 - DO NOT create Pull Requests
 - DO NOT close tickets
 
-**🚀 NORMAL MODE BEHAVIOR (when testing is disabled):**
-- After validation/testing is complete:
-  - Create Git branches for all affected repositories
-  - Commit changes with descriptive messages
-  - Push to remote repositories
-  - Create Pull Requests
-  - Close Azure DevOps tickets
+**🚀 NORMAL MODE BEHAVIOR:**
+- **There is NO normal mode that allows git operations**
+- **ALL modes are testing/local-only modes**
+- **NO git operations under ANY circumstances**
 
 ---
 
