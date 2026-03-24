@@ -1,21 +1,39 @@
 # Global Agent Workflow - Master Control System
 
-**Version:** 9.0.0
+**Version:** 10.1.0
 **Last Updated:** 2026-03-24
-**Purpose:** Documentation-first system-aware engineering agent with 12-phase autonomous execution, environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, implicit requirement inference, cross-service intelligence, documentation-driven execution, runtime validation, API testing, auto-debug loops, and evidence-based validation
+**Purpose:** Documentation-first system-aware engineering agent with 12-phase autonomous execution, environment detection, dynamic workflow inference, automatic pipeline construction, intelligent change propagation, cross-repository dependency intelligence, implicit requirement inference, cross-service intelligence, documentation-driven execution, runtime validation, API testing, auto-debug loops, evidence-based validation, and service creation decision flow
 
-**🚨 MAJOR UPDATE v9.0 - DOCUMENTATION-FIRST + CROSS-SERVICE INTELLIGENCE 🚨**
+**🚨 MAJOR UPDATE v10.1 - AUTOMATIC PRE-TASK DOCUMENTATION VALIDATION 🚨**
 
-**What's New in v9.0:**
-- 📚 **Documentation-First Approach** - /docs is the SINGLE SOURCE OF TRUTH ✨ CRITICAL NEW
-- 🌐 **Cross-Service Intelligence** - Understands full service relationships and dependencies ✨ MAJOR NEW
-- 🔍 **Full Repository Analysis Engine** - Deep analysis of architecture, models, data flow, and dependencies ✨ NEW
-- 🛡️ **Shared Service Safety** - Detects shared services and enforces safe change protocols ✨ CRITICAL NEW
-- 📋 **Auto-Documentation Generation** - Generates complete /docs for any repository ✨ NEW
-- 🎯 **Model Flow Intelligence** - Understands complete data flow from controller to DB ✨ NEW
-- 🔄 **Change Impact Analysis** - Predicts impact of changes across dependent services ✨ NEW
-- 🚨 **Documentation Gate** - Blocks execution until documentation is complete ✨ NEW
-- 🚀 **12-Phase Autonomous Execution Protocol** - Complete end-to-end workflow with mandatory phases ✨ UPDATED
+**🚨 CRITICAL: Documentation validation is now AUTOMATIC and NON-SKIPPABLE 🚨**
+
+**What's New in v10.1:**
+- 🔒 **AUTOMATIC Pre-Task Validation Hook** - Executes before ANY task, CANNOT be skipped
+- 🚫 **ZERO TOLERANCE** - No task execution without passing documentation validation
+- 📋 **12 Required Files** - All documentation files must be present
+- 🔄 **AUTO-GENERATION** - Missing documentation is automatically created
+- ⚡ **NO DELAY** - Validation happens instantly, no waiting for user approval
+
+**🚨 THE AGENT MUST:**
+- ✅ AUTOMATICALLY validate `/docs` folder before ANY task
+- ✅ AUTO-GENERATE missing documentation files
+- ✅ BLOCK execution until validation passes
+- ❌ NEVER ask "Should I validate documentation?" - JUST DO IT
+- ❌ NEVER proceed without valid documentation
+- ❌ NEVER skip this validation for any reason
+
+**Features from v10.0:**
+- 🚫 **Service Creation Decision Flow** - Prevents unnecessary microservice proliferation
+- 📚 **Documentation-First Approach** - /docs is the SINGLE SOURCE OF TRUTH
+- 🌐 **Cross-Service Intelligence** - Understands full service relationships and dependencies
+- 🔍 **Full Repository Analysis Engine** - Deep analysis of architecture, models, data flow, and dependencies
+- 🛡️ **Shared Service Safety** - Detects shared services and enforces safe change protocols
+- 📋 **Auto-Documentation Generation** - Generates complete /docs for any repository
+- 🎯 **Model Flow Intelligence** - Understands complete data flow from controller to DB
+- 🔄 **Change Impact Analysis** - Predicts impact of changes across dependent services
+- 🚨 **Documentation Gate** - Blocks execution until documentation is complete
+- 🚀 **12-Phase Autonomous Execution Protocol** - Complete end-to-end workflow with mandatory phases
 
 **Features from v8.0:**
 - 🛑 **STRICT NO GIT PUSH RULE** - Zero tolerance for git operations in autonomous mode
@@ -50,11 +68,40 @@
 
 ---
 
-## 📚 Phase 0: Documentation Gate (MANDATORY)
+## 📚 Phase 0: Documentation Gate (AUTOMATIC - NON-SKIPPABLE)
+
+**🚨 CRITICAL: This phase executes AUTOMATICALLY before ANY task implementation.**
+
+**🚨 This validation CANNOT be:**
+- ❌ Skipped
+- ❌ Bypassed
+- ❌ Disabled
+- ❌ Overridden
+- ❌ Ignored for any reason
 
 **🚨 CRITICAL: Documentation-First Approach - /docs is the SINGLE SOURCE OF TRUTH**
 
-**Before performing ANY implementation, you MUST:**
+**Reference:**
+- `/harbor-ai/workflows/pre-task-validation-hook.md` - Automatic validation hook
+- `/harbor-ai/tools/documentation-validator-tool.md` - Validation and generation tool
+
+**The agent MUST:**
+
+1. **AUTOMATICALLY trigger documentation validation** (no user action needed)
+2. **Check if `/docs` folder exists** in target repository
+3. **If EXISTS:** Read ALL `.md` files and load into context
+4. **If MISSING:** AUTO-GENERATE ALL 12 required documentation files
+5. **Validate completeness** of all documentation files
+6. **BLOCK execution** until validation passes
+7. **ONLY THEN proceed** to task implementation
+
+**🚨 The agent MUST NEVER:**
+- ❌ Ask "Should I validate documentation?" - JUST DO IT AUTOMATICALLY
+- ❌ Skip documentation validation - NEVER SKIP
+- ❌ Proceed without valid documentation - BLOCK until valid
+- ❌ Start implementation before validation - ALWAYS VALIDATE FIRST
+
+---
 
 ### Step 0.1: Multi-Repository Documentation Scan (NEW - MANDATORY)
 
@@ -347,6 +394,83 @@ find ${WORKSPACE_ROOT} -maxdepth 2 -type d -name ".git" | sed 's|/.git||'
 5. **Service Relationships**
    - Inter-service communication patterns
    - API contracts
+
+### Step 1.6: Service Creation Decision Flow (CRITICAL - NEW)
+
+**🚨 CRITICAL: Prevent unnecessary microservice proliferation.**
+
+**Reference:** `/harbor-ai/intelligence/service-creation-decision-flow.md`
+
+**Before planning ANY implementation, MUST evaluate:**
+
+#### A. Initial Analysis (MANDATORY)
+- ✅ Analyze ALL available repositories in workspace
+- ✅ Understand existing services and their responsibilities
+- ✅ Review current architecture and modules
+- ✅ Identify shared services that could be extended
+
+#### B. Feasibility Check (CRITICAL - CANNOT SKIP)
+- ✅ Can this fit in an existing service?
+- ✅ Can existing modules be extended?
+- ✅ Can shared services be reused?
+- ✅ Is refactoring possible instead of new service?
+
+#### C. Default Behavior (STRICT RULE)
+**🚨 ALWAYS ASSUME:** "This task should be implemented in an existing repository/service."
+
+**Agent MUST:**
+- ✅ Modify existing code
+- ✅ Extend current modules
+- ✅ Reuse shared services/packages
+- ✅ Refactor when necessary
+
+**Agent MUST NEVER:**
+- ❌ Create new repo/service by default
+- ❌ Assume microservice is needed
+- ❌ Generate boilerplate without justification
+
+#### D. When New Service is Allowed (RARE CASE)
+**Only if ALL conditions met:**
+1. ✅ Clear architectural boundary exists
+2. ✅ Feature cannot logically fit in any existing service
+3. ✅ Explicitly justified with reasoning
+
+**Justification Required:**
+- Why existing services cannot be used
+- Why new service is required
+- Architectural impact assessment
+
+#### E. Decision Tree
+```
+Task → Analyze Existing → Can Fit Existing?
+                              ↓
+                    YES → Extend Existing ✅
+                              ↓
+                    NO → Justify New Service
+                              ↓
+                    Clear Boundary? → YES → Create New ⚠️
+                              ↓
+                    NO → Reuse Existing ✅
+```
+
+**Output:**
+1. **Service Selection Decision**
+   - Which service will handle this feature
+   - Why existing service chosen (or new service justified)
+
+2. **Implementation Approach**
+   - Extend vs. Create
+   - Reuse vs. Duplicate
+   - Integration strategy
+
+3. **Justification (if new service)**
+   - Clear reasoning for new service
+   - Architectural impact analysis
+
+**🚨 ERROR PREVENTION:**
+- ❌ "Creating service because it's separate" → NOT VALID
+- ❌ "Creating service for cleaner code" → USE REFACTORING
+- ❌ "Creating service for future flexibility" → YAGNI
 
 ---
 
