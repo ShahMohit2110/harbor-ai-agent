@@ -701,6 +701,373 @@ API Integration:
 
 ---
 
+## 🔬 Phase 0.75: Self-Auditing Verification System (NEW - MANDATORY)
+
+**🚨 CRITICAL: This is the NEW mandatory phase that ensures agent verifies all work before marking complete.**
+
+**Reference:** `/harbor-ai/workflows/self-auditing-verification-system.md`
+
+**Purpose:** Agent verifies its own work - catches missing imports, forgotten commands, incomplete work
+
+**🆕 Key Capabilities:**
+- ✅ **File Creation Verification** - Verifies all files exist and compile
+- ✅ **Import/Inclusion Verification** - Verifies all imports added (catches missing model imports!)
+- ✅ **Command Execution Verification** - Verifies all commands ran successfully (catches forgotten npm start!)
+- ✅ **Continuation Verification** - Prevents agent from getting stuck
+- ✅ **Self-Audit Loop** - Agent asks "Am I done?" before proceeding
+
+**This phase CANNOT be:**
+- ❌ Skipped
+- ❌ Bypassed
+- ❌ Rushed
+- ❌ Marked complete without verification
+
+---
+
+### 🚫 STRICT RULE (NON-NEGOTIABLE)
+
+**After completing work on ANY repository, BEFORE marking complete:**
+
+- ❌ DO NOT assume file is correct
+- ❌ DO NOT assume imports are added
+- ❌ DO NOT assume commands succeeded
+- ❌ DO NOT move to next repo without verification
+
+✅ **ALWAYS run self-audit verification before proceeding**
+
+---
+
+### 📋 Verification Layers
+
+#### Layer 1: File Creation Verification
+
+**After creating ANY file, agent MUST:**
+
+```markdown
+File Creation Checklist:
+- [ ] File exists at correct path
+- [ ] File has content (not empty)
+- [ ] File has correct syntax
+- [ ] File compiles/runs without errors
+- [ ] File has all required exports
+- [ ] File has all required imports
+```
+
+**How to verify (dynamically, no hardcoding):**
+
+```bash
+# For each created file:
+file="path/to/file.ts"
+
+# 1. Check file exists
+test -f "$file" || echo "ERROR: File not created!"
+
+# 2. Check file not empty
+test -s "$file" || echo "ERROR: File is empty!"
+
+# 3. Check syntax (TypeScript)
+npx tsc --noEmit "$file" || echo "ERROR: Syntax errors!"
+
+# 4. Check exports
+grep -q "export" "$file" || echo "WARNING: No exports found!"
+
+# 5. Check imports satisfied
+npx tsc --noEmit || echo "ERROR: Imports not satisfied!"
+```
+
+---
+
+#### Layer 2: Import/Inclusion Verification
+
+**🚨 THIS CATCHES THE "MISSING MODEL IMPORT" BUG**
+
+**After creating a model, agent MUST:**
+
+```markdown
+Model Inclusion Checklist:
+- [ ] Model exported from entity registry
+- [ ] Model imported in database config
+- [ ] Model imported in files that use it
+- [ ] All files compile with imports
+```
+
+**How to find files dynamically (based on documentation):**
+
+```javascript
+// Read IMPORT_PATTERNS.md to understand repo patterns
+const importPatterns = readDocumentation(repo, 'IMPORT_PATTERNS.md');
+
+// Find files that need the model
+const filesNeedingModel = findFilesByPattern(repo, importPatterns);
+
+// Add import to each file
+for (const file of filesNeedingModel) {
+  addImportToFile(file, modelName);
+
+  // Verify file still compiles
+  if (!fileCompiles(file)) {
+    throw new Error(`File ${file} doesn't compile after adding ${modelName} import!`);
+  }
+}
+```
+
+**Example - Blog Model:**
+
+```markdown
+Model Created: models/Blog.ts
+
+Step 1: Find entity registry (from IMPORT_PATTERNS.md)
+  File: src/entities/index.ts
+  Action: Add `export * from './Blog';`
+  Verify: npx tsc --noEmit (no errors)
+
+Step 2: Find database config (from IMPORT_PATTERNS.md)
+  File: src/database/connection.ts
+  Action: Import Blog, add to entities array
+  Verify: npx tsc --noEmit (no errors)
+
+Step 3: Find files using Blog model
+  Files: BlogController.ts, BlogRepository.ts
+  Action: Add `import { Blog } from '../../entities/Blog';`
+  Verify: npx tsc --noEmit (no errors)
+
+Step 4: Final verification
+  Run: npx tsc --noEmit
+  Should: Show no errors
+```
+
+---
+
+#### Layer 3: Command Execution Verification
+
+**🚨 THIS CATCHES THE "FORGOT NPM START" BUG**
+
+**After running ANY command, agent MUST:**
+
+```markdown
+Command Execution Checklist:
+- [ ] Command executed
+- [ ] Command output checked
+- [ ] Success indicators verified
+- [ ] No errors in output
+```
+
+**How to verify commands (based on COMMAND_VERIFY.md):**
+
+```bash
+# Example: npm install
+npm install
+
+# Verify success (from COMMAND_VERIFY.md)
+test -f package-lock.json || echo "ERROR: package-lock.json not created!"
+test -d node_modules || echo "ERROR: node_modules not created!"
+grep -q "ERR!" npm-debug.log && echo "ERROR: npm install had errors!"
+
+# Example: npm start (database-sync)
+npm start &
+NPM_PID=$!
+sleep 5
+
+# Verify success (from COMMAND_VERIFY.md)
+ps -p $NPM_PID || echo "ERROR: npm start process died!"
+grep -q "Database synced" logs/app.log || echo "ERROR: Sync not confirmed!"
+
+# Clean up
+kill $NPM_PID
+```
+
+**For each command type:**
+
+**npm install:**
+- ✅ package-lock.json exists/updated
+- ✅ node_modules/ exists
+- ✅ No ERR! in output
+
+**npm run build:**
+- ✅ dist/ or build/ directory created
+- ✅ No TypeScript errors
+- ✅ Exit code 0
+
+**npm start (database-sync):**
+- ✅ Process stays running
+- ✅ Logs show "Database synced"
+- ✅ Tables created in database
+
+**npm publish:**
+- ✅ Package visible in registry
+- ✅ New version installable
+- ✅ No E404 errors
+
+---
+
+#### Layer 4: Continuation Verification
+
+**🚨 THIS PREVENTS "AGENT GOT STUCK" BUG**
+
+**Before moving to next repo, agent MUST:**
+
+```markdown
+Continuation Checklist:
+- [ ] Current repo work complete
+- [ ] All verifications passed
+- [ ] All files created and verified
+- [ ] All imports added and verified
+- [ ] All commands run and verified
+- [ ] Self-audit passed
+- [ ] Ready to proceed to next repo
+```
+
+**Self-Audit Loop:**
+
+```javascript
+async function completeRepo(repo, task) {
+  let attempts = 0;
+  const maxAttempts = 3;
+
+  while (attempts < maxAttempts) {
+    try {
+      // Do the work
+      await implementChanges(repo, task);
+
+      // Verify the work (SAVS)
+      await verifyAllChanges(repo, task);
+
+      // Self-audit: Am I done?
+      const audit = await selfAudit(repo, task);
+
+      if (audit.complete) {
+        console.log(`✅ ${repo} complete and verified`);
+        return { success: true, repo };
+      } else {
+        console.log(`⚠️ Audit found issues:`, audit.issues);
+        await fixIssues(audit.issues);
+        attempts++;
+      }
+
+    } catch (error) {
+      console.error(`❌ Error:`, error);
+      await fixError(error);
+      attempts++;
+    }
+  }
+
+  throw new Error(`Failed to complete ${repo}`);
+}
+```
+
+**Self-Audit Questions:**
+
+1. **Did I create all required files?**
+   - Check VERIFICATION_CHECKLIST.md
+   - Verify all files exist
+   - Verify all files compile
+
+2. **Did I add all required imports?**
+   - Check IMPORT_PATTERNS.md
+   - Verify model exported
+   - Verify model imported in config
+   - Verify model imported in using files
+
+3. **Did I run all required commands?**
+   - Check COMMAND_VERIFY.md
+   - Verify npm install succeeded
+   - Verify npm run build succeeded
+   - Verify npm start succeeded (if database-sync)
+
+4. **Does everything compile?**
+   - Run `npx tsc --noEmit`
+   - Should show no errors
+
+5. **Can I safely move to next repo?**
+   - Only if ALL above are YES
+
+---
+
+### 📊 Repository Completion Verification
+
+**Before marking ANY repository complete, agent MUST:**
+
+```markdown
+## Repository Completion Verification
+
+**Repository:** {repo-name}
+
+### File Creation
+- [ ] All required files created
+- [ ] All files have content
+- [ ] All files compile successfully
+
+### Imports & Dependencies
+- [ ] All required imports added
+- [ ] All imports resolve correctly
+- [ ] No circular dependencies
+
+### Model Inclusions (if model created)
+- [ ] Model exported from entity registry
+- [ ] Model imported in database config
+- [ ] Model imported in using files
+- [ ] Model registered with ORM
+
+### Commands Executed
+- [ ] npm install succeeded (if needed)
+- [ ] npm run build succeeded (if needed)
+- [ ] npm start succeeded (if needed)
+- [ ] npm publish succeeded (if shared package)
+
+### Testing
+- [ ] TypeScript compilation verified
+- [ ] Runtime tested (if applicable)
+- [ ] Database changes verified (if applicable)
+
+### Self-Audit
+- [ ] Am I truly done with this repo?
+- [ ] Did I miss anything?
+- [ ] Is everything verified?
+- [ ] Can I safely move to next repo?
+
+Only when ALL items checked:
+  ✅ Mark repo complete
+  ✅ Move to next repo
+```
+
+---
+
+### 🔧 How Agent Uses SAVS
+
+**Integration:**
+
+```javascript
+// For each repository in task
+for (const repo of affectedRepos) {
+  console.log(`\n🔧 Working on: ${repo}`);
+
+  // Implement changes
+  await implementChanges(repo, task);
+
+  // VERIFY using SAVS
+  const verification = await verifyRepository(repo, task);
+
+  if (!verification.success) {
+    console.log(`❌ Verification failed!`);
+    console.log(`Issues:`, verification.issues);
+    await fixIssues(verification.issues);
+
+    // Re-verify
+    const recheck = await verifyRepository(repo, task);
+    if (!recheck.success) {
+      throw new Error(`Failed to verify ${repo}!`);
+    }
+  }
+
+  console.log(`✅ ${repo} verified successfully`);
+}
+
+// Final cross-repo verification
+await verifyCrossRepoDependencies(affectedRepos);
+```
+
+---
+
 ## 🧠 Phase 1: Full Repository Analysis Engine (MANDATORY)
 
 *Same as v10.1 - Deep analysis of target repository*
