@@ -31,9 +31,128 @@
 
 ---
 
+## 🎯 Phase 0.45: Service Selection Analysis (NEW - MANDATORY)
+
+**🚨 CRITICAL: This phase PREVENTS creating unnecessary new services!**
+
+**Reference:** `/harbor-ai/workflows/service-selection-logic-v2.md`
+
+**Purpose:** Agent decides which repo to use based on DOCUMENTATION (not assumptions)
+
+**🆕 Key Capabilities:**
+- 🔍 **Read ALL existing service documentation** (ARCHITECTURE.md, SERVICE_RULES.md)
+- 🧠 **Understand what each service does** (from documentation)
+- 📊 **Match task to existing service** (documentation-based decision)
+- 🚫 **Prevent new service creation** (unless PROVEN necessary by docs)
+
+**This phase CANNOT be:**
+- ❌ Skipped
+- ❌ Bypassed
+- ❌ Based on assumptions
+
+---
+
+### 🚫 STRICT RULE (NON-NEGOTIABLE)
+
+**Before deciding which repo to use:**
+
+- ❌ DO NOT assume you need a new service
+- ❌ DO NOT create new service without reading existing docs
+- ❌ DO NOT make decisions based on task name only
+
+✅ **ALWAYS read ALL existing service documentation first**
+
+---
+
+### 📊 Service Selection Process
+
+**Step 1: Discover All Existing Services**
+```bash
+find /workspace -maxdepth 2 -name ".git" -type d
+```
+
+**Step 2: Read Documentation from EACH Service**
+```bash
+# For EACH service, READ:
+- docs/ARCHITECTURE.md (what it does)
+- docs/SERVICE_RULES.md (what it allows/prohibits)
+- docs/STRUCTURE.md (how it's organized)
+```
+
+**Step 3: Extract Service Capabilities**
+From documentation, understand:
+- What domain does this service handle?
+- What features does it provide?
+- What extensions does it allow?
+- What does it prohibit?
+
+**Step 4: Match Task to Service**
+- Can ANY existing service handle this task?
+- Check SERVICE_RULES.md for each service
+- Look for "allows extension" rules
+- Find BEST match
+
+**Step 5: Make Documentation-Based Decision**
+- If service found: USE IT (don't create new)
+- If no service found: Only THEN create new
+- Decision MUST include reasoning from documentation
+
+---
+
+### 📋 Service Selection Output
+
+**Agent MUST output:**
+
+```markdown
+## Service Selection Analysis
+
+**Task:** {task}
+
+**Services Analyzed:**
+- service-A: {capabilities from ARCHITECTURE.md}
+- service-B: {capabilities from ARCHITECTURE.md}
+- service-C: {capabilities from ARCHITECTURE.md}
+
+**Documentation Review:**
+- service-A/docs/SERVICE_RULES.md: {rules}
+- service-B/docs/SERVICE_RULES.md: {rules}
+
+**Decision:**
+✅ USE_EXISTING: {service-name}
+  Reason: {from SERVICE_RULES.md}
+
+OR
+
+✅ CREATE_NEW: {service-name}
+  Reason: No existing service can handle this (proven by docs)
+```
+
+---
+
+### 🚨 Anti-Pattern Prevention
+
+**❌ WRONG:**
+```
+Task: "Create blog module"
+Agent: "I'll create blog-service" ← NO DOCUMENTATION READ!
+```
+
+**✅ RIGHT:**
+```
+Task: "Create blog module"
+Agent:
+  1. Read user-service/docs/SERVICE_RULES.md
+  2. Read job-service/docs/SERVICE_RULES.md
+  3. Read notification-service/docs/SERVICE_RULES.md
+  4. Found: job-service allows "blog content about jobs"
+  5. Decision: USE job-service (not create new)
+```
+
+---
+
 ## 🧠 Phase 0.5: Pre-Execution Intelligence Analysis v2.0 (NEW - MANDATORY)
 
-**🚨 CRITICAL: This is the NEW mandatory phase that transforms the agent from task executor to system-aware decision maker.**
+**🚨 CRITICAL: This phase continues after service selection**
 
 **Reference:** `/harbor-ai/workflows/pre-execution-intelligence-analysis-v2.md`
 
@@ -1064,6 +1183,171 @@ for (const repo of affectedRepos) {
 
 // Final cross-repo verification
 await verifyCrossRepoDependencies(affectedRepos);
+```
+
+---
+
+## ⚙️ Phase 0.85: Mandatory Command Execution (NEW - MANDATORY)
+
+**🚨 CRITICAL: This phase PREVENTS forgotten commands (like npm start)!**
+
+**Reference:** `/harbor-ai/workflows/mandatory-command-execution.md`
+
+**Purpose:** Agent MUST run ALL required commands and VERIFY they succeeded
+
+**🆕 Key Capabilities:**
+- 📖 **Read COMMAND_VERIFY.md** to identify required commands
+- ⚡ **Execute ALL required commands** (not optional!)
+- ✅ **Verify EACH command succeeded** (check success indicators)
+- 🔄 **Retry failed commands** (up to 3 times)
+- 🚫 **Block completion** until ALL commands verified
+
+**This phase CANNOT be:**
+- ❌ Skipped
+- ❌ Marked complete without running commands
+- ❌ Marked complete without verifying commands
+
+---
+
+### 🚫 STRICT RULE (NON-NEGOTIABLE)
+
+**After implementing changes in a repo:**
+
+- ❌ DO NOT mark complete without running commands
+- ❌ DO NOT assume command succeeded without verification
+- ❌ DO NOT move to next repo without command verification
+
+✅ **ALWAYS execute required commands and verify success**
+
+---
+
+### 📊 Command Execution Process
+
+**Step 1: Identify Required Commands (from documentation)**
+
+```bash
+# Read COMMAND_VERIFY.md from repo
+cat repo/docs/COMMAND_VERIFY.md
+
+# Extract required commands based on repo type
+```
+
+**Repository Type → Required Commands:**
+- **Shared Package:** npm run build, npm publish
+- **Database Infrastructure:** npm install, **npm start** (MANDATORY!)
+- **Business Logic:** npm install, npx tsc --noEmit
+
+**Step 2: Execute Each Command MANDATORILY**
+
+```javascript
+for (const cmd of requiredCommands) {
+  let attempts = 0;
+  while (attempts < 3) {
+    // Execute command
+    const result = executeCommand(cmd);
+
+    // Verify success
+    if (verifyCommandSuccess(cmd, result)) {
+      break; // Success, move to next command
+    }
+
+    // Failed, retry
+    attempts++;
+  }
+}
+```
+
+**Step 3: Verify Each Command Succeeded**
+
+**For npm install:**
+- ✅ package-lock.json exists/updated
+- ✅ node_modules/ exists
+- ✅ No ERR! in output
+
+**For npm run build:**
+- ✅ dist/ or build/ created
+- ✅ No TypeScript errors
+
+**For npm start (database-sync) ← YOUR ISSUE!**
+- ✅ Process stays running (doesn't crash)
+- ✅ Logs show "Database synced" or "Server started"
+- ✅ Tables created in database
+- ✅ Process stopped cleanly
+
+**Step 4: Only Mark Complete When All Verified**
+
+```markdown
+Command Completion Checklist:
+- [ ] All required commands executed
+- [ ] npm install verified
+- [ ] npm run build verified (if needed)
+- [ ] npm start verified ← THIS WAS MISSING!
+- [ ] npm publish verified (if needed)
+```
+
+---
+
+### 📋 Command Execution Output
+
+**Agent MUST output:**
+
+```markdown
+## Command Execution
+
+**Repository:** {repo-name}
+
+**Required Commands (from COMMAND_VERIFY.md):**
+- npm install
+- npm start ← MANDATORY for database-sync!
+
+**Executing: npm install**
+  ✅ package-lock.json updated
+  ✅ node_modules exists
+  ✅ Verified
+
+**Executing: npm start** ← THIS WAS MISSING BEFORE!
+  Starting process...
+  PID: 12345
+  Waiting 5 seconds...
+  ✅ Process still running
+  ✅ Logs show "Database synced"
+  ✅ Blog table created in database
+  Stopping process...
+  ✅ Process stopped
+  ✅ Verified
+
+**Result:** ✅ All commands executed and verified
+```
+
+---
+
+### 🚨 Anti-Pattern Prevention
+
+**❌ WRONG:**
+```
+Repository: database-sync
+Agent: Updated files
+  ✅ Files updated
+  ❌ npm start NOT run ← YOUR ISSUE!
+  ❌ Marked complete
+```
+
+**✅ RIGHT:**
+```
+Repository: database-sync
+Agent: Updated files
+  ✅ Files updated
+
+Reading: COMMAND_VERIFY.md
+  Found: npm start is MANDATORY
+
+Executing: npm start
+  ✅ Process started
+  ✅ Logs verified
+  ✅ Database synced
+  ✅ Process stopped
+
+Result: ✅ All commands executed and verified
 ```
 
 ---
