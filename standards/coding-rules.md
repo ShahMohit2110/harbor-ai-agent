@@ -122,7 +122,71 @@ Harbor is built on **microservices architecture**. All AI agents and developers 
 - Bypass API Gateway for client-facing features
 - Share authentication tokens between services
 
-### 3.2 Service Ownership
+### 3.2 Service Creation Rules (🚨 CRITICAL)
+
+🔴 **MANDATORY: NEVER create new services/repositories unnecessarily**
+
+**Core Rule:** Before creating a new service, you MUST prove it cannot fit in an existing service.
+
+**Examples of WRONG decisions (DO NOT DO THIS):**
+- ❌ Task: "Blog creation" → Agent created new `blogservice`
+- ✅ Correct: Add blog functionality to `harborUserSvc` (User Service)
+- ❌ Task: "User comments" → Agent created new `commentservice`
+- ✅ Correct: Add comments to the relevant service (User/Job/etc)
+- ❌ Task: "User ratings" → Agent created new `ratingservice`
+- ✅ Correct: Add ratings to the service being rated (User/Job/etc)
+
+**When to create a NEW service (only if ALL conditions apply):**
+1. Domain is completely separate from ALL existing services
+2. Requires independent scaling (different load patterns)
+3. Has different data retention/backup requirements
+4. Has separate security/compliance needs
+5. Approved by architecture team
+
+**Service Extension Decision Tree:**
+```
+┌─────────────────────────────────┐
+│  Task: Implement feature X      │
+└──────────────┬──────────────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │ Can it fit in an     │
+    │ existing service?    │
+    └──────────┬───────────┘
+               │
+        ┌──────┴──────┐
+        │             │
+       YES            NO
+        │             │
+        ▼             ▼
+  ┌──────────┐   ┌──────────┐
+  │ Add to   │   │ Escalate │
+  │ existing │   │ to human │
+  │ service  │   │ team     │
+  └──────────┘   └──────────┘
+```
+
+**Implementation Requirements:**
+- ✅ Always extend existing services first
+- ✅ Add new modules/controllers to existing repos
+- ✅ Add new API routes to existing services
+- ✅ Add new database tables to existing service databases
+- ❌ Only propose new services with strong justification
+- ❌ Never create a service because "it seems cleaner"
+- ❌ Never create a service without checking existing ones first
+
+**Feature-to-Service Mapping Examples:**
+| Feature | Correct Service | WRONG (Don't Create) |
+|---------|----------------|---------------------|
+| Blog posts | harborUserSvc | blogservice ❌ |
+| Comments | harborUserSvc/harborJobSvc | commentservice ❌ |
+| Ratings/Reviews | harborUserSvc | ratingservice ❌ |
+| User tags/labels | harborUserSvc | tagservice ❌ |
+| Bookmarks/Favorites | harborUserSvc | favservice ❌ |
+| Social feeds | harborUserSvc | socialservice ❌ |
+
+### 3.3 Service Ownership
 
 Each service **owns specific data and functionality**:
 
@@ -137,7 +201,7 @@ Each service **owns specific data and functionality**:
 | Website | Web UI, pages, components |
 | Mobile App | Mobile UI, screens, components |
 
-### 3.3 Data Access Rules
+### 3.4 Data Access Rules
 
 🔒 **Strict Rules:**
 
@@ -155,7 +219,7 @@ const jobs = await JobServiceDatabase.findAll();
 const jobs = await axios.get(`${JOB_SERVICE_URL}/jobs`);
 ```
 
-### 3.4 Communication Patterns
+### 3.5 Communication Patterns
 
 ```
 ┌─────────────┐

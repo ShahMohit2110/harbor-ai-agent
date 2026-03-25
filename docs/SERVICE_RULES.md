@@ -24,9 +24,11 @@
 
 **Skip documentation validation**
 
-**Create new services without justification**
+🚨 **Create new services/repositories for tasks that fit existing services**
 
 **Break existing services without planning**
+
+**Duplicate functionality across services**
 
 ---
 
@@ -38,8 +40,14 @@
 - Generate when missing
 
 **2. Service Creation**
-- Optimize existing services first
-- Only create new with clear justification
+- 🚨 **NEVER create new repositories for features that can fit in existing services**
+- Example: "Blog creation" → Add to User Service, NOT create BlogService
+- Example: "User comments" → Add to relevant service (User/Job), NOT create CommentService
+- Only create new services when:
+  - Domain is completely separate from existing services
+  - Requires independent scalability
+  - Has different data retention requirements
+  - Approved by architecture team
 
 **3. Cross-Service Intelligence**
 - Understand dependencies
