@@ -52,7 +52,7 @@
 # 🏗️ MASTER CONTROL SYSTEM INTEGRATION
 
 **This agent operates under the Master Control System framework defined in:**
-`/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/global-agent-workflow.md`
+`HARBOR_AI_ROOT/workflows/global-agent-workflow.md`
 
 **🚨 CRITICAL: This agent now follows the 10-Phase Autonomous Execution Protocol (v8.0.0)**
 
@@ -491,8 +491,8 @@ The agent acts as a **junior-to-mid-level developer** who can work independently
 **You do NOT stop at phases 3, 4, or 5. You continue until phase 7 is complete.**
 
 **For detailed rules, see:**
-- `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/WORKFLOW_REMINDER.md`
-- `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/ai-workflow.md` section "Autonomous Workflow Continuation"
+- `HARBOR_AI_ROOT/workflows/WORKFLOW_REMINDER.md`
+- `HARBOR_AI_ROOT/workflows/ai-workflow.md` section "Autonomous Workflow Continuation"
 
 ---
 
@@ -3348,7 +3348,7 @@ The broader intent is to maintain a complete record of how the Harbor AI documen
 
 ### 3. Files and Code Sections
 
-**File 1: `/Users/mohitshah/Documents/HarborService/harbor-ai/failure-recovery.md`**
+**File 1: `HARBOR_AI_ROOT/failure-recovery.md`**
 - **Purpose**: Defines how Harbor-AI detects, analyzes, and recovers from failures
 - **Created**: During first user request
 - **Key Sections**:
@@ -3466,7 +3466,7 @@ This has been completed by adding this Conversation History section to the harbo
 5. Follow the 6-phase workflow defined in the agent documentation
 
 **Key Files for Reference:**
-- `/Users/mohitshah/Documents/HarborService/harbor-ai/failure-recovery.md`
+- `HARBOR_AI_ROOT/failure-recovery.md`
 - `/Users/mohitshah/Documents/HarborService/agents/harbor-backend-agent.md` (this file)
 - All 12 Harbor AI documentation files in `harbor-ai/` directory
 

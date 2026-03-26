@@ -31,36 +31,91 @@
 
 ---
 
-## 🎯 Phase 0.45: Service Selection Analysis (NEW - MANDATORY)
+## 🎯 Phase 0.45: Service Selection Analysis (BLOCKING - NON-SKIPPABLE)
 
-**🚨 CRITICAL: This phase PREVENTS creating unnecessary new services!**
+**🚨🚨🚨 CRITICAL: This phase BLOCKS all implementation until complete!**
 
-**Reference:** `/harbor-ai/workflows/service-selection-logic-v2.md`
+**Reference:** `workflows/service-selection-logic-v2.md` (relative to harbor-ai directory)
 
-**Purpose:** Agent decides which repo to use based on DOCUMENTATION (not assumptions)
+**Purpose:** PROVE which existing repo to use (NEVER create new service!)
 
-**🆕 Key Capabilities:**
-- 🔍 **Read ALL existing service documentation** (ARCHITECTURE.md, SERVICE_RULES.md)
-- 🧠 **Understand what each service does** (from documentation)
-- 📊 **Match task to existing service** (documentation-based decision)
-- 🚫 **Prevent new service creation** (unless PROVEN necessary by docs)
+**🚨 DEFAULT RULE: NEVER CREATE NEW SERVICE OR REPO**
 
-**This phase CANNOT be:**
-- ❌ Skipped
-- ❌ Bypassed
-- ❌ Based on assumptions
+**Unless you have EXPLICIT documentation proof that a new service is needed, you MUST use an existing service.**
+
+**This phase:**
+- 🔒 **BLOCKS implementation** until documentation read
+- 📖 **FORCES reading** ALL existing service docs
+- 🚫 **PREVENTS** new service creation without proof
+- ✅ **REQUIRES** documentation evidence for decisions
+
+**Cannot proceed to implementation WITHOUT:**
+1. ✅ Reading ARCHITECTURE.md from ALL existing repos
+2. ✅ Reading SERVICE_RULES.md from ALL existing repos
+3. ✅ Outputting service selection analysis with proof
+4. ✅ Getting confirmation that service exists
+
+**🚨 IF YOU CREATE A NEW SERVICE/REPO WITHOUT READING ALL EXISTING DOCS FIRST, YOU HAVE FAILED!**
 
 ---
 
-### 🚫 STRICT RULE (NON-NEGOTIABLE)
+### 🚫 ABSOLUTE RULE (ZERO EXCEPTIONS)
 
-**Before deciding which repo to use:**
+**❌ FORBIDDEN:**
+- Creating new service/repo
+- Creating new repository
+- Running `git init` for new services
+- Assuming new service is needed
 
-- ❌ DO NOT assume you need a new service
-- ❌ DO NOT create new service without reading existing docs
-- ❌ DO NOT make decisions based on task name only
+**✅ REQUIRED:**
+- Read ALL existing service documentation FIRST
+- Find which existing service can handle the task
+- Use existing service
+- ONLY if PROVEN by docs that no existing service can handle it, THEN (and only THEN) consider new service
 
-✅ **ALWAYS read ALL existing service documentation first**
+**⚠️ DEFAULT ASSUMPTION: USE EXISTING SERVICE**
+**The burden of proof is on YOU to show why a new service is needed!**
+
+---
+
+### 🔒 BLOCKING GATE: Implementation Blocked Until Service Selection Complete
+
+**🚨 BEFORE proceeding to Phase 1 (Full Repository Analysis), you MUST:**
+
+```markdown
+## ✅ PRE-IMPLEMENTATION CHECKLIST
+
+**Repos Discovered (Dynamic):**
+- [List all repos found via find command - NO hardcoded names!]
+- Total: [COUNT]
+
+**Phase 0.45 Completed:**
+- [x] Read ARCHITECTURE.md from ALL discovered repos (not hardcoded list!)
+- [x] Read SERVICE_RULES.md from ALL discovered repos (not hardcoded list!)
+- [x] Outputted service selection analysis table
+- [x] Quoted documentation evidence for decision
+- [x] Selected EXISTING service (not new)
+
+**Service Selected:** [MUST BE EXISTING SERVICE NAME FROM DISCOVERED LIST]
+**Repository Path:** [MUST BE PATH TO EXISTING REPO FROM DISCOVERED LIST]
+**New Service:** NONE (creating new service = FAIL)
+
+**Evidence from documentation:**
+> [Quote from SERVICE_RULES.md showing why this service can handle the task]
+
+🟢 **ONLY WHEN ALL ABOVE CHECKED, PROCEED TO PHASE 1**
+```
+
+**❌ IF NOT COMPLETE:**
+```
+❌ IMPLEMENTATION BLOCKED
+Complete Phase 0.45 (Service Selection Analysis) first!
+Read all documentation, output analysis, select existing service.
+```
+
+---
+
+## 🧠 Phase 1: Full Repository Analysis Engine (MANDATORY)
 
 ---
 
@@ -154,7 +209,7 @@ Agent:
 
 **🚨 CRITICAL: This phase continues after service selection**
 
-**Reference:** `/harbor-ai/workflows/pre-execution-intelligence-analysis-v2.md`
+**Reference:** `workflows/pre-execution-intelligence-analysis-v2.md` (relative to harbor-ai directory)
 
 **Purpose:** Deep analysis with repository type classification and operation decision making
 
@@ -192,12 +247,16 @@ Agent:
 **Scan the entire workspace:**
 
 ```bash
-# Navigate to workspace root
-WORKSPACE_ROOT=/Users/mohitshah/Documents/HarborService/
+# Navigate to workspace root dynamically (discover from current location)
+WORKSPACE_ROOT=$(pwd)
+while [ "$WORKSPACE_ROOT" != "/" ] && [ ! -d "$WORKSPACE_ROOT/.git" ]; do
+  WORKSPACE_ROOT=$(dirname "$WORKSPACE_ROOT")
+done
+
 cd ${WORKSPACE_ROOT}
 
-# Find ALL git repositories
-find . -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
+# Find ALL git repositories dynamically
+find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
 ```
 
 **Identify and classify:**
@@ -824,7 +883,7 @@ API Integration:
 
 **🚨 CRITICAL: This is the NEW mandatory phase that ensures agent verifies all work before marking complete.**
 
-**Reference:** `/harbor-ai/workflows/self-auditing-verification-system.md`
+**Reference:** `workflows/self-auditing-verification-system.md` (relative to harbor-ai directory)
 
 **Purpose:** Agent verifies its own work - catches missing imports, forgotten commands, incomplete work
 
@@ -1191,7 +1250,7 @@ await verifyCrossRepoDependencies(affectedRepos);
 
 **🚨 CRITICAL: This phase PREVENTS forgotten commands (like npm start)!**
 
-**Reference:** `/harbor-ai/workflows/mandatory-command-execution.md`
+**Reference:** `workflows/mandatory-command-execution.md` (relative to harbor-ai directory)
 
 **Purpose:** Agent MUST run ALL required commands and VERIFY they succeeded
 

@@ -305,7 +305,7 @@ For all other services (harborUserSvc, harborJobSvc, harborNotificationSvc, harb
 
 ## Project Structure
 
-**Working Directory:** `/Users/mohitshah/Documents/HarborService/harbor-ai`
+**Working Directory:** `HARBOR_AI_ROOT`
 
 This is the documentation directory. Code implementations go in service directories:
 - **harborUserSvc** (User Service - Port 3001)
@@ -392,7 +392,7 @@ Task Intake → System Understanding → Planning → **Repository Impact Analys
 
 ### Documentation Reference
 
-See `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/repository-impact-analysis.md` for complete implementation details.
+See `HARBOR_AI_ROOT/workflows/repository-impact-analysis.md` for complete implementation details.
 
 ---
 

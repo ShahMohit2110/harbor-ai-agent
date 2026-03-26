@@ -52,11 +52,15 @@ done
 **For EVERY repository, READ EVERY .md file:**
 
 ```bash
-# Navigate to workspace root
-cd /Users/mohitshah/Documents/HarborService/
+# Navigate to workspace root dynamically
+WORKSPACE_ROOT=$(pwd)
+while [ "$WORKSPACE_ROOT" != "/" ] && [ ! -d "$WORKSPACE_ROOT/.git" ]; do
+  WORKSPACE_ROOT=$(dirname "$WORKSPACE_ROOT")
+done
+cd "$WORKSPACE_ROOT"
 
-# For EACH repository
-for repo in $(find . -maxdepth 2 -type d -name ".git" | sed 's|/.git||'); do
+# For EACH repository (discovered dynamically, NOT hardcoded!)
+for repo in $(find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||'); do
     echo "📚 READING DOCUMENTATION: $repo"
     cd "$repo"
 
@@ -76,71 +80,54 @@ done
 **🚨 CRITICAL VALIDATION CHECKLIST:**
 
 Before proceeding to implementation, verify:
-- [ ] READ `harbor-ai/docs/ARCHITECTURE.md` - System architecture overview
-- [ ] READ `harbor-ai/docs/STRUCTURE.md` - System structure
-- [ ] READ `harbor-ai/docs/DEPENDENCIES.md` - Dependencies
-- [ ] READ `harbor-ai/docs/SERVICE_RULES.md` - Service rules
-- [ ] READ `harbor-ai/docs/SHARED_SERVICES.md` - Shared services (CRITICAL!)
-- [ ] READ `harbor-ai/docs/CHANGE_IMPACT.md` - Change impact analysis
-- [ ] READ `harborUserSvc/docs/ARCHITECTURE.md` - User service architecture
-- [ ] READ `harborUserSvc/docs/SHARED_SERVICES.md` - What user service depends on
-- [ ] READ `harborUserSvc/docs/CHANGE_IMPACT.md` - Impact of changes to user service
-- [ ] READ `harborJobSvc/docs/ARCHITECTURE.md` - Job service architecture
-- [ ] READ `harborJobSvc/docs/SHARED_SERVICES.md` - What job service depends on
-- [ ] READ `harborJobSvc/docs/CHANGE_IMPACT.md` - Impact of changes to job service
-- [ ] READ `harborBlogSvc/docs/ARCHITECTURE.md` - Blog service architecture (if exists)
-- [ ] READ `harborBlogSvc/docs/SHARED_SERVICES.md` - What blog service depends on
-- [ ] READ `harborBlogSvc/docs/CHANGE_IMPACT.md` - Impact of changes to blog service
-- [ ] READ `shared-models/docs/ARCHITECTURE.md` - Shared models architecture (CRITICAL!)
-- [ ] READ `shared-models/docs/CHANGE_IMPACT.md` - Impact of changing shared models (CRITICAL!)
+- [ ] Discovered ALL repos dynamically (no hardcoded list!)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/ARCHITECTURE.md
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/STRUCTURE.md
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/DEPENDENCIES.md (if exists)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/SERVICE_RULES.md (if exists)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/SHARED_SERVICES.md (if exists)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/CHANGE_IMPACT.md (if exists)
+- [ ] READ ALL other .md files in docs/ for EACH repo
 
-**🚨 FOR ALL OTHER REPOS:**
-- [ ] Repeat for ALL repositories in workspace
+**🚨 FOR ALL DISCOVERED REPOS:**
+- [ ] Repeat for ALL repositories found via find command
 - [ ] NO exceptions
 - [ ] NO skipping
+- [ ] Output checklist with ACTUAL discovered repo names (not hardcoded!)
 - [ ] READ EVERYTHING
 
 ### Step 3: Cross-Repository Analysis (MANDATORY)
 
-**After reading all documentation, perform cross-repository analysis:**
+**After reading all documentation, perform cross-repository analysis (using discovered repos):**
 
 ```markdown
 ## Cross-Repository Analysis
 
-### Repository Map
-1. **harbor-ai** - Documentation and workflows
-2. **harborUserSvc** - User management service
-3. **harborJobSvc** - Job management service
-4. **harborBlogSvc** - Blog service
-5. **shared-models** - Shared data models
-6. **harborWebsite** - Frontend (Next.js)
-7. **harborShared** - Shared utilities
-8. **api-gateway** - API gateway
-9. **harborNotificationSvc** - Notification service
-10. **socket-service** - WebSocket service
+### Repository Map (DYNAMIC - from discovered repos)
+1. **[REPO-1]** - [From ARCHITECTURE.md]
+2. **[REPO-2]** - [From ARCHITECTURE.md]
+3. **[REPO-3]** - [From ARCHITECTURE.md]
+[Continue for ALL discovered repos...]
 
-### Shared Services (CRITICAL - READ THESE CAREFULLY)
+### Shared Services (CRITICAL - READ THESE CAREFULLY!)
 
 **From SHARED_SERVICES.md files:**
-- **shared-models** - Used by ALL services (HIGH IMPACT)
-- **harborShared** - Used by all backend services (MEDIUM IMPACT)
+- **[SHARED-REPO-1]** - [Impact from docs]
+- **[SHARED-REPO-2]** - [Impact from docs]
 
 ### Dependency Relationships (UNDERSTAND THESE!)
 
 **From DEPENDENCIES.md and ARCHITECTURE.md:**
 ```
-harborUserSvc → depends on → shared-models
-harborJobSvc → depends on → shared-models
-harborBlogSvc → depends on → shared-models
-
-harborUserSvc → depends on → harborShared
-harborJobSvc → depends on → harborShared
+[SERVICE-1] → depends on → [SHARED-SERVICE]
+[SERVICE-2] → depends on → [SHARED-SERVICE]
+[Continue for all discovered dependencies...]
 ```
 
 ### Service Boundaries (DO NOT VIOLATE!)
 
 **From SERVICE_RULES.md:**
-- Each service has specific responsibilities
+- Each service has specific responsibilities (from docs)
 - DO NOT access another service's database
 - DO NOT share internal models
 - DO NOT create tight coupling
@@ -148,9 +135,9 @@ harborJobSvc → depends on → harborShared
 ### Change Impact Analysis (UNDERSTAND BEFORE MAKING CHANGES!)
 
 **From CHANGE_IMPACT.md files:**
-- If I change shared-models → affects ALL services
-- If I change harborUserSvc → affects dependent services
-- If I change harborJobSvc → affects dependent services
+- If I change [SHARED-SERVICE] → affects [dependent services from docs]
+- If I change [SERVICE-1] → affects [dependent services from docs]
+- [Continue for all discovered services...]
 ```
 
 ### Step 4: ONLY THEN Proceed to Implementation
@@ -204,7 +191,14 @@ With full documentation context:
 echo "🚨 DOCUMENTATION READING GATE VALIDATION"
 echo "=========================================="
 
-# Check if docs were read
+# Check if docs were read (using DISCOVERED repos, not hardcoded!)
+DISCOVERED_REPOS=$(find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||')
+
+for repo in $DISCOVERED_REPOS; do
+    REPO_NAME=$(basename "$repo")
+    echo "Checking $REPO_NAME..."
+    # Verify docs exist and were read
+done
 if [ ! -f "/tmp/documentation_reading_proof.md" ]; then
     echo "❌ ERROR: Documentation not read!"
     echo "   You must read ALL documentation files before implementation."
@@ -217,8 +211,8 @@ key_files=(
     "harbor-ai/docs/ARCHITECTURE.md"
     "shared-models/docs/ARCHITECTURE.md"
     "shared-models/docs/CHANGE_IMPACT.md"
-    "harborUserSvc/docs/SHARED_SERVICES.md"
-    "harborJobSvc/docs/SHARED_SERVICES.md"
+    "[DISCOVERED-SERVICE-NAME]/docs/SHARED_SERVICES.md"
+    "[DISCOVERED-SERVICE-NAME]/docs/SHARED_SERVICES.md"
 )
 
 for file in "${key_files[@]}"; do
@@ -263,14 +257,14 @@ Task: "Add user notifications"
 
 Agent Actions:
 1. ✅ Validate/Generate docs for all repos
-2. ✅ READ harborUserSvc/docs/ARCHITECTURE.md
-3. ✅ READ harborUserSvc/docs/SHARED_SERVICES.md
-4. ✅ READ harborUserSvc/docs/CHANGE_IMPACT.md
+2. ✅ READ [DISCOVERED-SERVICE-NAME]/docs/ARCHITECTURE.md
+3. ✅ READ [DISCOVERED-SERVICE-NAME]/docs/SHARED_SERVICES.md
+4. ✅ READ [DISCOVERED-SERVICE-NAME]/docs/CHANGE_IMPACT.md
 5. ✅ READ shared-models/docs/ARCHITECTURE.md
 6. ✅ READ shared-models/docs/CHANGE_IMPACT.md
 7. ✅ READ all other repos' documentation
 8. ✅ Perform cross-repository analysis
-9. ✅ Identify: "harborNotificationSvc exists - use it!"
+9. ✅ Identify: "[DISCOVERED-SERVICE-NAME] exists - use it!"
 10. ✅ Identify: "shared-models - need to check impact"
 11. ✅ Plan implementation with full context
 12. ✅ Implement with understanding of dependencies
@@ -289,7 +283,7 @@ Agent Actions:
 3. ❌ START implementation immediately
 4. ❌ ASSUME architecture without reading
 5. ❌ CREATE new notification service (duplicate!)
-6. ❌ MISS existing harborNotificationSvc
+6. ❌ MISS existing [DISCOVERED-SERVICE-NAME]
 7. ❌ BREAK shared-models dependencies
 8. ❌ VIOLATE service boundaries
 
@@ -337,12 +331,12 @@ cat > /tmp/documentation_reading_proof.md << EOF
 - ✅ docs/ARCHITECTURE.md
 - ✅ docs/CHANGE_IMPACT.md
 
-### harborUserSvc
+### [DISCOVERED-SERVICE-NAME]
 - ✅ docs/ARCHITECTURE.md
 - ✅ docs/SHARED_SERVICES.md
 - ✅ docs/CHANGE_IMPACT.md
 
-### harborJobSvc
+### [DISCOVERED-SERVICE-NAME]
 - ✅ docs/ARCHITECTURE.md
 - ✅ docs/SHARED_SERVICES.md
 - ✅ docs/CHANGE_IMPACT.md

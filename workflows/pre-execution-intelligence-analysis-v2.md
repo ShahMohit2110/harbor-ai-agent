@@ -2,7 +2,7 @@
 
 **🚨 MANDATORY PHASE: Runs AFTER Phase 0 (Documentation Reading) and BEFORE Phase 1 (Task Planning)**
 
-**Reference:** `/harbor-ai/workflows/global-agent-workflow-v11.md` - Phase 0.5
+**Reference:** `workflows/global-agent-workflow-v11.md` (relative to harbor-ai directory)
 
 ---
 

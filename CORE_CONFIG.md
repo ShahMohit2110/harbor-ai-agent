@@ -15,7 +15,7 @@
 
 ### Create ONE Permanent Configuration File
 
-**Location:** `/Users/mohitshah/Documents/HarborService/harbor-ai/CORE_CONFIG.md`
+**Location:** `{HARBOR_AI_ROOT}/CORE_CONFIG.md` (discovered dynamically)`
 
 **This file:**
 - ✅ NEVER changes (permanent)
@@ -277,7 +277,7 @@ Agent cannot proceed until ALL checks pass
 **Run this diagnostic:**
 
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
+cd $HARBOR_AI_ROOT
 
 echo "=== DIAGNOSTIC ==="
 echo ".env file:"
@@ -304,13 +304,13 @@ echo "=== END DIAGNOSTIC ==="
 
 ### What CANNOT Change:
 
-1. **This file location:** Always at `/Users/mohitshah/Documents/HarborService/harbor-ai/CORE_CONFIG.md`
+1. **This file location:** `{HARBOR_AI_ROOT}/CORE_CONFIG.md` (current directory)
 
-2. **Working directory:** Always `/Users/mohitshah/Documents/HarborService`
+2. **Working directory:** `{WORKSPACE_ROOT}` (discovered dynamically by finding .git)
 
-3. **.env location:** Always at `/Users/mohitshah/Documents/HarborService/harbor-ai/.env`
+3. **.env location:** `{HARBOR_AI_ROOT}/.env` (same directory as this file)
 
-4. **Core workflow files:** Always in `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/`
+4. **Core workflow files:** `{HARBOR_AI_ROOT}/workflows/` (relative to this directory)
 
 5. **Startup sequence:** Always in this order (Env → Dir → Files → Validate → Test)
 
@@ -332,7 +332,7 @@ echo "=== END DIAGNOSTIC ==="
 ### Test 1: Delete and Restore
 ```bash
 # Simulate broken state
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
+cd $HARBOR_AI_ROOT
 
 # This file should ALWAYS exist
 ls -la CROP_CONFIG.md
@@ -344,7 +344,7 @@ ls -la CROP_CONFIG.md
 ### Test 2: Fresh Session
 ```bash
 # Start new terminal/session
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
+cd $HARBOR_AI_ROOT
 
 # Agent should work immediately (no setup needed)
 # Because CROP_CONFIG.md has all instructions

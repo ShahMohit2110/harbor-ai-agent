@@ -100,7 +100,7 @@
 
 2. **Absolute Paths**
    - Never use relative paths
-   - Always: `/Users/mohitshah/Documents/HarborService/harbor-ai/...`
+   - Always: `{HARBOR_AI_ROOT}/...`
    - Works from any directory
 
 3. **Verification Steps**
@@ -169,7 +169,7 @@
    "Execute startup sequence:"
    ↓
 4. Loads .env (MANDATORY)
-   cd /Users/mohitshah/Documents/HarborService/harbor-ai
+   cd {HARBOR_AI_ROOT}
    export $(cat .env | grep -v '^#' | xargs)
    ↓
 5. Validates .env
@@ -199,8 +199,8 @@
 
 ```bash
 # These NEVER break:
-/Users/mohitshah/Documents/HarborService/harbor-ai/CORE_CONFIG.md
-/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/service-selection-logic-v2.md
+{HARBOR_AI_ROOT}/CORE_CONFIG.md
+{HARBOR_AI_ROOT}/workflows/service-selection-logic-v2.md
 
 # These would break:
 ../CROP_CONFIG.md                    # Breaks when you move
@@ -292,35 +292,35 @@ fi
 
 ### Test 1: Core Config Exists
 ```bash
-cat /Users/mohitshah/Documents/HarborService/harbor-ai/CORE_CONFIG.md
+cat {HARBOR_AI_ROOT}/CORE_CONFIG.md
 ```
 
 **Expected:** Shows permanent startup instructions
 
 ### Test 2: Start Here Exists
 ```bash
-cat /Users/mohitshah/Documents/HarborService/harbor-ai/START_HERE.md
+cat {HARBOR_AI_ROOT}/START_HERE.md
 ```
 
 **Expected:** Points to CROP_CONFIG.md
 
 ### Test 3: .env Exists
 ```bash
-cat /Users/mohitshah/Documents/HarborService/harbor-ai/.env
+cat {HARBOR_AI_ROOT}/.env
 ```
 
 **Expected:** Shows your Azure DevOps credentials
 
 ### Test 4: Core Files Exist
 ```bash
-ls -la /Users/mohitshah/Documents/HarborService/harbor-ai/workflows/
+ls -la {HARBOR_AI_ROOT}/workflows/
 ```
 
 **Expected:** Shows all workflow files
 
 ### Test 5: Run Diagnostic
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
+cd {HARBOR_AI_ROOT}
 cat CROP_CONFIG.md | grep "DIAGNOSTIC" -A 20
 ```
 
@@ -365,7 +365,7 @@ cat CROP_CONFIG.md | grep "DIAGNOSTIC" -A 20
 
 ### 1. Verify Setup
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
+cd {HARBOR_AI_ROOT}
 
 # Check files exist
 ls -la START_HERE.md

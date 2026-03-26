@@ -10,7 +10,7 @@
 **Current Issue:**
 ```
 Task: "Create blog module"
-Agent: "I'll create new blog-service" ← WRONG!
+Agent: "I'll create new blog-service" ← WRONG! ❌
 ```
 
 **Root Cause:**
@@ -18,14 +18,20 @@ Agent doesn't **READ** existing repo documentation to understand what they do.
 
 ---
 
-## ✅ SOLUTION: Documentation-Driven Service Selection
+## ✅ SOLUTION: NEVER Create New Service (Unless Proven Necessary)
+
+**🔒 DEFAULT BEHAVIOR: ALWAYS USE EXISTING SERVICE**
 
 **Agent MUST:**
 
-1. **READ** ARCHITECTURE.md from EACH existing repo
-2. **UNDERSTAND** what features each repo handles
-3. **DECIDE** based on documentation whether to use existing or create new
-4. **NEVER** create new service WITHOUT proof from docs that it's needed
+1. **READ** ARCHITECTURE.md from EACH existing repo ✅
+2. **READ** SERVICE_RULES.md from EACH existing repo ✅
+3. **FIND** which existing service can handle the task ✅
+4. **USE** that existing service ✅
+5. **NEVER** create new service WITHOUT proof from docs 🚫
+
+**🚨 CRITICAL: The default is ALWAYS to use an existing service!**
+**New service creation is ONLY allowed if documentation explicitly proves it's necessary!**
 
 ---
 
@@ -37,44 +43,70 @@ Agent doesn't **READ** existing repo documentation to understand what they do.
 
 ---
 
-#### Step 1: Discover All Existing Repos
+#### Step 1: Discover All Existing Repos (DYNAMIC)
 
 ```bash
-# Find all repos in workspace
-find /Users/mohitshah/Documents/HarborService -maxdepth 2 -name ".git" -type d
+# Find all repos in workspace dynamically
+WORKSPACE_ROOT=$(pwd)
+while [ "$WORKSPACE_ROOT" != "/" ] && [ ! -d "$WORKSPACE_ROOT/.git" ]; do
+  WORKSPACE_ROOT=$(dirname "$WORKSPACE_ROOT")
+done
+
+find "$WORKSPACE_ROOT" -maxdepth 2 -name ".git" -type d
 ```
 
-**Result:**
+**Expected repos (examples - actual list discovered dynamically):**
 ```
-- shared-models
-- database-sync
-- user-service
-- job-service
-- notification-service
-- socket-service
-- api-gateway
-- website
+[Discovered via find command - could be any repos]
 ```
+
+**🚨 If you find existing repos, YOU MUST USE ONE OF THEM!**
 
 ---
 
-#### Step 2: Read Each Repo's Documentation
+#### Step 2: Discover and Read Documentation from All Repos (DYNAMIC)
 
-**For EACH repo, READ these files:**
+**🎯 Discover repos dynamically, then read documentation:**
 
 ```bash
-# For each repo
-for repo in user-service job-service notification-service; do
+# Step 2a: Find all repos dynamically (no hardcoding!)
+WORKSPACE_ROOT=$(pwd)
+while [ "$WORKSPACE_ROOT" != "/" ] && [ ! -d "$WORKSPACE_ROOT/.git" ]; do
+  WORKSPACE_ROOT=$(dirname "$WORKSPACE_ROOT")
+done
+
+# Discover all repos (find .git directories)
+REPOS=$(find "$WORKSPACE_ROOT" -maxdepth 2 -name ".git" -type d -exec dirname {} \;)
+
+echo "🔍 Discovered repos:"
+echo "$REPOS"
+
+# Step 2b: For EACH discovered repo, read documentation
+for repo in $REPOS; do
   echo "📖 READING: $repo/docs/ARCHITECTURE.md"
-  cat "$repo/docs/ARCHITECTURE.md"
+  if [ -f "$repo/docs/ARCHITECTURE.md" ]; then
+    cat "$repo/docs/ARCHITECTURE.md"
+  else
+    echo "⚠️ No ARCHITECTURE.md found in $repo"
+  fi
 
   echo "📖 READING: $repo/docs/SERVICE_RULES.md"
-  cat "$repo/docs/SERVICE_RULES.md"
+  if [ -f "$repo/docs/SERVICE_RULES.md" ]; then
+    cat "$repo/docs/SERVICE_RULES.md"
+  else
+    echo "⚠️ No SERVICE_RULES.md found in $repo"
+  fi
 
   echo "📖 READING: $repo/docs/STRUCTURE.md"
-  cat "$repo/docs/STRUCTURE.md"
+  if [ -f "$repo/docs/STRUCTURE.md" ]; then
+    cat "$repo/docs/STRUCTURE.md"
+  else
+    echo "⚠️ No STRUCTURE.md found in $repo"
+  fi
 done
 ```
+
+**✅ Result: All repos discovered dynamically, documentation read without hardcoding!**
 
 ---
 
@@ -85,27 +117,19 @@ done
 **What features does this service handle?**
 
 ```markdown
-## Service Capability Matrix
+## Service Capability Matrix (Example format - actual services discovered dynamically)
 
-**user-service:**
-- Features: User management, user profiles, authentication
-- Domain: User data
-- Bounds: Manages user accounts only
+**[SERVICE-NAME-1]:**
+- Features: [From ARCHITECTURE.md]
+- Domain: [From ARCHITECTURE.md]
+- Bounds: [From SERVICE_RULES.md]
 
-**job-service:**
-- Features: Job creation, job management, job applications
-- Domain: Job data
-- Bounds: Manages job lifecycle
+**[SERVICE-NAME-2]:**
+- Features: [From ARCHITECTURE.md]
+- Domain: [From ARCHITECTURE.md]
+- Bounds: [From SERVICE_RULES.md]
 
-**notification-service:**
-- Features: Email notifications, SMS notifications, push notifications
-- Domain: Notifications
-- Bounds: Manages notification delivery
-
-**socket-service:**
-- Features: WebSocket connections, real-time messaging
-- Domain: Real-time communication
-- Bounds: Manages WebSocket connections
+**[Continue for all discovered services...]**
 ```
 
 ---
@@ -117,41 +141,35 @@ done
 **Decision Process:**
 
 ```
-Task: "Create blog module"
+Task: "[Example task - replace with actual]"
 
 Step 1: Analyze task requirements
-- Blog module = content management, blog posts
-- Domain: Content/Blog data
-- CRUD operations needed
+- [Extract requirements from task description]
 
-Step 2: Check existing services
-- user-service: Handles users (NOT blog content)
-- job-service: Handles jobs (NOT blog content)
-- notification-service: Handles notifications (NOT blog content)
-- socket-service: Handles WebSocket (NOT blog content)
+Step 2: Check existing services (discovered dynamically)
+- [SERVICE-1]: [Features from ARCHITECTURE.md]
+- [SERVICE-2]: [Features from ARCHITECTURE.md]
+- [SERVICE-3]: [Features from ARCHITECTURE.md]
+- [Continue for all discovered services...]
 
 Step 3: Find BEST match
-- None of the existing services handle blog content
-- Question: Can blog fit into any existing service?
+- Check which service can handle the requirements
+- Check SERVICE_RULES.md for each service
 
 Step 4: Check SERVICE_RULES.md for each service
-- Read user-service/docs/SERVICE_RULES.md
-  - "Manages user data only"
-  - "Should not handle unrelated features"
-- Read job-service/docs/SERVICE_RULES.md
-  - "Manages job lifecycle"
-  - "Can be extended for related features"
-  - "Blog could be considered job-related content"
+- Read [SERVICE-1]/docs/SERVICE_RULES.md
+  - [Extract rules and constraints]
+- Read [SERVICE-2]/docs/SERVICE_RULES.md
+  - [Extract rules and constraints]
 
-Step 5: Make decision
-- Option A: Add blog to job-service (blog = content about jobs)
-- Option B: Create new blog-service (separate concern)
+Step 5: Make decision based on DOCUMENTATION ONLY
+- Option A: Use [SERVICE-X] (if allowed by SERVICE_RULES.md)
+- Option B: Consider new service (only if all existing services prohibit it)
 
 Step 6: Check ARCHITECTURE.md for guidance
-- Read /ARCHITECTURE.md or shared docs
-- Look for: "Service boundaries", "Domain separation"
-- If docs say: "Keep job and content separate" → Create new service
-- If docs say: "Related features can be grouped" → Use job-service
+- Read ARCHITECTURE.md from relevant services
+- Look for: Service boundaries, domain separation
+- Follow documentation guidance
 
 Step 7: Final Decision
 - Based on DOCUMENTATION only
@@ -172,35 +190,85 @@ Step 7: Final Decision
 
 **Existing Services Analyzed:**
 
-| Service | Features | Can Handle Blog? | Reason |
+| Service | Features | Can Handle Task? | Reason |
 |---------|----------|------------------|---------|
-| user-service | User management | NO | Different domain |
-| job-service | Job management | MAYBE | Blog could be job-related content |
-| notification-service | Notifications | NO | Different domain |
-| socket-service | WebSocket | NO | Infrastructure service |
+| [SERVICE-1] | [From ARCHITECTURE.md] | [YES/NO/MAYBE] | [From SERVICE_RULES.md] |
+| [SERVICE-2] | [From ARCHITECTURE.md] | [YES/NO/MAYBE] | [From SERVICE_RULES.md] |
+| [SERVICE-3] | [From ARCHITECTURE.md] | [YES/NO/MAYBE] | [From SERVICE_RULES.md] |
 
 **Documentation Review:**
 
-**job-service/docs/SERVICE_RULES.md says:**
-- "Manages job lifecycle and job-related content"
-- "Can be extended for features related to jobs"
+**[SELECTED-SERVICE]/docs/SERVICE_RULES.md says:**
+- [Quote relevant rules that allow this feature]
 
-**ARCHITECTURE.md says:**
-- "Group related features in same service"
-- "Avoid service fragmentation"
+**[SELECTED-SERVICE]/docs/ARCHITECTURE.md says:**
+- [Quote relevant architecture guidance]
 
 **Decision:**
-✅ **USE EXISTING: job-service**
+✅ **USE EXISTING: [SELECTED-SERVICE]**
 
 **Reasoning:**
-- Blog content is related to jobs (job postings, blog about jobs)
-- job-service SERVICE_RULES allows extensions for related features
-- ARCHITECTURE recommends grouping related features
+- [Quote from SERVICE_RULES.md showing this is allowed]
+- [Quote from ARCHITECTURE.md showing this fits]
 - NO need for new service
 
-**Repository to use:** job-service
+**Repository to use:** [SELECTED-SERVICE]
+**Repository path:** [FULL PATH FROM DISCOVERY]
 **New service to create:** NONE
 ```
+
+---
+
+## 🚨 BLOCKING CHECK: Must Output Before Proceeding
+
+**🔒 AGENT CANNOT PROCEED TO IMPLEMENTATION WITHOUT:**
+
+1. ✅ **Reading ARCHITECTURE.md** from ALL existing repos
+2. ✅ **Reading SERVICE_RULES.md** from ALL existing repos
+3. ✅ **Outputting the analysis table** (shown above)
+4. ✅ **Showing documentation evidence** for the decision
+5. ✅ **Selecting an EXISTING service** (not creating new)
+
+**⚠️ IF THE AGENT DOES NOT OUTPUT THE ANALYSIS ABOVE, IT HAS FAILED!**
+
+**Implementation is BLOCKED until:**
+```markdown
+## ✅ SERVICE SELECTION COMPLETE
+
+**Discovered Repos:** [DYNAMIC LIST - output from find command]
+**Total Repos Found:** [COUNT]
+
+**Documentation Read:**
+- [x] [REPO-1-NAME]/docs/ARCHITECTURE.md
+- [x] [REPO-1-NAME]/docs/SERVICE_RULES.md
+- [x] [REPO-2-NAME]/docs/ARCHITECTURE.md
+- [x] [REPO-2-NAME]/docs/SERVICE_RULES.md
+- [x] [... continue for ALL discovered repos ...]
+
+**Selected Service:** [EXISTING SERVICE NAME]
+**Repository Path:** [FULL PATH TO SELECTED REPO]
+**New Service:** NONE (creating new service = FAIL)
+**Reason:** [DOCUMENTATION EVIDENCE QUOTED]
+
+🟢 **PROCEEDING TO IMPLEMENTATION IN: [EXISTING SERVICE]**
+```
+
+**🚨 IF "New Service: CREATE-NEW-SERVICE-NAME" APPEARS, THIS IS A FAILURE!**
+
+---
+
+## 🚨 FINAL RULE: DEFAULT TO EXISTING
+
+**The default decision is ALWAYS:**
+- ✅ Use existing service
+- ❌ Do NOT create new service
+
+**New service is ONLY allowed if:**
+- Documentation explicitly says so
+- OR all existing services explicitly prohibit the feature in their SERVICE_RULES.md
+- AND you quote the exact documentation proving this
+
+**Without explicit documentation proof, you MUST use an existing service!**
 
 ---
 

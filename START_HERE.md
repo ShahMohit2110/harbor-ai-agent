@@ -55,7 +55,7 @@ cat CORE_CONFIG.md
    - ./file.md (breaks when you change directory)
 
 ✅ RIGHT: Absolute paths
-   - /Users/mohitshah/Documents/HarborService/harbor-ai/workflows/file.md
+   - {HARBOR_AI_ROOT}/workflows/file.md
    - Always works, no matter where you are
 ```
 
@@ -195,28 +195,28 @@ cat CORE_CONFIG.md
 
 ### Test 1: Read Core Config
 ```bash
-cat /Users/mohitshah/Documents/HarborService/harbor-ai/CORE_CONFIG.md
+cat $HARBOR_AI_ROOT/CORE_CONFIG.md
 ```
 
 **Expected:** Shows complete startup instructions
 
 ### Test 2: Check .env
 ```bash
-cat /Users/mohitshah/Documents/HarborService/harbor-ai/.env
+cat $HARBOR_AI_ROOT/.env
 ```
 
 **Expected:** Shows your Azure DevOps credentials
 
 ### Test 3: Check Core Files
 ```bash
-ls -la /Users/mohitshah/Documents/HarborService/harbor-ai/workflows/
+ls -la $HARBOR_AI_ROOT/workflows/
 ```
 
 **Expected:** Shows all workflow files
 
 ### Test 4: Run Diagnostic
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
+cd $HARBOR_AI_ROOT
 source .env
 echo "Org: $AZURE_DEVOPS_ORG"
 ```
@@ -248,9 +248,9 @@ echo "Org: $AZURE_DEVOPS_ORG"
 
 **When agent starts:**
 
-1. **READ** `/Users/mohitshah/Documents/HarborService/harbor-ai/START_HERE.md`
+1. **READ** `$HARBOR_AI_ROOT/START_HERE.md`
 
-2. **READ** `/Users/mohitshah/Documents/HarborService/harbor-ai/CORE_CONFIG.md`
+2. **READ** `$HARBOR_AI_ROOT/CORE_CONFIG.md`
 
 3. **FOLLOW** the startup sequence in CROP_CONFIG.md
 
