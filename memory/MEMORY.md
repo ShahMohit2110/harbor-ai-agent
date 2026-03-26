@@ -1,6 +1,22 @@
 # Harbor AI Agent Memory
 
-**Last Updated:** 2026-03-24
+**Last Updated:** 2026-03-26
+
+---
+
+# 🔒 CRITICAL: PERMANENT RULES (ZERO TOLERANCE)
+
+## 🚨 NO GIT PUSH - ABSOLUTE PROHIBITION
+
+**Reference:** [memory/HARBOR_NO_PUSH_RULE.md](HARBOR_NO_PUSH_RULE.md)
+
+**User Feedback:** "THIS IS NOT TOLLERATE LIKE I HAVE TOLE 10000 TIMES THIS THINGS."
+
+**The Rule:** Agent MUST NEVER execute git push commands under ANY circumstances.
+
+**Enforcement:** Code-level command interception via `tools/safe-bash-tool.md`
+
+**Status:** 🔒 ACTIVE - Zero tolerance - User extremely frustrated
 
 ---
 

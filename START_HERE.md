@@ -8,7 +8,26 @@
 
 **🚨 When the Harbor AI Agent starts, it MUST:**
 
-### Step 1: Load Configuration (Dynamic)
+### Step 1: MANDATORY Documentation Gate (FIRST - BEFORE ANYTHING ELSE)
+
+**Reference:** `workflows/DOCUMENTATION-GATE-MANDATORY.md`
+
+**🚨 THUMB RULE: NO DOCUMENTATION = NO TASK**
+
+**Agent MUST:**
+1. ✅ Discover ALL repositories in workspace
+2. ✅ Check EACH repository has docs/ folder
+3. ✅ Count .md files in EACH docs/ folder (must be 12)
+4. ✅ Generate missing files if count < 12
+5. ✅ Re-verify ALL repos have 12/12 files
+6. ✅ Output "✅ ALL REPOS: Documentation complete"
+7. ✅ ONLY THEN proceed to task
+
+**⚠️ DO NOT proceed with ANY task until documentation gate is PASSED!**
+
+---
+
+### Step 2: Load Configuration (Dynamic)
 
 **Check for Azure DevOps credentials:**
 
@@ -21,31 +40,41 @@
 - `AZURE_DEVOPS_ORG` - Organization name (e.g., HarborApp)
 - `AZURE_DEVOPS_PROJECT` - Project name (e.g., Harbor)
 
-### Step 2: Read Core Configuration
+**⚠️ DO NOT proceed with tasks until documentation gate is PASSED!**
+
+---
+
+### Step 3: Read Main Workflow
 
 ```bash
-# Read the permanent core configuration
-cat CORE_CONFIG.md
+# Read the main workflow
+cat workflows/global-agent-workflow-v11.md
 ```
 
-**⚠️ DO NOT proceed with tasks until credentials are loaded!**
+**This contains the complete 12-phase autonomous execution protocol.**
 
 ---
 
-## 🎯 The Key to Permanent Fixes
+## 🎯 Agent Execution Flow
 
-**The Problem:** Fixes work, then break later
-**The Solution:** ONE permanent configuration file that NEVER changes
+**Order is CRITICAL:**
 
-### This File: START_HERE.md
-**Purpose:** Points to CORE_CONFIG.md (always the first thing to read)
+1. **Documentation Gate** (FIRST - MANDATORY)
+   - Validate all repos have complete documentation
+   - Generate missing files
+   - Verify 12/12 files present
 
-### Core File: CROP_CONFIG.md
-**Purpose:** Contains permanent startup instructions that never break
+2. **Phase 0.5: Pre-Execution Intelligence Analysis**
+   - Read all documentation
+   - Analyze system impact
+   - Plan implementation
+
+3. **Phase 1-12: Implementation**
+   - Execute complete workflow
+   - Commit locally (NO PUSH)
+   - Complete task
 
 ---
-
-## 📋 What Makes This Permanent
 
 ### 1. Absolute Paths (Never Break)
 

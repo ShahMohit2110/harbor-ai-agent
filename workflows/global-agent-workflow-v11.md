@@ -14,20 +14,447 @@
 - 🚫 **Anti-Pattern Prevention** - Prevents duplicate services, wrong repo choices, breaking changes
 - 📊 **Structured Analysis Output** - Mandatory analysis summary before implementation
 - 🎯 **Smart Decision Engine** - Prefer modifying existing services over creating new ones
+- 🚨 **AUTONOMOUS EXECUTION** - NO PERMISSION CHECKPOINTS - Agent continues automatically until complete
 
-**🚨 CRITICAL RULE:**
+**🚨 CRITICAL RULES:**
 
+> **"NO DOCUMENTATION = NO TASK - ALL REPOS MUST HAVE 12/12 FILES"**
+>
 > **"NO ANALYSIS = NO IMPLEMENTATION"**
+>
+> **"NO PERMISSION CHECKPOINTS - FULL AUTONOMY"**
+>
+> **"NO COMMAND EXECUTION WITHOUT VALIDATION - ALL COMMANDS MUST USE SAFE BASH TOOL"**
 
 ---
 
-# 🚀 12-PHASE AUTONOMOUS EXECUTION PROTOCOL (ENHANCED)
+## 🚨 CRITICAL: MANDATORY FIRST STEP - DOCUMENTATION GATE
+
+**Reference:** `workflows/DOCUMENTATION-GATE-MANDATORY.md`
+
+**🚨 THUMB RULE - ZERO EXCEPTIONS:**
+
+**BEFORE DOING ANYTHING ELSE, AGENT MUST:**
+
+1. ✅ Discover ALL repositories in workspace
+2. ✅ Check EACH repository has docs/ folder
+3. ✅ Count .md files in EACH docs/ folder
+4. ✅ Verify EACH repo has EXACTLY 12 .md files
+5. ✅ Generate missing files if count < 12
+6. ✅ Re-verify ALL repos have 12/12 files
+7. ✅ Output "✅ ALL REPOS: Documentation complete"
+8. ✅ ONLY THEN proceed to task
+
+**🚨 IF ANY REPO HAS < 12 FILES:**
+- ❌ TASK IS BLOCKED
+- ❌ DO NOT analyze requirements
+- ❌ DO NOT write code
+- ✅ GENERATE missing files FIRST
+- ✅ ONLY THEN proceed
+
+**This is the ABSOLUTE FIRST STEP - BEFORE ANYTHING ELSE.**
 
 ---
 
-## 📚 Phase 0: Documentation Gate (AUTOMATIC - NON-SKIPPABLE)
+## 🚨 CRITICAL: FOR ALL COMMAND EXECUTION
 
-*Same as v10.1 - Automatic validation and generation of documentation*
+**Reference:** `tools/safe-bash-tool.md`
+
+---
+
+# 🚀 12-PHASE AUTONOMOUS EXECUTION PROTOCOL (ENHANCED - FULLY AUTONOMOUS)
+
+---
+
+## 📚 Phase 0: Documentation Gate (AUTOMATIC - NON-SKIPPABLE - ALL REPOS - MANDATORY)
+
+**Reference:** `workflows/DOCUMENTATION-GATE-MANDATORY.md` ⭐ PRIMARY - USE THIS
+**Reference:** `workflows/documentation-reading-gate.md`
+**Reference:** `workflows/DOCUMENTATION-GATE-ENFORCEMENT.md`
+
+**🚨 CRITICAL: DOCUMENTATION MUST BE COMPLETE FOR EVERY REPOSITORY**
+
+**🚨 CRITICAL: THIS IS THE ABSOLUTE FIRST STEP - MUST EXECUTE BEFORE ANYTHING ELSE**
+
+**Agent MUST:**
+1. ✅ EXECUTE documentation gate checks (use Bash tool to run commands)
+2. ✅ COUNT files in each repo (must be exactly 12)
+3. ✅ GENERATE missing files (use Write tool)
+4. ✅ VERIFY all repos have 12/12 files
+5. ✅ OUTPUT verification summary
+6. ✅ ONLY THEN proceed to Phase 0.5
+
+**Expected Output:**
+```bash
+🔍 Discovered repositories: [list all repos]
+📚 Checking: [each repo]
+✅/❌ [file count and generation]
+🔍 FINAL VERIFICATION
+✅ ALL REPOS: Documentation complete
+✅ Total repos validated: [count]
+✅ Each repo has 12/12 files present
+🟢 PROCEEDING TO TASK EXECUTION
+```
+
+**If agent does NOT output this, Phase 0 FAILED.**
+
+**🚨 CRITICAL: NEVER CREATE NEW SERVICE OR REPO - ABSOLUTE BLOCK**
+
+**Reference:** `workflows/NEVER-CREATE-NEW-SERVICE.md`
+
+**🚨 CRITICAL: THIS GATE BLOCKS ALL TASK EXECUTION UNTIL DOCUMENTATION IS COMPLETE**
+
+**🚨 CRITICAL: AGENT MUST ACTUALLY EXECUTE THESE COMMANDS, NOT JUST READ THEM**
+
+**Agent MUST:**
+1. ✅ ACTUALLY RUN the repository discovery command (not just read it)
+2. ✅ ACTUALLY CHECK each repo's docs folder (not just assume it exists)
+3. ✅ ACTUALLY COUNT files in each docs folder (not just check existence)
+4. ✅ OUTPUT the validation results (must show "X/12 files present")
+5. ✅ ACTUALLY CREATE missing files if count < 12
+6. ✅ OUTPUT "Generating missing file..." for each missing file
+7. ✅ ONLY THEN proceed to task execution
+
+**If agent does NOT output validation results, it FAILED to execute Phase 0.**
+
+---
+
+### Step 1: Discover ALL Repositories (MUST EXECUTE - NOT JUST READ)
+
+```bash
+# Find ALL git repositories in workspace (dynamic discovery)
+WORKSPACE_ROOT=$(pwd)
+while [ "$WORKSPACE_ROOT" != "/" ] && [ ! -d "$WORKSPACE_ROOT/.git" ]; do
+  WORKSPACE_ROOT=$(dirname "$WORKSPACE_ROOT")
+done
+
+cd "$WORKSPACE_ROOT"
+
+# Discover ALL repos dynamically
+find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
+```
+
+**🚨 NOTE: Repositories are discovered dynamically at runtime.**
+**NO hardcoded list. The `find` command will discover ALL git repositories automatically.**
+
+**Example of what might be discovered (NOT a hardcoded list):**
+```
+Result will vary based on what's in your workspace.
+Example: harbor-ai, harborApp, harborWebsite, harborUserSvc, etc.
+Actual list is discovered dynamically when agent runs.
+```
+
+### Step 2: Validate Documentation for EVERY Repository (MANDATORY - BLOCKS TASK EXECUTION)
+
+**🚨 CRITICAL: THIS STEP BLOCKS TASK EXECUTION UNTIL ALL DOCUMENTATION IS COMPLETE**
+
+**🚨 CRITICAL: READ ALL DOCUMENTATION FROM ALL EXISTING SERVICES FIRST**
+
+**Before making ANY decision about which service to use, agent MUST:**
+
+**First, validate EVERY repo has complete documentation:**
+
+1. ✅ Read ARCHITECTURE.md from EVERY existing service
+2. ✅ Read SERVICE_RULES.md from EVERY existing service
+3. ✅ Read STRUCTURE.md from EVERY existing service
+4. ✅ Understand what each service can handle
+5. ✅ Find existing service that can handle the task
+6. ✅ ONLY if ALL services explicitly prohibit task, consider new service
+
+**🚨 IF THIS STEP IS SKIPPED: BLOCKED**
+
+**For EACH discovered repository, check if `/docs` folder exists and has ALL 12 required files:**
+
+**Required Documentation Files (12 Total - MANDATORY):**
+1. **ARCHITECTURE.md** - Service overview, relationships, dependency graph
+2. **STRUCTURE.md** - Folder structure, layer responsibilities
+3. **DEPENDENCIES.md** - External and internal dependencies
+4. **DATABASE.md** - DB type, ORM, schema, relationships (if applicable)
+5. **MODEL_FLOW.md** - Complete data flow (controller → service → repository → DB)
+6. **API_PATTERNS.md** - Request/response, error handling (if applicable)
+7. **AUTH.md** - Authentication & authorization flow (if applicable)
+8. **SERVICE_RULES.md** - DOs and DON'Ts, boundaries
+9. **SHARED_SERVICES.md** - Shared service inventory and impact
+10. **CHANGE_IMPACT.md** - Impact analysis and safe change guidelines
+11. **DEVELOPMENT_RULES.md** - Coding standards, conventions
+12. **GIT_RULES.md** - Git rules (NO PUSH, NO BRANCHES)
+
+**For EACH repository, check:**
+
+```bash
+for repo in $(find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||'); do
+    echo "Checking $repo/docs/..."
+
+    # Check if docs folder exists
+    if [ ! -d "$repo/docs" ]; then
+        echo "❌ NO DOCS FOLDER: $repo"
+        echo "   Creating docs folder and generating all 12 files..."
+        mkdir -p "$repo/docs"
+        # Generate all 12 files
+    else
+        echo "✅ DOCS FOLDER EXISTS: $repo"
+    fi
+
+    # Check if all 12 required files exist
+    REQUIRED_FILES=(
+        "ARCHITECTURE.md"
+        "STRUCTURE.md"
+        "DEPENDENCIES.md"
+        "DATABASE.md"
+        "MODEL_FLOW.md"
+        "API_PATTERNS.md"
+        "AUTH.md"
+        "SERVICE_RULES.md"
+        "SHARED_SERVICES.md"
+        "CHANGE_IMPACT.md"
+        "DEVELOPMENT_RULES.md"
+        "GIT_RULES.md"
+    )
+
+    MISSING_FILES=()
+
+    for file in "${REQUIRED_FILES[@]}"; do
+        if [ ! -f "$repo/docs/$file" ]; then
+            MISSING_FILES+=("$file")
+        fi
+    done
+
+    if [ ${#MISSING_FILES[@]} -gt 0 ]; then
+        echo "❌ MISSING FILES in $repo/docs/:"
+        for file in "${MISSING_FILES[@]}"; do
+            echo "   - $file"
+        done
+        echo "   Generating missing files..."
+        # Generate missing files
+    else
+        echo "✅ ALL 12 FILES PRESENT: $repo/docs/"
+    fi
+done
+```
+
+**🚨 CRITICAL CHECKLIST (Must be TRUE for EVERY repo):**
+
+```markdown
+## Documentation Validation Report
+
+**Discovered Repositories:** {count} (discovered dynamically via `find` command)
+
+### Per-Repository Documentation Status:
+
+**{DYNAMIC-REPO-NAME-1}:**
+- [ ] docs/ folder exists
+- [ ] ARCHITECTURE.md present
+- [ ] STRUCTURE.md present
+- [ ] DEPENDENCIES.md present
+- [ ] DATABASE.md present (if applicable)
+- [ ] MODEL_FLOW.md present (if applicable)
+- [ ] API_PATTERNS.md present (if applicable)
+- [ ] AUTH.md present (if applicable)
+- [ ] SERVICE_RULES.md present
+- [ ] SHARED_SERVICES.md present
+- [ ] CHANGE_IMPACT.md present
+- [ ] DEVELOPMENT_RULES.md present
+- [ ] GIT_RULES.md present
+- Status: {COMPLETE/INCOMPLETE}
+
+**{DYNAMIC-REPO-NAME-2}:**
+- [ ] [Same checklist for each discovered repo]
+- Status: {COMPLETE/INCOMPLETE}
+
+**[Continue for ALL dynamically discovered repos - one checklist per repo]**
+
+**🚨 CRITICAL: Agent MUST OUTPUT this exact validation summary:**
+
+```bash
+🔍 FINAL VALIDATION
+✅ ALL REPOS: Documentation complete
+✅ Total repos validated: {count}
+✅ Each repo has 12/12 files present
+🟢 PROCEEDING TO TASK EXECUTION
+```
+
+**If agent does NOT output this summary, Phase 0 FAILED.**
+
+---
+
+### Special Repo Types (Detected Dynamically):
+
+**React Native Apps (e.g., [REACT-NATIVE-APP-NAME]):**
+If a repo is detected as React Native, additional checks:
+- [ ] STRUCTURE.md covers React Native project structure
+- [ ] DEPENDENCIES.md covers npm packages, React Native dependencies
+- [ ] DATABASE.md covers Realm/SQLite if applicable
+- [ ] MODEL_FLOW.md covers component flow, state management
+- [ ] API_PATTERNS.md covers API integration patterns
+- [ ] AUTH.md covers React Native auth (tokens, biometrics)
+- [ ] SERVICE_RULES.md covers React Native development rules
+- [ ] SHARED_SERVICES.md covers shared React Native components
+- [ ] CHANGE_IMPACT.md covers React Native bundle rebuild impact
+- [ ] DEVELOPMENT_RULES.md covers React Native coding standards
+- [ ] GIT_RULES.md covers NO PUSH rule
+
+**Frontend Apps (e.g., Next.js, React):**
+If a repo is detected as Frontend, additional checks:
+- [ ] STRUCTURE.md covers frontend project structure
+- [ ] DEPENDENCIES.md covers npm packages
+- [ ] API_PATTERNS.md covers API integration patterns
+- [ ] Other frontend-specific documentation
+
+**Backend Services (e.g., Node.js, Python):**
+If a repo is detected as Backend Service, additional checks:
+- [ ] DATABASE.md covers database schema
+- [ ] MODEL_FLOW.md covers data flow
+- [ ] API_PATTERNS.md covers endpoint patterns
+- [ ] Other backend-specific documentation
+
+### Summary:
+- Total Repos Discovered: {count} (discovered dynamically)
+- Repos with Complete Docs: {count}
+- Repos with Incomplete Docs: 0
+- Overall Status: ✅ COMPLETE (proceed) OR ❌ INCOMPLETE (fix first)
+```
+
+**If ANY repository has incomplete documentation:**
+```
+❌ DOCUMENTATION INCOMPLETE
+Repository: {repo-name}
+Missing Files: {list}
+Action: AUTO-GENERATING MISSING FILES...
+Please wait...
+✅ Documentation generation complete for {repo-name}
+```
+
+**Only proceed to task execution when:**
+```
+✅ ALL repositories have docs/ folder
+✅ ALL repositories have ALL 12 required .md files
+✅ NO missing documentation in any repo
+✅ ALL repos validated
+🟢 PROCEEDING TO TASK EXECUTION
+```
+
+**❌ IF DOCUMENTATION INCOMPLETE:**
+```
+❌ TASK BLOCKED - DOCUMENTATION INCOMPLETE
+
+Repository: {repo-name}
+Missing files: {list}
+
+ACTION REQUIRED:
+1. Generate missing documentation files
+2. Validate all repos
+3. Only then proceed to task
+
+CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
+```
+
+**🚨 TASK EXECUTION IS BLOCKED UNTIL ALL DOCUMENTATION IS COMPLETE**
+
+**This check happens BEFORE the agent picks up ANY task.**
+
+**If any repo is missing documentation:**
+1. ❌ BLOCK task execution
+2. ✅ Generate missing documentation
+3. ✅ Re-validate all repos
+4. ✅ Only then proceed to task
+```
+
+### Step 3: READ ALL Documentation (MANDATORY - CRITICAL)
+
+**🚨 THIS STEP CANNOT BE SKIPPED 🚨**
+
+**For EVERY repository, READ EVERY .md file:**
+
+```bash
+# Navigate to workspace root
+cd "$WORKSPACE_ROOT"
+
+# For EACH repository
+for repo in $(find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||'); do
+    echo "📚 READING DOCUMENTATION: $repo"
+    cd "$repo"
+
+    # READ EVERY .md file in docs/
+    for md_file in docs/*.md; do
+        echo "  📖 READING: $md_file"
+        # Actually READ the file content
+        cat "$md_file"
+        # Store in context
+        echo "  ✅ LOADED INTO CONTEXT: $md_file"
+    done
+
+    cd ..
+done
+```
+
+**🚨 CRITICAL VALIDATION CHECKLIST:**
+
+Before proceeding to implementation, verify:
+- [ ] Discovered ALL repos dynamically (no hardcoded list!)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/ARCHITECTURE.md
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/STRUCTURE.md
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/DEPENDENCIES.md (if exists)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/SERVICE_RULES.md (if exists)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/SHARED_SERVICES.md (if exists)
+- [ ] READ [EACH-DISCOVERED-REPO]/docs/CHANGE_IMPACT.md (if exists)
+- [ ] READ ALL other .md files in docs/ for EACH repo
+- [ ] Special attention to React Native repos (detected dynamically)
+- [ ] Special attention to Frontend repos (detected dynamically)
+- [ ] Special attention to Backend repos (detected dynamically)
+
+**🚨 FOR ALL DISCOVERED REPOS (dynamic list, not hardcoded):**
+- [ ] Repeat for ALL repositories found via find command
+- [ ] NO exceptions
+- [ ] NO skipping
+- [ ] Output checklist with ACTUAL discovered repo names (not hardcoded!)
+- [ ] READ EVERYTHING
+
+### Step 4: ONLY THEN Proceed to Implementation
+
+**ONLY AFTER completing ALL above steps:**
+
+```markdown
+✅ Documentation Reading Gate: PASSED
+
+All repositories documentation read and understood:
+- ✅ All ARCHITECTURE.md files read
+- ✅ All SHARED_SERVICES.md files read
+- ✅ All CHANGE_IMPACT.md files read
+- ✅ [REACT-NATIVE-APP] (React Native) docs read
+- ✅ Cross-repository relationships understood
+- ✅ Service boundaries identified
+- ✅ Dependencies mapped
+
+🟢 NOW PROCEEDING TO TASK IMPLEMENTATION
+
+With full documentation context:
+- Architecture: [Understood]
+- Dependencies: [Mapped]
+- Service boundaries: [Identified]
+- Change impact: [Analyzed]
+```
+
+---
+
+**🚨 IF DOCUMENTATION GATE FAILS:**
+
+```
+❌ DOCUMENTATION GATE FAILED
+
+Incomplete documentation detected:
+- Repository: {repo-name}
+- Missing files: {list}
+
+ACTION REQUIRED:
+1. Generate missing documentation files
+2. Verify all files are present
+3. Read all documentation
+4. Only then proceed to implementation
+
+CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
+```
+
+**This gate is NON-SKIPPABLE and MANDATORY.**
 
 ---
 
@@ -264,7 +691,7 @@ find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
 1. **All repositories** in the workspace
 2. **Service boundaries** - What does each service do?
 3. **Service types:**
-   - 🎯 **Core Service** - Business logic service (e.g., harborUserSvc)
+   - 🎯 **Core Service** - Business logic service (e.g., [BACKEND-SERVICE-NAME])
    - 📦 **Shared Service** - Common package used by multiple services
    - 🔧 **Infrastructure Service** - Gateway, auth, etc.
    - 🎨 **Frontend Service** - UI/Frontend application
@@ -273,22 +700,32 @@ find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
 ```markdown
 Repository Classification (v2.0 - Enhanced):
 🔴 Shared Package Services:
-- shared-models → Shared Package (publish required)
-- harbor-shared → Shared Package (publish required)
+- [SHARED-PACKAGE-NAME] → Shared Package (publish required)
 
 🔵 Database Infrastructure Services:
-- database-sync → Database Infrastructure (sync required)
+- [DATABASE-SYNC-NAME] → Database Infrastructure (sync required)
 
 🟢 Business Logic Services:
-- harborUserSvc → Business Logic (CRUD implementation)
-- harborJobSvc → Business Logic (CRUD implementation)
+- [BACKEND-SERVICE-NAME] → Business Logic (CRUD implementation)
 
 🟡 Gateway Services:
-- api-gateway → Gateway (route updates)
+- [GATEWAY-SERVICE-NAME] → Gateway (route updates)
 
 🟣 Frontend Applications:
-- harborWebsite → Frontend (UI implementation)
+- [FRONTEND-APP-NAME] → Frontend (UI implementation)
 ```
+
+**🚨 CRITICAL: If multiple frontend applications are identified:**
+
+**Reference:** `workflows/multi-frontend-implementation.md`
+
+**Agent MUST:**
+1. ✅ Identify ALL frontend repos (web, mobile, etc.)
+2. ✅ Implement feature in ALL frontend repos
+3. ✅ NOT skip ANY frontend repo
+4. ✅ Verify ALL frontend repos have the feature
+
+**⚠️  Feature is ONLY complete when implemented in ALL frontend apps.**
 
 ---
 
@@ -431,17 +868,17 @@ Actions:
 **Example Output:**
 ```markdown
 Architecture Mapping:
-harborUserSvc:
-  - Upstream: shared-models, harborShared
+[BACKEND-SERVICE-1]:
+  - Upstream: [SHARED-PACKAGE-1], [SHARED-PACKAGE-2]
   - Downstream: None (leaf service)
   - Communication: REST API
 
-harborJobSvc:
-  - Upstream: shared-models, harborShared, harborUserSvc
+[BACKEND-SERVICE-2]:
+  - Upstream: [SHARED-PACKAGE-1], [SHARED-PACKAGE-2], [BACKEND-SERVICE-1]
   - Downstream: None (leaf service)
   - Communication: REST API + Events
 
-shared-models:
+[SHARED-PACKAGE-NAME]:
   - Upstream: None (base library)
   - Downstream: ALL services
   - Communication: N/A (shared library)
@@ -457,16 +894,16 @@ shared-models:
 **Example:**
 ```markdown
 Dependency Graph:
-shared-models (HIGH IMPACT)
-  ├─ harborUserSvc
-  ├─ harborJobSvc
-  ├─ harborBlogSvc
-  └─ harborWebsite
+[SHARED-PACKAGE-NAME] (HIGH IMPACT)
+  ├─ [SERVICE-1]
+  ├─ [SERVICE-2]
+  ├─ [SERVICE-3]
+  └─ [FRONTEND-APP]
 
-harborShared (MEDIUM IMPACT)
-  ├─ harborUserSvc
-  ├─ harborJobSvc
-  └─ harborBlogSvc
+[ANOTHER-SHARED-PACKAGE] (MEDIUM IMPACT)
+  ├─ [SERVICE-1]
+  ├─ [SERVICE-2]
+  └─ [SERVICE-3]
 ```
 
 ##### 3. Service Rules
@@ -512,29 +949,29 @@ harborShared (MEDIUM IMPACT)
 ```markdown
 Dependency Chain:
 
-1. shared-model (Shared Package)
+1. [SHARED-PACKAGE-NAME] (Shared Package)
    ├─ Changes: Create Blog.ts model
    ├─ Prerequisites: None
    └─ Post-actions: Version bump → Build → Publish
 
-2. database-sync (Database Infrastructure)
+2. [DATABASE-SYNC-NAME] (Database Infrastructure)
    ├─ Changes: Register Blog model
-   ├─ Prerequisites: shared-model@2.1.0 published
+   ├─ Prerequisites: [SHARED-PACKAGE]@2.1.0 published
    └─ Post-actions: npm install → Configure → Test sync
 
-3. job-service (Business Logic)
+3. [BACKEND-SERVICE-NAME] (Business Logic)
    ├─ Changes: Implement Blog CRUD
-   ├─ Prerequisites: shared-model@2.1.0 available
+   ├─ Prerequisites: [SHARED-PACKAGE]@2.1.0 available
    └─ Post-actions: npm install → Implement Controller/Service/Repository
 
-4. api-gateway (Gateway)
+4. [GATEWAY-SERVICE-NAME] (Gateway)
    ├─ Changes: Add /api/blog routes
-   ├─ Prerequisites: job-service has blog endpoints
+   ├─ Prerequisites: [BACKEND-SERVICE] has blog endpoints
    └─ Post-actions: Update routes
 
-5. website (Frontend)
+5. [FRONTEND-APP-NAME] (Frontend)
    ├─ Changes: Create blog UI
-   ├─ Prerequisites: api-gateway has /api/blog routing
+   ├─ Prerequisites: [GATEWAY-SERVICE] has /api/blog routing
    └─ Post-actions: Create pages/components
 ```
 
@@ -559,14 +996,14 @@ Dependency Chain:
 
 **Decision Tree:**
 ```markdown
-Task: "Add user notifications"
+Task: "[EXAMPLE TASK]"
 
 Analysis:
-1. ✅ Check: Does harborNotificationSvc exist?
+1. ✅ Check: Does [SERVICE-NAME] exist?
    → YES → Use existing service
    → NO → Check if existing service can handle it
 
-2. ✅ Check: Can harborUserSvc handle notifications?
+2. ✅ Check: Can [EXISTING-SERVICE] handle this?
    → Check SERVICE_RULES.md
    → Check ARCHITECTURE.md
    → If NO → Create new service
@@ -595,12 +1032,12 @@ Shared Service Impact Analysis:
 Task: "Modify User model in shared-models"
 
 Impact:
-- 🔴 HIGH IMPACT - shared-models used by ALL services
+- 🔴 HIGH IMPACT - [SHARED-PACKAGE-NAME] used by ALL services
 - 🔴 AFFECTED SERVICES:
-  - harborUserSvc (will break)
-  - harborJobSvc (will break)
-  - harborBlogSvc (will break)
-  - harborWebsite (will break)
+  - [SERVICE-1] (will break)
+  - [SERVICE-2] (will break)
+  - [SERVICE-3] (will break)
+  - [FRONTEND-APP] (will break)
 
 Required Actions:
 1. Update shared-models User model
@@ -1477,9 +1914,145 @@ Result: ✅ All commands executed and verified
 
 ---
 
-## 🔄 Phase 12: Git Integration (MANDATORY)
+## 🔄 Phase 12: Git Integration (MANDATORY - NO PUSH)
 
-*Same as v10.1 - Local git changes, NO PUSH*
+**🚨 CRITICAL: NO GIT PUSH - ZERO TOLERANCE**
+
+**Reference:** `workflows/CRITICAL-GIT-RULES-ENFORCEMENT.md`
+
+**🚨 CRITICAL: USE SAFE BASH TOOL FOR ALL COMMAND EXECUTION**
+
+**Reference:** `tools/safe-bash-tool.md`
+
+**Before executing ANY bash command, agent MUST:**
+
+1. ✅ Read `tools/safe-bash-tool.md`
+2. ✅ Validate the command using the validation function
+3. ✅ Only execute if validation passes
+4. ✅ If blocked, STOP immediately and do not execute
+
+**🚨 THIS IS NOT OPTIONAL - ALL COMMANDS MUST BE VALIDATED**
+
+**Example:**
+```javascript
+// Agent wants to commit changes
+
+// Step 1: Read the safe bash tool
+read('tools/safe-bash-tool.md');
+
+// Step 2: Validate the command
+const command = "git commit -m 'Add feature'";
+const validation = validateCommand(command);
+
+// Step 3: Check if blocked
+if (!validation.allowed) {
+    console.log(validation.error);
+    console.log('🚨 COMMAND BLOCKED - NOT EXECUTED');
+    // STOP - do not execute
+    return;
+}
+
+// Step 4: Execute if allowed
+console.log(`✅ Command validated: ${command}`);
+executeCommand(command);
+```
+
+**🚨 IF THIS STEP IS SKIPPED: CRITICAL FAILURE**
+
+### Allowed Operations (LOCAL ONLY)
+
+**✅ Agent MAY:**
+- Create feature branch locally
+- Stage files with `git add`
+- Commit changes with `git commit`
+- View status with `git status`
+- View diff with `git diff`
+- View log with `git log`
+
+**❌ Agent MUST NEVER:**
+- `git push` - UNDER ANY CIRCUMSTANCES
+- `git push origin` - UNDER ANY CIRCUMSTANCES
+- `git push origin dev` - UNDER ANY CIRCUMSTANCES
+- `git push origin main` - UNDER ANY CIRCUMSTANCES
+- `gh pr create` - This requires push first
+- ANY variant of push command
+
+### Git Integration Process
+
+**🚨 CRITICAL: AGENT ONLY WORKS LOCALLY - NO BRANCH CREATION - NO PUSH**
+
+**After completing all implementation, agent MUST:**
+
+1. ✅ Stage changes: `git add .`
+2. ✅ Commit locally: `git commit -m "feat(scope): description"`
+3. ✅ Verify commit: `git log -1`
+4. ✅ Check status: `git status`
+
+**❌ AGENT MUST NOT:**
+- ❌ Create branches (NOT ALLOWED)
+- ❌ Push to remote (NOT ALLOWED)
+- ❌ Create pull requests (NOT ALLOWED)
+
+**Agent only commits locally to the CURRENT branch.**
+
+**User handles branches, push, and PR creation manually.**
+
+### Pull Request Handoff
+
+**🚨 AGENT DOES NOT CREATE PULL REQUESTS**
+
+**Agent completes implementation and commits locally.**
+
+**User handles:**
+- Branch creation (if desired)
+- Pushing to remote
+- Creating pull requests
+- Code review
+
+**Agent's responsibility ends at local commit.**
+
+### Compliance Verification
+
+**Before marking task complete, agent MUST verify:**
+
+```markdown
+## Git Compliance Verification
+
+### Operations Executed:
+- [x] git add . ✅ (allowed)
+- [x] git commit -m "..." ✅ (allowed)
+- [x] git status ✅ (allowed)
+- [x] git log -1 ✅ (allowed)
+
+### Operations NOT EXECUTED:
+- [ ] ❌ git checkout -b (not executed - agent doesn't create branches)
+- [ ] ❌ git push (not executed - agent doesn't push)
+- [ ] ❌ git push origin (not executed - agent doesn't push)
+- [ ] ❌ gh pr create (not executed - agent doesn't create PRs)
+
+### Final State:
+✅ All operations were LOCAL
+✅ NO branch creation
+✅ NO push commands executed
+✅ NO PR creation
+✅ NO remote changes made
+✅ Repository state: LOCAL CHANGES ONLY
+✅ Task complete (local commit only)
+```
+
+### 🚨 What Agent Does (Summary)
+
+```markdown
+✅ Implementation complete
+✅ Testing complete
+✅ Documentation updated
+✅ Local commit complete
+❌ Branch NOT created (user's choice)
+❌ Push NOT executed (user's responsibility)
+❌ PR NOT created (user's responsibility)
+```
+
+**Agent stops at local commit. User handles everything else.**
 
 ---
 
@@ -1567,6 +2140,187 @@ Review Analysis Plan
   ↓
 Phase 1-12: Implementation & Validation
 ```
+
+---
+
+# 🚨 CRITICAL RULE: FULLY AUTONOMOUS EXECUTION (NO PERMISSION CHECKPOINTS)
+
+**🚨 v11.0 - AGENT RUNS AUTONOMOUSLY UNTIL TASK COMPLETE**
+
+**Reference:** This workflow file
+
+---
+
+## 🎯 Rule: NO PERMISSION CHECKPOINTS
+
+**The agent MUST:**
+- ✅ Continue automatically from phase to phase
+- ✅ Execute complete workflow autonomously
+- ✅ Only stop for CRITICAL ERRORS or user-initiated stops
+- ✅ NO intermediate progress reports between phases
+- ✅ NO status updates between tasks
+- ✅ Run silently until task complete
+
+**The agent MUST NOT:**
+- ❌ Ask "Would you like me to continue with Task #X?"
+- ❌ Ask "Should I proceed to the next step?"
+- ❌ Ask "Do you want me to continue?"
+- ❌ Stop and wait for user input between phases
+- ❌ Present options or choices during execution
+- ❌ Output progress summaries between tasks
+- ❌ Show "Progress Summary" or status updates during execution
+- ❌ Output ANYTHING until task is complete
+
+---
+
+## 🚀 Autonomous Execution Flow
+
+**When agent receives task:**
+
+```
+1. Receive task
+   ↓
+2. Phase 0: Documentation Gate (automatic)
+   ↓
+3. Phase 0.45: Service Selection (automatic)
+   ↓
+4. Phase 0.5: Intelligence Analysis (automatic)
+   ↓
+5. Phase 1: Repository Analysis (automatic)
+   ↓
+6. Phase 2-12: Continue automatically (no stops)
+   ↓
+7. Task Complete: Report results
+   ↓
+8. Continue to next task automatically (if any)
+```
+
+**NO STOPS between phases - FULL AUTONOMY**
+
+---
+
+## 📊 Progress Reporting (SILENT EXECUTION)
+
+**Agent MUST run SILENTLY through all phases:**
+
+**✅ CORRECT BEHAVIOR:**
+```
+Agent receives task
+[Phase 0 runs silently]
+[Phase 0.45 runs silently]
+[Phase 0.5 runs silently]
+[Phase 1-12 run silently]
+✅ TASK COMPLETE
+[Final report only]
+```
+
+**❌ WRONG BEHAVIOR:**
+```
+❌ "Progress Summary: Task #1 complete"
+❌ "Moving to Task #2..."
+❌ "Would you like me to continue?"
+❌ Any intermediate status updates
+❌ Any progress reports during execution
+```
+
+**ONLY output:**
+- ✅ Final completion report (when ALL tasks done)
+- ✅ Critical error report (if something fails)
+- ❌ NO intermediate progress
+- ❌ NO status updates during execution
+- ❌ NO phase-by-phase updates
+
+---
+
+## 🚨 When to Stop
+
+**Agent ONLY stops for:**
+
+1. **CRITICAL ERRORS**
+   - Build failures that cannot be auto-fixed
+   - Test failures that cannot be auto-fixed
+   - Documentation validation failures
+   - Dependency conflicts that cannot be resolved
+   - GIT PUSH ATTEMPTS (CRITICAL VIOLATION)
+
+2. **USER-INITIATED STOPS**
+   - User sends "stop" command
+   - User sends "pause" command
+   - User interrupts with new task
+
+3. **TASK COMPLETION**
+   - All tasks completed
+   - Report final results
+   - Wait for new tasks
+
+**Agent DOES NOT stop for:**
+- ❌ Phase transitions
+- ❌ Task transitions
+- ❌ File completions
+- ❌ Success milestones
+- ❌ "Permission requests"
+
+---
+
+## ✅ Correct Execution Example
+
+```markdown
+**Task Received:** Implement blog module
+
+**Agent:**
+[Executes Phase 0 silently]
+[Executes Phase 0.45 silently]
+[Executes Phase 0.5 silently]
+[Executes Phase 1-12 silently]
+[NO intermediate output]
+
+✅ TASK COMPLETE
+Implementation: Blog module fully implemented
+Repository: job-service
+Commits: Local commits complete (NO PUSH)
+Status: Ready for review
+
+[Only final output, no intermediate updates]
+```
+
+---
+
+## ❌ Wrong Execution Example
+
+```markdown
+**Task Received:** Implement blog module
+
+**Agent:**
+[Executes silently]
+[NO progress output]
+[NO status updates]
+[NO intermediate reports]
+
+✅ TASK COMPLETE
+All implementation done.
+
+❌ WRONG: "Progress Summary: Task #1 complete, Task #2 complete..."
+❌ WRONG: "Would you like me to continue?"
+❌ WRONG: Any intermediate output during execution
+✅ RIGHT: Complete silence until task complete, then final report only
+
+```
+
+---
+
+## 🎯 Summary
+
+**Fully Autonomous Execution:**
+- ✅ Run through all phases automatically
+- ✅ Report progress but don't stop
+- ✅ Continue to next task automatically
+- ✅ Only stop for critical errors
+- ✅ Never ask for permission
+
+**This ensures:**
+- Fast execution (no waiting for user)
+- Complete workflows (no abandoned tasks)
+- Maximum productivity (agent runs autonomously)
 
 ---
 
