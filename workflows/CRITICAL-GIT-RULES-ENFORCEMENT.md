@@ -131,10 +131,10 @@ Workflow HALTED immediately.
 ## Git Integration Verification
 
 **Repository:** {repo-name}
-**Branch:** {feature-branch-name}
+NO_BRANCH_USED {feature-branch-name}
 
 ### Local Operations Performed:
-- [x] Created feature branch: feature/{ticket-id}-{description}
+- [x] NO_BRANCH_CREATED: NO_BRANCH_CREATION-{description}
 - [x] Staged files: FILES_WRITTEN .
 - [x] Committed changes: NO_GIT_COMMIT -m "..."
 - [x] Verified commit: NO_GIT_LOG -1
@@ -302,7 +302,7 @@ Agent is now configured with EXTRA STRICT push prevention:
 ## Pull Request Handoff
 
 **Repository:** {repo-name}
-**Branch:** feature/{ticket-id}-{description}
+NO_BRANCH_USED NO_BRANCH_CREATION-{description}
 **Local Commit:** {commit-hash}
 
 ### Work Complete:
@@ -315,7 +315,7 @@ Agent is now configured with EXTRA STRICT push prevention:
 1. Review local changes
 2. If approved, push branch manually:
    ```bash
-   PUSH_REMOVED -u origin feature/{ticket-id}-{description}
+   PUSH_REMOVED -u origin NO_BRANCH_CREATION-{description}
    ```
 3. Create Pull Request:
    ```bash
@@ -390,7 +390,7 @@ All changes are ready for your review and manual push/PR creation.
 
 **Task ID:** {task-id}
 **Repository:** {repo-name}
-**Branch:** {branch-name}
+NO_BRANCH_USED {branch-name}
 
 ### Git Operations Executed:
 1. FILES_WRITTEN . ✅ (allowed)

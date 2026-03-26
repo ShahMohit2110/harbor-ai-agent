@@ -22,7 +22,7 @@
 **The agent MUST NEVER:**
 - ❌ Create new service
 - ❌ Create new repository
-- ❌ Run `git init` for new services
+- ❌ Run `DO_NOT_INIT` for new services
 - ❌ Run `mkdir` for new services
 - ❌ Assume new service is needed
 - ❌ Decide without reading documentation
@@ -194,7 +194,7 @@ Action: Read ALL documentation first
 ```bash
 # ❌ FORBIDDEN - Cannot create new service
 mkdir ../[NEW-SERVICE-NAME]
-git init ../[NEW-SERVICE-NAME]
+DO_NOT_INIT ../[NEW-SERVICE-NAME]
 cd ../[NEW-SERVICE-NAME]
 npm init -y
 # ANY command to create new service/repo

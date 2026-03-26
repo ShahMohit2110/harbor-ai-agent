@@ -98,7 +98,6 @@ cat workflows/global-agent-workflow-v11.md
    - Hard to maintain, breaks when files change
 
 ✅ RIGHT: ONE file with all startup instructions
-   - CROP_CONFIG.md has EVERYTHING
    - Always read this first
    - Other files can change, startup stays the same
 ```
@@ -144,7 +143,6 @@ cat workflows/global-agent-workflow-v11.md
 
 2. **Instructions Scattered**
    - Problem: Changes in one file don't reflect in others
-   - Solution: ONE source of truth (CROP_CONFIG.md)
 
 3. **No Verification**
    - Problem: Files deleted or moved, agent doesn't notice
@@ -156,12 +154,10 @@ cat workflows/global-agent-workflow-v11.md
 
 5. **No Recovery**
    - Problem: When something breaks, don't know what's wrong
-   - Solution: Diagnostic mode in CROP_CONFIG.md
 
 ### How This System Prevents Breaking:
 
 1. ✅ **Absolute paths** - Never break due to directory changes
-2. ✅ **Single source** - CROP_CONFIG.md has everything
 3. ✅ **Self-verifying** - Checks itself before running
 4. ✅ **Mandatory steps** - Can't skip anything
 5. ✅ **Diagnostic mode** - Can tell you what's wrong
@@ -173,9 +169,7 @@ cat workflows/global-agent-workflow-v11.md
 ```
 /harbor-ai/
 ├── START_HERE.md (this file)
-│   └── Points to: CROP_CONFIG.md
 │
-├── CROP_CONFIG.md (PERMANENT - Never changes)
 │   ├── .env loading instructions
 │   ├── Working directory setup
 │   ├── Core file loading
@@ -204,9 +198,7 @@ cat workflows/global-agent-workflow-v11.md
    ↓
 2. READ: START_HERE.md (this file)
    ↓
-3. READ: CROP_CONFIG.md (permanent instructions)
    ↓
-4. EXECUTE: Startup sequence from CROP_CONFIG.md
    ├─ Load .env
    ├─ Set working directory
    ├─ Load core files
@@ -224,7 +216,6 @@ cat workflows/global-agent-workflow-v11.md
 
 ### Test 1: Read Core Config
 ```bash
-cat $HARBOR_AI_ROOT/CORE_CONFIG.md
 ```
 
 **Expected:** Shows complete startup instructions
@@ -264,8 +255,6 @@ echo "Org: $AZURE_DEVOPS_ORG"
 
 ### What CANNOT Change:
 - **START_HERE.md** location
-- **CROP_CONFIG.md** location
-- **CROP_CONFIG.md** startup sequence
 - Absolute paths to core files
 - .env file location
 
@@ -279,9 +268,7 @@ echo "Org: $AZURE_DEVOPS_ORG"
 
 1. **READ** `$HARBOR_AI_ROOT/START_HERE.md`
 
-2. **READ** `$HARBOR_AI_ROOT/CORE_CONFIG.md`
 
-3. **FOLLOW** the startup sequence in CROP_CONFIG.md
 
 4. **VERIFY** all checklist items pass
 
@@ -292,7 +279,6 @@ echo "Org: $AZURE_DEVOPS_ORG"
 **When you need to add/change something:**
 
 1. **Create new file** for new feature (don't modify core)
-2. **Update CROP_CONFIG.md** ONLY if:
    - Adding a new core file (rare)
    - Changing absolute path (rare)
 3. **NEVER modify** the startup sequence itself
@@ -307,7 +293,6 @@ echo "Org: $AZURE_DEVOPS_ORG"
 - Hard to maintain
 
 **The Solution:**
-- ONE permanent core configuration (CROP_CONFIG.md)
 - ONE entry point (START_HERE.md)
 - Absolute paths (never break)
 - Self-verifying (catches issues)

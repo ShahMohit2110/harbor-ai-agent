@@ -1,38 +1,8 @@
 # Global Agent Workflow - Master Control System v11.0
 
-## 🔴 READ THIS FIRST - NO NEW REPOSITORIES
-
-**Reference:** `NO-NEW-REPOS.md`
-
-**🚨 BEFORE DOING ANYTHING, AGENT MUST:**
-1. ✅ Read `NO-NEW-REPOS.md`
-2. ✅ Discover ALL existing repositories
-3. ✅ Choose ONE existing repository
-4. ✅ Work in that existing repository
-5. ✅ NEVER create new repository
-
-**This is NON-NEGOTIABLE.**
-
-**Version:** 11.1.0
-**Last Updated:** 2026-03-26
+**Version:** 11.0.0
+**Last Updated:** 2026-03-25
 **Purpose:** System-aware decision-making agent with mandatory pre-execution intelligence analysis
-
----
-
-## 🔴 READ THIS FIRST - NO BRANCH CREATION
-
-**Reference:** `NO-BRANCH-CREATION.md`
-
-**🚨 BEFORE DOING ANYTHING, AGENT MUST:**
-1. ✅ Read `NO-BRANCH-CREATION.md`
-2. ✅ Understand: NO BRANCH CREATION
-3. ✅ Work on CURRENT branch only
-4. ✅ NO git commands
-5. ✅ ONLY then proceed
-
-**This is NON-NEGOTIABLE.**
-
----
 
 ---
 
@@ -48,33 +18,13 @@
 
 **🚨 CRITICAL RULES:**
 
-> **"NO BRANCH CREATION - WORK ON CURRENT BRANCH ONLY - ZERO EXCEPTIONS"**
->
-> **"NO GIT COMMANDS AT ALL - NO ADD, COMMIT, PUSH, STATUS, LOG, DIFF, CHECKOUT"**
->
 > **"NO DOCUMENTATION = NO TASK - ALL REPOS MUST HAVE 12/12 FILES"**
 >
 > **"NO ANALYSIS = NO IMPLEMENTATION"**
 >
 > **"NO PERMISSION CHECKPOINTS - FULL AUTONOMY"**
-
----
-
-## 🔴 ABSOLUTE PROHIBITION - NO BRANCH CREATION
-
-**🚨 AGENT MUST NOT:**
-- ❌ Create new branches (feature branches, any branches)
-- ❌ Switch branches (git checkout, git switch)
-- ❌ Use ANY git commands (add, commit, push, status, log, diff)
-- ❌ Modify git repository in ANY way
-
-**✅ AGENT ONLY:**
-- ✅ Writes/modifies code files
-- ✅ Runs tests
-- ✅ Updates documentation
-- ✅ Works on CURRENT BRANCH ONLY
-
-**User handles ALL git operations including branch creation.**
+>
+> **"NO COMMAND EXECUTION WITHOUT VALIDATION - ALL COMMANDS MUST USE SAFE BASH TOOL"**
 
 ---
 
@@ -108,6 +58,7 @@
 
 ## 🚨 CRITICAL: FOR ALL COMMAND EXECUTION
 
+**Reference:** `tools/safe-bash-tool.md`
 
 ---
 
@@ -118,6 +69,8 @@
 ## 📚 Phase 0: Documentation Gate (AUTOMATIC - NON-SKIPPABLE - ALL REPOS - MANDATORY)
 
 **Reference:** `workflows/DOCUMENTATION-GATE-MANDATORY.md` ⭐ PRIMARY - USE THIS
+**Reference:** `workflows/documentation-reading-gate.md`
+**Reference:** `workflows/DOCUMENTATION-GATE-ENFORCEMENT.md`
 
 **🚨 CRITICAL: DOCUMENTATION MUST BE COMPLETE FOR EVERY REPOSITORY**
 
@@ -536,9 +489,9 @@ CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
 ### 🚫 ABSOLUTE RULE (ZERO EXCEPTIONS)
 
 **❌ FORBIDDEN:**
-- DO_NOT_CREATE_ANYTHING_NEW
-- DO_NOT_CREATE_NEW_REPO
-- Running `DO_NOT_INIT` for new services
+- Creating new service/repo
+- Creating new repository
+- Running `git init` for new services
 - Assuming new service is needed
 
 **✅ REQUIRED:**
@@ -1456,6 +1409,8 @@ Model Inclusion Checklist:
 **How to find files dynamically (based on documentation):**
 
 ```javascript
+// Read IMPORT_PATTERNS.md to understand repo patterns
+const importPatterns = readDocumentation(repo, 'IMPORT_PATTERNS.md');
 
 // Find files that need the model
 const filesNeedingModel = findFilesByPattern(repo, importPatterns);
@@ -1476,10 +1431,12 @@ for (const file of filesNeedingModel) {
 ```markdown
 Model Created: models/Blog.ts
 
+Step 1: Find entity registry (from IMPORT_PATTERNS.md)
   File: src/entities/index.ts
   Action: Add `export * from './Blog';`
   Verify: npx tsc --noEmit (no errors)
 
+Step 2: Find database config (from IMPORT_PATTERNS.md)
   File: src/database/connection.ts
   Action: Import Blog, add to entities array
   Verify: npx tsc --noEmit (no errors)
@@ -1510,11 +1467,13 @@ Command Execution Checklist:
 - [ ] No errors in output
 ```
 
+**How to verify commands (based on COMMAND_VERIFY.md):**
 
 ```bash
 # Example: npm install
 npm install
 
+# Verify success (from COMMAND_VERIFY.md)
 test -f package-lock.json || echo "ERROR: package-lock.json not created!"
 test -d node_modules || echo "ERROR: node_modules not created!"
 grep -q "ERR!" npm-debug.log && echo "ERROR: npm install had errors!"
@@ -1524,6 +1483,7 @@ npm start &
 NPM_PID=$!
 sleep 5
 
+# Verify success (from COMMAND_VERIFY.md)
 ps -p $NPM_PID || echo "ERROR: npm start process died!"
 grep -q "Database synced" logs/app.log || echo "ERROR: Sync not confirmed!"
 
@@ -1618,11 +1578,13 @@ async function completeRepo(repo, task) {
    - Verify all files compile
 
 2. **Did I add all required imports?**
+   - Check IMPORT_PATTERNS.md
    - Verify model exported
    - Verify model imported in config
    - Verify model imported in using files
 
 3. **Did I run all required commands?**
+   - Check COMMAND_VERIFY.md
    - Verify npm install succeeded
    - Verify npm run build succeeded
    - Verify npm start succeeded (if database-sync)
@@ -1730,6 +1692,7 @@ await verifyCrossRepoDependencies(affectedRepos);
 **Purpose:** Agent MUST run ALL required commands and VERIFY they succeeded
 
 **🆕 Key Capabilities:**
+- 📖 **Read COMMAND_VERIFY.md** to identify required commands
 - ⚡ **Execute ALL required commands** (not optional!)
 - ✅ **Verify EACH command succeeded** (check success indicators)
 - 🔄 **Retry failed commands** (up to 3 times)
@@ -1759,6 +1722,8 @@ await verifyCrossRepoDependencies(affectedRepos);
 **Step 1: Identify Required Commands (from documentation)**
 
 ```bash
+# Read COMMAND_VERIFY.md from repo
+cat repo/docs/COMMAND_VERIFY.md
 
 # Extract required commands based on repo type
 ```
@@ -1827,6 +1792,7 @@ Command Completion Checklist:
 
 **Repository:** {repo-name}
 
+**Required Commands (from COMMAND_VERIFY.md):**
 - npm install
 - npm start ← MANDATORY for database-sync!
 
@@ -1868,6 +1834,7 @@ Repository: database-sync
 Agent: Updated files
   ✅ Files updated
 
+Reading: COMMAND_VERIFY.md
   Found: npm start is MANDATORY
 
 Executing: npm start
@@ -1955,6 +1922,7 @@ Result: ✅ All commands executed and verified
 
 **🚨 CRITICAL: USE SAFE BASH TOOL FOR ALL COMMAND EXECUTION**
 
+**Reference:** `tools/safe-bash-tool.md`
 
 **Before executing ANY bash command, agent MUST:**
 
@@ -2055,7 +2023,7 @@ executeCommand(command);
 - [x] NO_GIT_LOG -1 ✅ (allowed)
 
 ### Operations NOT EXECUTED:
-- [ ] ❌ NO_CHECKOUT_B (not executed - agent doesn't create branches)
+- [ ] ❌ git checkout -b (not executed - agent doesn't create branches)
 - [ ] ❌ PUSH_REMOVED (not executed - agent doesn't push)
 - [ ] ❌ PUSH_REMOVED origin (not executed - agent doesn't push)
 - [ ] ❌ DO_NOT_CREATE_PR (not executed - agent doesn't create PRs)
