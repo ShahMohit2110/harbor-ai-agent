@@ -1941,7 +1941,7 @@ Result: ✅ All commands executed and verified
 read('tools/safe-bash-tool.md');
 
 // Step 2: Validate the command
-const command = "git commit -m 'Add feature'";
+const command = "NO_GIT_COMMIT -m 'Add feature'";
 const validation = validateCommand(command);
 
 // Step 3: Check if blocked
@@ -1963,19 +1963,17 @@ executeCommand(command);
 
 **✅ Agent MAY:**
 - Create feature branch locally
-- Stage files with `git add`
-- Commit changes with `git commit`
-- View status with `git status`
-- View diff with `git diff`
-- View log with `git log`
+- Stage files with `NO_GIT_ADD`
+- Commit changes with `NO_GIT_COMMIT`
+- View status with `NO_GIT_STATUS`
+- View diff with `NO_GIT_DIFF`
+- View log with `NO_GIT_LOG`
 
-**❌ Agent MUST NEVER:**
-- `git push` - UNDER ANY CIRCUMSTANCES
-- `git push origin` - UNDER ANY CIRCUMSTANCES
-- `git push origin dev` - UNDER ANY CIRCUMSTANCES
-- `git push origin main` - UNDER ANY CIRCUMSTANCES
-- `gh pr create` - This requires push first
-- ANY variant of push command
+**❌ Agent MUST NOT:**
+- Push to remote - UNDER ANY CIRCUMSTANCES
+- Create pull requests - UNDER ANY CIRCUMSTANCES
+- Create branches - UNDER ANY CIRCUMSTANCES
+- Modify remote repository - UNDER ANY CIRCUMSTANCES
 
 ### Git Integration Process
 
@@ -1983,10 +1981,10 @@ executeCommand(command);
 
 **After completing all implementation, agent MUST:**
 
-1. ✅ Stage changes: `git add .`
-2. ✅ Commit locally: `git commit -m "feat(scope): description"`
-3. ✅ Verify commit: `git log -1`
-4. ✅ Check status: `git status`
+1. ✅ Stage changes: `FILES_WRITTEN .`
+2. ✅ Commit locally: `NO_GIT_COMMIT -m "feat(scope): description"`
+3. ✅ Verify commit: `NO_GIT_LOG -1`
+4. ✅ Check status: `NO_GIT_STATUS`
 
 **❌ AGENT MUST NOT:**
 - ❌ Create branches (NOT ALLOWED)
@@ -2019,16 +2017,16 @@ executeCommand(command);
 ## Git Compliance Verification
 
 ### Operations Executed:
-- [x] git add . ✅ (allowed)
-- [x] git commit -m "..." ✅ (allowed)
-- [x] git status ✅ (allowed)
-- [x] git log -1 ✅ (allowed)
+- [x] FILES_WRITTEN . ✅ (allowed)
+- [x] NO_GIT_COMMIT -m "..." ✅ (allowed)
+- [x] NO_GIT_STATUS ✅ (allowed)
+- [x] NO_GIT_LOG -1 ✅ (allowed)
 
 ### Operations NOT EXECUTED:
 - [ ] ❌ git checkout -b (not executed - agent doesn't create branches)
-- [ ] ❌ git push (not executed - agent doesn't push)
-- [ ] ❌ git push origin (not executed - agent doesn't push)
-- [ ] ❌ gh pr create (not executed - agent doesn't create PRs)
+- [ ] ❌ PUSH_REMOVED (not executed - agent doesn't push)
+- [ ] ❌ PUSH_REMOVED origin (not executed - agent doesn't push)
+- [ ] ❌ DO_NOT_CREATE_PR (not executed - agent doesn't create PRs)
 
 ### Final State:
 ✅ All operations were LOCAL

@@ -72,7 +72,7 @@
 10. **Phase 10: Evidence-Based Validation** - Proof of completion
 
 **🚨 CRITICAL RULES:**
-- ❌ **NO git push, commit, PR, or ticket closure**
+- ❌ **NO DO_NOT_PUSH, commit, PR, or ticket closure**
 - ✅ **Services MUST be started and verified**
 - ✅ **APIs MUST be tested with real payloads**
 - ✅ **Errors MUST be fixed until zero remain**
@@ -650,15 +650,15 @@ The Harbor AI system is designed as an autonomous development agent. When activa
 
 3. **Commit Changes**
    - Stage files: `git add <files>`
-   - Commit with message: `git commit -m "<ticket-id>: <description>"`
+   - Commit with message: `NO_GIT_COMMIT -m "<ticket-id>: <description>"`
    - Include co-authorship attribution
 
 4. **Push to Remote**
-   - Push branch: `git push -u origin feature/<ticket-id>-<description>`
+   - Push branch: `DO_NOT_PUSH -u origin feature/<ticket-id>-<description>`
    - ✅ MUST verify push succeeded
 
 5. **Create Pull Request**
-   - Use `gh pr create` or GitHub web interface
+   - Use `DO_NOT_CREATE_PR` or GitHub web interface
    - Target: `dev` branch
    - Include full PR description template
    - ✅ MUST verify PR created successfully
@@ -1957,7 +1957,7 @@ git checkout -b feature/HARBOR-123-add-job-filter
 
 ```bash
 # Review changes
-git status
+NO_GIT_STATUS
 
 # Stage only relevant files
 git add controllers/job.ts
@@ -1977,7 +1977,7 @@ git add tests/
 #### Step 6.5: Commit Changes
 
 ```bash
-git commit -m "HARBOR-XXX: Add job filtering API
+NO_GIT_COMMIT -m "HARBOR-XXX: Add job filtering API
 
 Implemented job filtering by location and salary range.
 Added validation, pagination, and error handling.
@@ -1988,14 +1988,14 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 #### Step 6.6: Push Branch
 
 ```bash
-git push -u origin feature/HARBOR-XXX-short-description
+DO_NOT_PUSH -u origin feature/HARBOR-XXX-short-description
 ```
 
 #### Step 6.7: Create Pull Request
 
 **Using GitHub CLI:**
 ```bash
-gh pr create \
+DO_NOT_CREATE_PR \
   --base dev \
   --title "HARBOR-XXX: Add job filtering API" \
   --body-file pr-description.md

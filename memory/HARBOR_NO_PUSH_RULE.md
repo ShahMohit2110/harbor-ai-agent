@@ -1,6 +1,6 @@
 ---
 name: harbor_no_push_rule
-description: CRITICAL: Agent must NEVER execute git push commands - zero tolerance rule with code-level enforcement
+description: CRITICAL: Agent must NEVER execute DO_NOT_PUSH commands - zero tolerance rule with code-level enforcement
 type: feedback
 ---
 
@@ -40,31 +40,31 @@ type: feedback
 
 **The Harbor AI Agent MUST NEVER:**
 
-1. **Execute ANY git push command:**
-   - `git push`
-   - `git push origin`
-   - `git push origin dev`
-   - `git push origin main`
-   - `git push -u origin`
-   - `git push --force`
-   - `git push --force-with-lease`
+1. **Execute ANY DO_NOT_PUSH command:**
+   - `DO_NOT_PUSH`
+   - `DO_NOT_PUSH origin`
+   - `DO_NOT_PUSH origin dev`
+   - `DO_NOT_PUSH origin main`
+   - `DO_NOT_PUSH -u origin`
+   - `DO_NOT_PUSH --force`
+   - `DO_NOT_PUSH --force-with-lease`
    - ANY variant of push
 
 2. **Create ANY pull request:**
-   - `gh pr create` (requires push first)
+   - `DO_NOT_CREATE_PR` (requires push first)
    - ANY PR creation command
 
 **The Harbor AI Agent MAY:**
 
 1. **Execute LOCAL git commands:**
-   - `git status`
-   - `git diff`
-   - `git log`
+   - `NO_GIT_STATUS`
+   - `NO_GIT_DIFF`
+   - `NO_GIT_LOG`
    - `git branch`
    - `git checkout`
    - `git checkout -b`
    - `git add .`
-   - `git commit -m "message"`
+   - `NO_GIT_COMMIT -m "message"`
    - `git merge`
    - `git rebase`
    - `git reset`
@@ -86,15 +86,15 @@ type: feedback
 read('tools/safe-bash-tool.md');
 
 // Step 2: Agent validates command before execution
-const command = "git push origin dev";
+const command = "DO_NOT_PUSH origin dev";
 
 function validateCommand(command) {
     const FORBIDDEN_PATTERNS = [
-        /git push/,
-        /git push\s+origin/,
-        /git push\s+-u/,
-        /git push\s+--force/,
-        /gh pr create/
+        /DO_NOT_PUSH/,
+        /DO_NOT_PUSH\s+origin/,
+        /DO_NOT_PUSH\s+-u/,
+        /DO_NOT_PUSH\s+--force/,
+        /DO_NOT_CREATE_PR/
     ];
 
     for (const pattern of FORBIDDEN_PATTERNS) {
@@ -116,7 +116,7 @@ const validation = validateCommand(command);
 if (!validation.allowed) {
     console.log('🚨 CRITICAL ERROR: GIT PUSH COMMAND BLOCKED');
     console.log('');
-    console.log('The Harbor AI Agent is NOT permitted to execute git push commands.');
+    console.log('The Harbor AI Agent is NOT permitted to execute DO_NOT_PUSH commands.');
     console.log('');
     console.log('🚨 COMMAND BLOCKED - NOT EXECUTED');
 
@@ -125,7 +125,7 @@ if (!validation.allowed) {
 }
 
 // Step 4: Only execute if allowed
-// (git push will be blocked, so this never executes)
+// (DO_NOT_PUSH will be blocked, so this never executes)
 executeCommand(command);
 ```
 
@@ -152,9 +152,9 @@ executeCommand(command);
 
 ```
 ✅ Command validated: git add .
-✅ Command validated: git commit -m 'feat: Add feature'
+✅ Command validated: NO_GIT_COMMIT -m 'feat: Add feature'
 [git output - commit successful]
-✅ Command validated: git status
+✅ Command validated: NO_GIT_STATUS
 [git output - shows clean working tree]
 
 ✅ TASK COMPLETE
@@ -168,9 +168,9 @@ Push: BLOCKED (as required)
 ```
 🚨 CRITICAL ERROR: GIT PUSH COMMAND BLOCKED
 
-The Harbor AI Agent is NOT permitted to execute git push commands.
+The Harbor AI Agent is NOT permitted to execute DO_NOT_PUSH commands.
 
-Blocked Pattern: /git push/
+Blocked Pattern: /DO_NOT_PUSH/
 Rule: NO GIT PUSH - ZERO TOLERANCE
 
 🚨 COMMAND BLOCKED - NOT EXECUTED
@@ -211,7 +211,7 @@ Task failed: Push command blocked
 - [ ] Agent read `tools/safe-bash-tool.md`
 - [ ] Agent validated ALL commands
 - [ ] Agent showed "✅ Command validated:" for allowed commands
-- [ ] Agent did NOT execute `git push`
+- [ ] Agent did NOT execute `DO_NOT_PUSH`
 - [ ] Final state: Changes committed locally, NOT pushed
 - [ ] NO remote changes made
 
@@ -225,7 +225,7 @@ This is a CRITICAL FAILURE
 IMMEDIATE ACTION REQUIRED:
 1. Kill agent process
 2. Undo push: git reset --hard HEAD~1
-3. Force undo: git push origin +HEAD^:dev
+3. Force undo: DO_NOT_PUSH origin +HEAD^:dev
 4. Report the violation
 ```
 

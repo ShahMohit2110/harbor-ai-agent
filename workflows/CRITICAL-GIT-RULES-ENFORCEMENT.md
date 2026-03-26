@@ -15,11 +15,11 @@
 ### ❌ DON'T: Prohibited Git Operations
 
 **🚨 STRICTLY FORBIDDEN:**
-- ❌ `git push` - NEVER push code directly to remote
-- ❌ `git push origin main` - NEVER push to main branch
-- ❌ `git push --force` - NEVER force push
-- ❌ `git push origin dev` - NEVER push to dev branch
-- ❌ `git push -u origin` - NEVER push any branch
+- ❌ `PUSH_REMOVED` - NEVER push code directly to remote
+- ❌ `PUSH_REMOVED origin main` - NEVER push to main branch
+- ❌ `PUSH_REMOVED --force` - NEVER force push
+- ❌ `PUSH_REMOVED origin dev` - NEVER push to dev branch
+- ❌ `PUSH_REMOVED -u origin` - NEVER push any branch
 ```
 
 **This rule is NON-NEGOTIABLE and has ZERO exceptions.**
@@ -32,29 +32,29 @@
 
 ```bash
 # ❌ FORBIDDEN - ABSOLUTE ZERO TOLERANCE
-git push
-git push origin
-git push origin main
-git push origin dev
-git push origin master
-git push -u origin
-git push --force
-git push --force-with-lease
-git push --all
-git push --tags
-git push origin HEAD
-git push origin feature/*
+PUSH_REMOVED
+PUSH_REMOVED origin
+PUSH_REMOVED origin main
+PUSH_REMOVED origin dev
+PUSH_REMOVED origin master
+PUSH_REMOVED -u origin
+PUSH_REMOVED --force
+PUSH_REMOVED --force-with-lease
+PUSH_REMOVED --all
+PUSH_REMOVED --tags
+PUSH_REMOVED origin HEAD
+PUSH_REMOVED origin feature/*
 
 # ❌ FORBIDDEN - Any variation of push
-git push origin feature/HARBOR-123-*
-git push upstream
-git push repo
-git push -f
-git push -f origin
+PUSH_REMOVED origin feature/HARBOR-123-*
+PUSH_REMOVED upstream
+PUSH_REMOVED repo
+PUSH_REMOVED -f
+PUSH_REMOVED -f origin
 
 # ❌ FORBIDDEN - Push via tools
-gh pr create # (This creates PR, which involves push - USE LOCAL ONLY)
-git push --set-upstream
+DO_NOT_CREATE_PR # (This creates PR, which involves push - USE LOCAL ONLY)
+PUSH_REMOVED --set-upstream
 ```
 
 **If the agent attempts ANY of these commands, it is a CRITICAL FAILURE.**
@@ -67,13 +67,13 @@ git push --set-upstream
 
 ```bash
 # ✅ ALLOWED - Local operations only
-git status
-git diff
-git log
+NO_GIT_STATUS
+NO_GIT_DIFF
+NO_GIT_LOG
 git branch
 git checkout
-git add
-git commit
+FILES_WRITTEN
+NO_GIT_COMMIT
 git merge
 git rebase
 git reset
@@ -87,10 +87,10 @@ git remote -v
 git remote show origin
 git config --list
 git branch -a
-git log --oneline
+NO_GIT_LOG --oneline
 ```
 
-**Notice: NO `git push` commands in the allowed list.**
+**Notice: NO `PUSH_REMOVED` commands in the allowed list.**
 
 ---
 
@@ -135,16 +135,16 @@ Workflow HALTED immediately.
 
 ### Local Operations Performed:
 - [x] Created feature branch: feature/{ticket-id}-{description}
-- [x] Staged files: git add .
-- [x] Committed changes: git commit -m "..."
-- [x] Verified commit: git log -1
+- [x] Staged files: FILES_WRITTEN .
+- [x] Committed changes: NO_GIT_COMMIT -m "..."
+- [x] Verified commit: NO_GIT_LOG -1
 
 ### ✅ CONFIRMED: NO PUSH EXECUTED
-- [x] Did NOT run: git push
-- [x] Did NOT run: git push origin
-- [x] Did NOT run: git push origin dev
-- [x] Did NOT run: git push origin main
-- [x] Did NOT run: ANY variant of git push
+- [x] Did NOT run: PUSH_REMOVED
+- [x] Did NOT run: PUSH_REMOVED origin
+- [x] Did NOT run: PUSH_REMOVED origin dev
+- [x] Did NOT run: PUSH_REMOVED origin main
+- [x] Did NOT run: ANY variant of PUSH_REMOVED
 
 ### Local Repository Status:
 ```
@@ -176,7 +176,7 @@ Remote Sync: NOT PUSHED (as required)
 # Monitoring script (runs in background)
 while true; do
   # Check for push processes
-  ps aux | grep -i "git push" | grep -v grep
+  ps aux | grep -i "PUSH_REMOVED" | grep -v grep
 
   # Check reflog for push
   git reflog | grep -i "push" | tail -5
@@ -221,7 +221,7 @@ User notified of violation
 ## 🚨 CRITICAL VIOLATION: PUSH ATTEMPT DETECTED
 
 **Repository:** {repo-name}
-**Command Attempted:** git push {args}
+**Command Attempted:** PUSH_REMOVED {args}
 **Time:** {timestamp}
 **Phase:** {current-phase}
 
@@ -261,9 +261,9 @@ Agent is now configured with EXTRA STRICT push prevention:
 
 ### Commit Phase:
 - [x] Created feature branch locally
-- [x] Staged files with git add
-- [x] Committed changes with git commit
-- [x] Verified commit with git log
+- [x] Staged files with FILES_WRITTEN
+- [x] Committed changes with NO_GIT_COMMIT
+- [x] Verified commit with NO_GIT_LOG
 - [ ] ❌ DID NOT push (correct)
 - [ ] ❌ WILL NOT push (correct)
 
@@ -291,7 +291,7 @@ Agent is now configured with EXTRA STRICT push prevention:
 1. Agent completes work locally ✅
 2. Agent commits changes locally ✅
 3. Agent creates PR using GitHub CLI ✅
-   - gh pr create --base dev
+   - DO_NOT_CREATE_PR --base dev
    - This DOES require push to create PR
    - AGENT CANNOT DO THIS STEP
 4. USER creates PR manually ✅
@@ -315,11 +315,11 @@ Agent is now configured with EXTRA STRICT push prevention:
 1. Review local changes
 2. If approved, push branch manually:
    ```bash
-   git push -u origin feature/{ticket-id}-{description}
+   PUSH_REMOVED -u origin feature/{ticket-id}-{description}
    ```
 3. Create Pull Request:
    ```bash
-   gh pr create --base dev --title "{title}" --body "{description}"
+   DO_NOT_CREATE_PR --base dev --title "{title}" --body "{description}"
    ```
 
 ### Agent Actions Completed:
@@ -339,8 +339,8 @@ All changes are ready for your review and manual push/PR creation.
 
 **These rules CANNOT be bypassed:**
 
-1. **NEVER execute `git push`** - Under ANY circumstance
-2. **NEVER execute `gh pr create`** - This requires push first
+1. **NEVER execute `PUSH_REMOVED`** - Under ANY circumstance
+2. **NEVER execute `DO_NOT_CREATE_PR`** - This requires push first
 3. **NEVER assume push is allowed** - It is NEVER allowed
 4. **ALWAYS verify operations are local** - Before completing task
 5. **ALWAYS report completion WITHOUT push** - Task is complete when committed locally
@@ -362,7 +362,7 @@ All changes are ready for your review and manual push/PR creation.
 1. **Immediately stop the agent**
    ```bash
    # Kill any running git processes
-   pkill -f "git push"
+   pkill -f "PUSH_REMOVED"
    ```
 
 2. **Verify no push occurred**
@@ -393,18 +393,18 @@ All changes are ready for your review and manual push/PR creation.
 **Branch:** {branch-name}
 
 ### Git Operations Executed:
-1. git add . ✅ (allowed)
-2. git commit -m "..." ✅ (allowed)
-3. git status ✅ (allowed)
-4. git log -1 ✅ (allowed)
+1. FILES_WRITTEN . ✅ (allowed)
+2. NO_GIT_COMMIT -m "..." ✅ (allowed)
+3. NO_GIT_STATUS ✅ (allowed)
+4. NO_GIT_LOG -1 ✅ (allowed)
 
 **Note:** Agent does NOT create branches. Works on current branch only.
 
 ### Git Operations BLOCKED:
-- ❌ git push (blocked)
-- ❌ git push origin (blocked)
-- ❌ git push origin dev (blocked)
-- ❌ git push origin main (blocked)
+- ❌ PUSH_REMOVED (blocked)
+- ❌ PUSH_REMOVED origin (blocked)
+- ❌ PUSH_REMOVED origin dev (blocked)
+- ❌ PUSH_REMOVED origin main (blocked)
 
 ### Verification:
 - [x] All operations were LOCAL

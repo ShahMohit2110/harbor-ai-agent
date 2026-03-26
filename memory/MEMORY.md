@@ -12,7 +12,7 @@
 
 **User Feedback:** "THIS IS NOT TOLLERATE LIKE I HAVE TOLE 10000 TIMES THIS THINGS."
 
-**The Rule:** Agent MUST NEVER execute git push commands under ANY circumstances.
+**The Rule:** Agent MUST NEVER execute DO_NOT_PUSH commands under ANY circumstances.
 
 **Enforcement:** Code-level command interception via `tools/safe-bash-tool.md`
 
