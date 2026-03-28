@@ -1,0 +1,30 @@
+{
+  "name": "harbor-ticket-tracker",
+  "version": "1.0.0",
+  "description": "Full-stack ticket tracking system with real-time updates - Integrates Harbor Agent with React UI",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "start": "npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "test:api": "curl http://localhost:3001/api/health"
+  },
+  "keywords": [
+    "harbor",
+    "ticket",
+    "tracker",
+    "react",
+    "express",
+    "real-time",
+    "agent"
+  ],
+  "author": "Harbor AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "harbor-ai/harbor-ticket-tracker"
+  }
+}

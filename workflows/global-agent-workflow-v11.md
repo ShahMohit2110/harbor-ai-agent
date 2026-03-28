@@ -34,6 +34,36 @@
 
 ---
 
+## 🔴 PHASE 0.0: MANDATORY TICKET CREATION (NON-SKIPPABLE)
+
+**🚨 THIS IS THE ABSOLUTE FIRST STEP - CANNOT BE SKIPPED - ZERO EXCEPTIONS**
+
+**Reference:** `workflows/PHASE-0-MANDATORY-TICKET-CREATION.md`
+
+**Before ANYTHING else, agent MUST:**
+
+1. ✅ Fetch Azure DevOps task
+2. ✅ **IMMEDIATELY CREATE TICKET IN TRACKER** (execute bash command)
+3. ✅ **IMMEDIATELY START TICKET** (execute bash command)
+4. ✅ Verify ticket exists in tracker
+5. ✅ ONLY THEN proceed to Phase 0 (Documentation Gate)
+
+**🚨 IF THIS STEP IS SKIPPED: CRITICAL FAILURE**
+
+**Quick Reference Commands:**
+
+```bash
+# After fetching Azure DevOps task, IMMEDIATELY execute this ONE command:
+
+cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+./mandatory-ticket-creation.sh "${AZURE_DEVOPS_ID}" "${AZURE_DEVOPS_TITLE}" "${AZURE_DEVOPS_DESCRIPTION}" "${SELECTED_SERVICE}"
+
+# This single command creates AND starts the ticket automatically
+# Expected output: "🎉 MANDATORY TICKET CREATION COMPLETE" + "🟢 PROCEEDING TO PHASE 0"
+```
+
+**See:** `workflows/PHASE-0-MANDATORY-TICKET-CREATION.md` for complete details
+
 ---
 
 ## 🚨 MAJOR UPDATE v11.0 - PRE-EXECUTION INTELLIGENCE ANALYSIS 🚨
@@ -586,6 +616,311 @@ CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
 Complete Phase 0.45 (Service Selection Analysis) first!
 Read all documentation, output analysis, select existing service.
 ```
+
+---
+
+## 🎫 Phase 0.25: Ticket Tracker Integration (MANDATORY - NON-BLOCKING)
+
+**Purpose:** Integrate with Harbor Ticket Tracker for real-time progress tracking
+
+**🚨 CRITICAL: NON-BLOCKING INTEGRATION**
+- If Ticket Tracker API is unavailable → Agent continues without tracking
+- If API calls fail → Agent continues without tracking
+- Tracking failures NEVER block task execution
+
+### Integration Steps
+
+**🚨 MANDATORY BASH COMMANDS (Execute in order):**
+
+**Step 1: Create Ticket When Task Starts**
+```bash
+# After Azure DevOps task is fetched, create ticket in tracker
+cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+
+# Create ticket data JSON
+cat > /tmp/ticket-data.json << EOF
+{
+  "id": "TKT-${AZURE_DEVOPS_ID}",
+  "title": "${AZURE_DEVOPS_TITLE}",
+  "description": "${AZURE_DEVOPS_DESCRIPTION}",
+  "priority": "High",
+  "assignedRepos": ["${SELECTED_SERVICE}"],
+  "assignee": "Harbor Agent",
+  "tags": ["azure-devops", "automation"]
+}
+EOF
+
+# Create ticket
+node ticketTrackerIntegration.js create /tmp/ticket-data.json
+
+# Verify ticket created
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep '"id":"TKT-${AZURE_DEVOPS_ID}"'
+```
+
+**Step 2: Start Ticket**
+```bash
+# When agent begins implementation
+node ticketTrackerIntegration.js start "TKT-${AZURE_DEVOPS_ID}" "Development" "Harbor AI Agent started working on ${AZURE_DEVOPS_TITLE}"
+
+# Verify ticket started
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep '"status":"In Progress"'
+```
+
+**Step 3: Verify Integration**
+```bash
+# Check ticket appears in tracker
+curl -s http://localhost:3001/api/tickets | grep "TKT-${AZURE_DEVOPS_ID}"
+
+# Check initial activity logged
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID}/activities | grep "Harbor Agent Started"
+```
+
+---
+
+**JavaScript API Usage (Alternative):**
+
+**Step 1: Import Ticket Tracker Helper**
+```javascript
+import { HarborAgentTracker } from './harbor-ticket-tracker/backend/src/utils/harborAgentHelper.js'
+import { reportSingleFileChange, reportMultipleFileChanges } from './harbor-ticket-tracker/backend/src/utils/fileChangesHelper.js'
+```
+
+**Step 2: Create Ticket When Task Starts**
+```javascript
+// After Azure DevOps task is fetched
+const ticketData = {
+  id: `TKT-${azureDevOpsId}`,
+  title: azureDevOpsTitle,
+  description: azureDevOpsDescription,
+  priority: 'High',
+  assignedRepos: [selectedService],
+  assignee: 'Harbor Agent',
+  tags: ['azure-devops', 'automation']
+}
+
+await HarborAgentTracker.createTicket(ticketData)
+```
+
+**Step 3: Start Ticket**
+```javascript
+// When agent begins implementation
+await HarborAgentTracker.startTicket(
+  `TKT-${azureDevOpsId}`,
+  'Development',
+  `Harbor AI Agent started working on ${azureDevOpsTitle}`
+)
+```
+
+**Step 4: Update Progress at Milestones**
+```javascript
+// After significant progress (25%, 50%, 75%, 90%)
+await HarborAgentTracker.updateProgress(
+  `TKT-${azureDevOpsId}`,
+  25,  // Progress percentage
+  'Development',
+  'Completed user authentication implementation'
+)
+
+// With file changes
+await HarborAgentTracker.updateProgress(
+  `TKT-${azureDevOpsId}`,
+  50,
+  'Development',
+  'Implemented user login endpoint',
+  reportSingleFileChange(
+    'harborUserSvc/src/controllers/authController.js',
+    45,  // 45 lines added
+    12,  // 12 lines deleted
+    '@@ -20,8 +20,53 @@\n+ export const login = async...' // Optional diff
+  )
+)
+```
+
+**Step 5: Complete Ticket**
+```javascript
+// When task is complete
+await HarborAgentTracker.completeTicket(
+  `TKT-${azureDevOpsId}`,
+  `Successfully completed ${azureDevOpsTitle}`
+)
+```
+
+### File Changes Reporting
+
+**🚨 AUTOMATIC INTEGRATION - BASH COMMANDS (MANDATORY)**
+
+**The agent MUST execute these bash commands during workflow execution:**
+
+**When task is fetched from Azure DevOps:**
+```bash
+# Create ticket in tracker
+cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cat > /tmp/ticket-data.json << EOF
+{
+  "id": "TKT-${AZURE_DEVOPS_ID}",
+  "title": "${AZURE_DEVOPS_TITLE}",
+  "description": "${AZURE_DEVOPS_DESCRIPTION}",
+  "priority": "High",
+  "assignedRepos": ["${SELECTED_SERVICE}"],
+  "assignee": "Harbor Agent",
+  "tags": ["azure-devops", "automation"]
+}
+EOF
+
+node ticketTrackerIntegration.js create /tmp/ticket-data.json
+
+# Start ticket
+node ticketTrackerIntegration.js start "TKT-${AZURE_DEVOPS_ID}" "Development" "Starting implementation"
+```
+
+**When implementation starts (25% progress):**
+```bash
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 25 "Development" "Started implementation"
+```
+
+**When core features implemented (50% progress):**
+```bash
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Core features implemented"
+```
+
+**When testing starts (75% progress):**
+```bash
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 75 "Testing" "Testing started"
+```
+
+**When ready for completion (90% progress):**
+```bash
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 90 "Deployment" "Ready for completion"
+```
+
+**When task is complete (100% progress):**
+```bash
+node ticketTrackerIntegration.js complete "TKT-${AZURE_DEVOPS_ID}" "Successfully completed implementation"
+```
+
+**With file changes:**
+```bash
+# Create file changes JSON
+cat > /tmp/file-changes.json << EOF
+{
+  "filesChanged": [
+    {
+      "path": "harborUserSvc/src/controllers/authController.js",
+      "changeType": "added",
+      "additions": 65,
+      "deletions": 0,
+      "diff": "@@ -0,0 +1,65 @@\\n+ export const login = async..."
+    },
+    {
+      "path": "harborUserSvc/src/routes/userRoutes.js",
+      "changeType": "modified",
+      "additions": 12,
+      "deletions": 5,
+      "diff": "@@ -10,5 +10,12 @@\\n+ router.get('/login', authController.login)"
+    }
+  ],
+  "summary": {
+    "totalFiles": 2,
+    "additions": 77,
+    "deletions": 5
+  }
+}
+EOF
+
+# Update progress with file changes
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Implemented authentication" /tmp/file-changes.json
+```
+
+---
+
+**JavaScript API Usage (Alternative):**
+
+**Automatic File Change Tracking:**
+
+When agent modifies files, report changes using helper functions:
+
+```javascript
+// Single file change
+const fileChanges = reportSingleFileChange(
+  'harborUserSvc/src/models/User.js',
+  28,  // additions
+  0    // deletions
+)
+
+await HarborAgentTracker.updateProgress(
+  ticketId,
+  75,
+  'Development',
+  'Added User model',
+  fileChanges
+)
+
+// Multiple file changes
+const fileChanges = reportMultipleFileChanges([
+  { path: 'harborUserSvc/src/controllers/userController.js', additions: 65, deletions: 8 },
+  { path: 'harborUserSvc/src/routes/userRoutes.js', additions: 42, deletions: 0 },
+  { path: 'harborUserSvc/src/models/user.js', additions: 12, deletions: 0 }
+])
+
+await HarborAgentTracker.updateProgress(
+  ticketId,
+  90,
+  'Testing',
+  'Implementation complete',
+  fileChanges
+)
+```
+
+### Progress Milestones
+
+Report progress at these milestones:
+- **10%**: Requirements analysis complete
+- **25%**: Implementation started
+- **50%**: Core features implemented
+- **75%**: Testing started
+- **90%**: Ready for deployment
+- **100%**: Complete
+
+### Error Handling
+
+**🚨 NON-BLOCKING: All API calls wrap errors gracefully**
+
+```javascript
+// HarborAgentTracker helper already has error handling
+// If API fails, it logs error but returns null
+// Agent continues execution regardless of API status
+
+try {
+  await HarborAgentTracker.updateProgress(...)
+} catch (error) {
+  // Error already logged by helper
+  // Agent continues
+}
+```
+
+### What Gets Tracked
+
+**Tracked in Ticket Tracker UI:**
+- ✅ Ticket creation and assignment
+- ✅ Progress percentage (0-100%)
+- ✅ Stage transitions (Planning → Analysis → Development → Testing → Deployment)
+- ✅ Activity messages
+- ✅ File changes (files modified, additions, deletions)
+- ✅ Git diff-style code changes (if provided)
+
+**NOT Tracked:**
+- ❌ Git operations (add, commit, push - forbidden)
+- ❌ Branch creation (forbidden)
+- ❌ Any git repository modifications (forbidden)
+
+### Verification
+
+**After implementation, verify in Ticket Tracker UI:**
+1. Open http://localhost:5173/ticket/TKT-{ID}
+2. Check progress bar shows correct percentage
+3. Check activity timeline shows updates
+4. Check file changes display (if reported)
+5. Verify no git operations were performed
 
 ---
 
@@ -1913,7 +2248,143 @@ Result: ✅ All commands executed and verified
 
 ## 🧠 Phase 6: Pattern-Based Implementation (MANDATORY)
 
-*Same as v10.1 - Follow existing patterns*
+### 📝 Implementation with Progress Tracking
+
+**🚨 MANDATORY BASH COMMANDS:**
+
+**Step 1: Start Implementation (25% Progress)**
+```bash
+cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 25 "Development" "Started implementation following existing patterns"
+```
+
+**Step 2: Mid-Implementation (50% Progress)**
+```bash
+# After implementing core features
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Core implementation complete - following existing patterns"
+```
+
+**Step 3: Testing Phase (75% Progress)**
+```bash
+# When testing starts
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 75 "Testing" "Implementation complete - starting tests"
+```
+
+**With File Changes:**
+```bash
+# After modifying files, create file changes JSON
+cat > /tmp/impl-changes.json << EOF
+{
+  "filesChanged": [
+    {
+      "path": "service/src/controllers/newController.js",
+      "changeType": "added",
+      "additions": 85,
+      "deletions": 0,
+      "diff": "@@ -0,0 +1,85 @@\\n+ export const newFeature = async..."
+    }
+  ],
+  "summary": {
+    "totalFiles": 1,
+    "additions": 85,
+    "deletions": 0
+  }
+}
+EOF
+
+# Update progress with file changes
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Implemented new controller" /tmp/impl-changes.json
+```
+
+---
+
+**JavaScript API Usage (Alternative):**
+
+**Step 1: Start Implementation (25% Progress)**
+```javascript
+// Begin coding
+await HarborAgentTracker.updateProgress(
+  `TKT-${azureDevOpsId}`,
+  25,
+  'Development',
+  'Started implementation following existing patterns'
+)
+```
+
+**Step 2: Report File Changes During Implementation**
+
+When creating/modifying files:
+
+```javascript
+// Example: Creating a new controller
+const fileChanges = reportMultipleFileChanges([
+  {
+    path: 'harborUserSvc/src/controllers/authController.js',
+    additions: 65,
+    deletions: 0,
+    diff: '@@ -0,0 +1,65 @@\n+ export const login = async...'
+
+  },
+  {
+    path: 'harborUserSvc/src/models/user.js',
+    additions: 12,
+    deletions: 8
+  }
+])
+
+await HarborAgentTracker.updateProgress(
+  `TKT-${azureDevOpsId}`,
+  50,
+  'Development',
+  'Implemented authentication controller and user model',
+  fileChanges
+)
+```
+
+**Step 3: Mid-Implementation Update (50% Progress)**
+```javascript
+await HarborAgentTracker.updateProgress(
+  `TKT-${azureDevOpsId}`,
+  50,
+  'Development',
+  'Core implementation complete - following existing patterns'
+)
+```
+
+**Step 4: File Changes Best Practices**
+
+**What to Report:**
+- ✅ New files created (controllers, models, routes, services)
+- ✅ Modified files (existing functionality changes)
+- ✅ Configuration changes (env files, config files)
+- ✅ Documentation updates (README.md, API docs)
+
+**How to Count Lines:**
+- **Additions**: New lines added (including imports, functions, comments)
+- **Deletions**: Lines removed (deleted code, refactored sections)
+- **Estimate**: If exact count not available, estimate based on file size
+
+**Example:**
+```javascript
+// Agent just created authController.js with ~65 lines
+const fileChanges = reportSingleFileChange(
+  'harborUserSvc/src/controllers/authController.js',
+  65,  // Approximate line count
+  0    // No deletions (new file)
+)
+
+await HarborAgentTracker.updateProgress(ticketId, 50, 'Development', 'Created auth controller', fileChanges)
+```
+
+**Step 5: Testing Phase (75% Progress)**
+```javascript
+await HarborAgentTracker.updateProgress(
+  `TKT-${azureDevOpsId}`,
+  75,
+  'Testing',
+  'Implementation complete - starting tests'
+)
+```
 
 ---
 
@@ -1937,7 +2408,64 @@ Result: ✅ All commands executed and verified
 
 ## ✅ Phase 10: Evidence-Based Validation (MANDATORY)
 
-*Same as v10.1 - Evidence-based validation*
+### 🎯 Completion and Ticket Finalization
+
+**🚨 MANDATORY BASH COMMANDS:**
+
+**Step 1: Final Validation (90% Progress)**
+```bash
+cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 90 "Testing" "All tests passing - ready for completion"
+```
+
+**Step 2: Complete Ticket (100% Progress)**
+```bash
+# Mark ticket as complete
+node ticketTrackerIntegration.js complete "TKT-${AZURE_DEVOPS_ID}" "Successfully completed ${AZURE_DEVOPS_TITLE}. All tests passing, implementation complete."
+
+# Verify completion
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep '"status":"Completed"'
+```
+
+**🎯 COMPLETION CHECKLIST:**
+- [ ] 90% progress update executed
+- [ ] 100% complete command executed
+- [ ] Ticket status shows "Completed"
+- [ ] Ticket stage shows "Deployment"
+- [ ] Progress shows 100%
+- [ ] All file changes reported (if applicable)
+
+---
+
+**JavaScript API Usage (Alternative):**
+
+**Step 1: Final Validation (90% Progress)**
+```javascript
+await HarborAgentTracker.updateProgress(
+  `TKT-${azureDevOpsId}`,
+  90,
+  'Testing',
+  'All tests passing - ready for completion'
+)
+```
+
+**Step 2: Complete Ticket (100% Progress)**
+```javascript
+// Mark ticket as complete
+await HarborAgentTracker.completeTicket(
+  `TKT-${azureDevOpsId}`,
+  `Successfully completed ${azureDevOpsTitle}. All tests passing, implementation complete.`
+)
+```
+
+**Step 3: Evidence of Completion**
+
+Verify completion in Ticket Tracker UI:
+- ✅ Progress shows 100%
+- ✅ Stage shows "Deployment"
+- ✅ Status shows "Completed"
+- ✅ Activity timeline shows all updates
+- ✅ File changes displayed (if reported)
 
 ---
 
@@ -2138,10 +2666,16 @@ executeCommand(command);
 
 ### Before ANY Implementation
 
-**MUST COMPLETE:**
+**MUST COMPLETE (IN ORDER):**
 
+0. [ ] **Phase 0.0: MANDATORY TICKET CREATION** ← DO THIS FIRST!
+   - [ ] Fetch Azure DevOps task
+   - [ ] **Create ticket in tracker** (execute bash command)
+   - [ ] **Start ticket in tracker** (execute bash command)
+   - [ ] Verify ticket exists
 1. [ ] Phase 0: Documentation Gate
-2. [ ] Phase 0.5: Pre-Execution Intelligence Analysis
+2. [ ] Phase 0.25: Ticket Tracker Integration
+3. [ ] Phase 0.5: Pre-Execution Intelligence Analysis
    - [ ] Repository Discovery
    - [ ] Documentation Intelligence Scan
    - [ ] Deep Understanding Extraction
