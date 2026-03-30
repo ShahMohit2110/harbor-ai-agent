@@ -205,6 +205,25 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
             />
           </div>
 
+          {ticket.agentDescription && (
+            <div className="info-section" style={{
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.05))',
+              padding: '1rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(59, 130, 246, 0.2)',
+              borderLeft: '4px solid #3b82f6'
+            }}>
+              <span className="info-label" style={{ color: '#3b82f6', marginBottom: '0.5rem', display: 'block' }}>
+                🤖 Agent Updates
+              </span>
+              <div
+                className="description-text"
+                style={{ whiteSpace: 'pre-line', color: '#4b5563' }}
+                dangerouslySetInnerHTML={{ __html: ticket.agentDescription.replace(/\n\n/g, '<br/><br/>') }}
+              />
+            </div>
+          )}
+
           <div className="info-section">
             <span className="info-label">Assigned Repositories</span>
             <div className="tags">

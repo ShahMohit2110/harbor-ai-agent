@@ -166,13 +166,22 @@ app.get('/api/tickets/:id', (req, res) => {
 
 // Create new ticket (called by Harbor Agent when it starts working)
 app.post('/api/tickets', (req, res) => {
-  const { id, title, description, priority, assignedRepos, assignee, tags } = req.body
+  const { id, title, description, agentDescription, priority, assignedRepos, assignee, tags } = req.body
 
   // Check if ticket already exists
   const existingTicket = tickets.find(t => t.id === id)
   if (existingTicket) {
-    // Update existing ticket
-    Object.assign(existingTicket, req.body)
+    // Update existing ticket (but preserve original description)
+    if (agentDescription) {
+      existingTicket.agentDescription = agentDescription
+    }
+    // Only update other fields if explicitly provided
+    if (title) existingTicket.title = title
+    if (priority) existingTicket.priority = priority
+    if (assignedRepos) existingTicket.assignedRepos = assignedRepos
+    if (assignee) existingTicket.assignee = assignee
+    if (tags) existingTicket.tags = tags
+
     existingTicket.updatedAt = new Date().toISOString()
     saveData()
 
@@ -199,7 +208,8 @@ app.post('/api/tickets', (req, res) => {
   const newTicket = {
     id: id || `TKT-${Date.now()}`,
     title: title || 'Untitled Ticket',
-    description: description || '',
+    description: description || '',  // Original Azure DevOps description
+    agentDescription: agentDescription || '',  // Agent's description/updates
     status: 'Pending',
     stage: 'Planning',
     priority: priority || 'Medium',
@@ -251,6 +261,16 @@ app.put('/api/tickets/:id/progress', (req, res) => {
   if (progress !== undefined) ticket.progress = progress
   if (stage) ticket.stage = stage
   if (status) ticket.status = status
+
+  // Update agentDescription with the latest message
+  if (message) {
+    // Append to existing agentDescription or create new one
+    if (ticket.agentDescription) {
+      ticket.agentDescription = `${ticket.agentDescription}\n\n${message}`
+    } else {
+      ticket.agentDescription = message
+    }
+  }
 
   // Auto-set stage to Deployment when progress reaches 100%
   if (ticket.progress >= 100) {
@@ -426,6 +446,7 @@ app.post('/api/harbor-agent/start', (req, res) => {
   ticket.status = 'In Progress'
   ticket.stage = stage || 'Development'
   ticket.harborAgentActive = true
+  ticket.agentDescription = message || `Harbor Agent started working on ${ticket.title}`
   ticket.updatedAt = new Date().toISOString()
 
   saveData()

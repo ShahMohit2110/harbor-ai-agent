@@ -20,16 +20,45 @@ import path from 'path';
 import { execSync } from 'child_process';
 import http from 'http';
 import https from 'https';
+import readline from 'readline';
+import { fileURLToPath } from 'url';
 
-// Load .env file (only for Azure DevOps credentials)
-function loadEnv() {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/**
+ * Create readline interface for prompts
+ */
+function createReadline() {
+  return readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+}
+
+/**
+ * Prompt user for input
+ */
+function promptQuestion(rl, question) {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer);
+    });
+  });
+}
+
+/**
+ * Load or create .env file with Azure DevOps credentials
+ */
+async function loadEnv() {
   // Try multiple possible .env locations
   const possiblePaths = [
-    path.join(path.dirname(new URL(import.meta.url).pathname), '../../.env'),
+    path.join(__dirname, '../../.env'),
     '/Users/mohitshah/Documents/HarborService/harbor-ai/.env',
     path.join(process.cwd(), '.env')
   ];
 
+  // First, try to find existing .env file
   for (const envPath of possiblePaths) {
     if (fs.existsSync(envPath)) {
       const envContent = fs.readFileSync(envPath, 'utf8');
@@ -41,14 +70,75 @@ function loadEnv() {
         }
       });
       console.log(`✅ Loaded .env from: ${envPath}`);
-      return;
+      return true;
     }
   }
 
-  console.log('⚠️  No .env file found, will try to locate it...');
+  // No .env found - ask for credentials interactively
+  console.log('╔════════════════════════════════════════════════════════════════╗');
+  console.log('║          🔐 Azure DevOps Configuration Required                  ║');
+  console.log('╠════════════════════════════════════════════════════════════════╣');
+  console.log('║  No .env file found. Let\'s set up your Azure DevOps credentials.    ║');
+  console.log('║  These will be saved to .env for automatic loading next time.       ║');
+  console.log('╚════════════════════════════════════════════════════════════════╝');
+  console.log('');
+
+  const rl = createReadline();
+
+  try {
+    // Ask for PAT
+    const pat = await promptQuestion(rl, '🔑 Enter Azure DevOps Personal Access Token (PAT): ');
+    if (!pat || pat.trim().length === 0) {
+      console.log('❌ PAT is required for Azure DevOps integration');
+      console.log('ℹ️  You can still use the tracker without Azure sync (git-based tracking only)');
+      rl.close();
+      return false;
+    }
+
+    // Ask for Organization
+    const org = await promptQuestion(rl, '🏢 Enter Azure DevOps Organization: ');
+    if (!org || org.trim().length === 0) {
+      console.log('❌ Organization is required');
+      rl.close();
+      return false;
+    }
+
+    // Ask for Project (with default)
+    const project = await promptQuestion(rl, '📁 Enter Azure DevOps Project (default: Harbor): ') || 'Harbor';
+
+    rl.close();
+
+    // Create .env file
+    const envPath = path.join(process.cwd(), '.env');
+    const envContent = `# Azure DevOps Configuration
+# Generated automatically by Harbor Ticket Tracker
+AZURE_DEVOPS_PAT=${pat.trim()}
+AZURE_DEVOPS_ORG=${org.trim()}
+AZURE_DEVOPS_PROJECT=${project.trim()}
+`;
+
+    fs.writeFileSync(envPath, envContent, { mode: 0o600 }); // Read/write for owner only
+    console.log('');
+    console.log(`✅ Configuration saved to: ${envPath}`);
+    console.log('✅ Credentials loaded successfully!');
+    console.log('ℹ️  Next time, credentials will be loaded automatically from .env');
+
+    // Set environment variables
+    process.env.AZURE_DEVOPS_PAT = pat.trim();
+    process.env.AZURE_DEVOPS_ORG = org.trim();
+    process.env.AZURE_DEVOPS_PROJECT = project.trim();
+
+    return true;
+
+  } catch (error) {
+    console.error('❌ Error getting credentials:', error.message);
+    rl.close();
+    return false;
+  }
 }
 
-loadEnv();
+// Load .env (will prompt if missing)
+const envLoaded = await loadEnv();
 
 const API_BASE = 'http://localhost:3001/api';
 const STATE_FILE = '/tmp/harbor-agent-tracker-state.json';
@@ -65,7 +155,7 @@ const CONFIG = {
     org: process.env.AZURE_DEVOPS_ORG,
     project: process.env.AZURE_DEVOPS_PROJECT
   },
-  syncOnStartup: true,
+  syncOnStartup: false,  // Disabled - use manual sync button instead
   log: true
 };
 
@@ -486,6 +576,14 @@ async function syncAllTickets() {
   log('AZURE DEVOPS SYNC - SMART AUTO-DETECTION MODE', 'INFO');
   log('═══════════════════════════════════════════════════════════', 'INFO');
 
+  // Check if credentials are configured
+  if (!CONFIG.azure.pat || !CONFIG.azure.org || !CONFIG.azure.project) {
+    log('Azure DevOps credentials not configured - skipping sync', 'WARNING');
+    log('ℹ️  Git-based tracking will still work without Azure sync', 'INFO');
+    log('ℹ️  To enable Azure sync, set up credentials when prompted or create a .env file', 'INFO');
+    return { total: 0, created: 0, updated: 0, failed: 0, skipped: true };
+  }
+
   const azureTickets = await fetchActiveAzureDevOpsTickets();
 
   if (azureTickets.length === 0) {
@@ -872,6 +970,7 @@ async function addFileChangesToLatestActivity(ticketId, fileChanges) {
 
 /**
  * Check for progress and update tracker
+ * REVISED: Only capture file changes, don't touch progress!
  */
 async function checkProgress() {
   const state = loadState();
@@ -889,7 +988,7 @@ async function checkProgress() {
     return;
   }
 
-  log(`Found active ticket: ${activeTicket.id}`, 'INFO');
+  log(`Found active ticket: ${activeTicket.id} (Progress: ${activeTicket.progress}%, Stage: ${activeTicket.stage})`, 'INFO');
 
   const repoName = activeTicket.assignedRepos[0];
   const repoPath = path.join(CONFIG.reposPath, repoName);
@@ -910,6 +1009,7 @@ async function checkProgress() {
 
   let newState = { ...state };
 
+  // Initialize state for this ticket
   if (!state.currentTicketId || state.currentTicketId !== activeTicket.id) {
     newState = {
       ...state,
@@ -917,66 +1017,66 @@ async function checkProgress() {
       currentRepo: repoPath,
       lastCommitHash: latestCommit,
       startCommitCount: currentCommitCount,
-      currentProgress: activeTicket.progress || 0
+      currentProgress: activeTicket.progress || 0,
+      currentStage: activeTicket.stage || 'Planning'
     };
 
     saveState(newState);
+    log(`Initialized tracking for ${activeTicket.id} (Progress: ${newState.currentProgress}%, Stage: ${newState.currentStage})`, 'INFO');
     return;
   }
 
+  // Check for new commits
   if (latestCommit !== state.lastCommitHash) {
     const newCommits = currentCommitCount - state.startCommitCount;
 
     if (newCommits > 0) {
       log(`Detected ${newCommits} new commit(s)`, 'INFO');
 
-      const progressIncrease = Math.min(newCommits * CONFIG.progressPerCommit, CONFIG.maxProgress - state.currentProgress);
-      const newProgress = Math.min(state.currentProgress + progressIncrease, CONFIG.maxProgress);
-
-      log(`Progress: ${state.currentProgress}% -> ${newProgress}%`, 'INFO');
-
-      const fileChanges = getFileChanges(repoPath, state.lastCommitHash);
-
-      log(`Files changed: ${fileChanges.summary.totalFiles} (+${fileChanges.summary.additions}, -${fileChanges.summary.deletions})`, 'INFO');
-
-      // Only update progress if there are actual file changes
-      if (fileChanges.filesChanged && fileChanges.filesChanged.length > 0) {
-        // First, try to add file changes to the latest activity (created by agent)
-        const addedToActivity = await addFileChangesToLatestActivity(activeTicket.id, fileChanges);
-
-        if (!addedToActivity) {
-          // If that fails, create a new progress update activity
-          await updateTicketProgress(
-            activeTicket.id,
-            newProgress,
-            null, // Don't override stage - let agent control it
-            `Auto-detected progress: ${newCommits} new commit(s), ${fileChanges.summary.totalFiles} file(s) changed`,
-            fileChanges
-          );
-        } else {
-          // Just update the progress (no new activity)
-          await makeAPIRequest(`/tickets/${activeTicket.id}`, 'PUT', {
-            progress: newProgress
-          });
-          log(`Updated ${activeTicket.id} progress to ${newProgress}%`, 'SUCCESS');
-        }
-      } else {
-        // No file changes, just update progress
-        await makeAPIRequest(`/tickets/${activeTicket.id}`, 'PUT', {
-          progress: newProgress
-        });
-        log(`Updated ${activeTicket.id} progress to ${newProgress}% (no file changes)`, 'INFO');
+      // Get current ticket progress from API (not from state!)
+      const ticketResult = await makeAPIRequest(`/tickets/${activeTicket.id}`);
+      if (!ticketResult.success) {
+        log('Failed to fetch current ticket state', 'ERROR');
+        return;
       }
 
+      const currentTicketProgress = ticketResult.data.progress || 0;
+      log(`Current ticket progress: ${currentTicketProgress}% (from API, not state)`, 'INFO');
+
+      // Capture file changes
+      const fileChanges = getFileChanges(repoPath, state.lastCommitHash);
+
+      if (fileChanges.summary.totalFiles > 0) {
+        log(`Files changed: ${fileChanges.summary.totalFiles} (+${fileChanges.summary.additions}, -${fileChanges.summary.deletions})`, 'INFO');
+
+        // Add file changes to latest activity (without modifying progress!)
+        const addedToActivity = await addFileChangesToLatestActivity(activeTicket.id, fileChanges);
+
+        if (addedToActivity) {
+          log(`✅ File changes added to latest activity for ${activeTicket.id}`, 'SUCCESS');
+        } else {
+          log(`⚠️  Could not add file changes to activity`, 'WARNING');
+        }
+      } else {
+        log(`No file changes detected in commits`, 'INFO');
+      }
+
+      // Update state but DON'T change progress
       newState = {
         ...state,
-        lastCommitHash: latestCommit,
-        currentProgress: newProgress
+        lastCommitHash: latestCommit
       };
 
       saveState(newState);
+      log(`State updated: new commit baseline saved`, 'INFO');
     }
+  } else {
+    log(`No new commits (last check: ${new Date(state.lastChecked || Date.now()).toLocaleTimeString()})`, 'INFO');
   }
+
+  // Update last checked time
+  newState.lastChecked = Date.now();
+  saveState(newState);
 }
 
 /**
