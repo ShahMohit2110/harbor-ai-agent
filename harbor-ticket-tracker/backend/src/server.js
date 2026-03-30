@@ -257,9 +257,31 @@ app.put('/api/tickets/:id/progress', (req, res) => {
 
   const { progress, stage, status, message } = req.body
 
+  // ✅ FIX: Auto-sync progress based on stage if progress not provided
+  const stageProgressMap = {
+    'Planning': 0,
+    'Analysis': 25,
+    'Development': 50,
+    'Testing': 75,
+    'Deployment': 90
+  }
+
   // Update ticket
-  if (progress !== undefined) ticket.progress = progress
-  if (stage) ticket.stage = stage
+  if (progress !== undefined) {
+    ticket.progress = progress
+  } else if (stage) {
+    // Auto-set progress based on stage if progress not provided
+    ticket.progress = stageProgressMap[stage] || ticket.progress
+  }
+
+  if (stage) {
+    ticket.stage = stage
+    // ✅ FIX: Also update progress if stage changed and progress wasn't explicitly set
+    if (progress === undefined) {
+      ticket.progress = stageProgressMap[stage] || ticket.progress
+    }
+  }
+
   if (status) ticket.status = status
 
   // Update agentDescription with the latest message
@@ -272,10 +294,24 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     }
   }
 
-  // Auto-set stage to Deployment when progress reaches 100%
+  // ✅ FIX: Auto-sync ALL completion-related fields
+  // When progress reaches 100%, auto-set stage and status
   if (ticket.progress >= 100) {
     ticket.stage = 'Deployment'
     ticket.status = 'Completed'
+    ticket.harborAgentActive = false
+  }
+
+  // ✅ FIX: When status is set to Completed, auto-set progress and stage
+  if (ticket.status === 'Completed' || ticket.status === 'completed') {
+    ticket.progress = 100
+    ticket.stage = 'Deployment'
+    ticket.harborAgentActive = false
+  }
+
+  // ✅ FIX: When stage is set to Deployment and status is Completed, ensure progress is 100%
+  if (ticket.stage === 'Deployment' && (ticket.status === 'Completed' || ticket.status === 'completed')) {
+    ticket.progress = 100
     ticket.harborAgentActive = false
   }
 
@@ -328,6 +364,27 @@ app.put('/api/tickets/:id', (req, res) => {
       ticket[field] = req.body[field]
     }
   })
+
+  // ✅ FIX: Auto-sync completion fields (progress, stage, status)
+  // When status is set to Completed, auto-set progress to 100% and stage to Deployment
+  if (ticket.status === 'Completed' || ticket.status === 'completed') {
+    ticket.progress = 100
+    ticket.stage = 'Deployment'
+    ticket.harborAgentActive = false
+  }
+
+  // When progress reaches 100%, auto-set status to Completed and stage to Deployment
+  if (ticket.progress >= 100) {
+    ticket.status = 'Completed'
+    ticket.stage = 'Deployment'
+    ticket.harborAgentActive = false
+  }
+
+  // When stage is Deployment and status is Completed, ensure progress is 100%
+  if (ticket.stage === 'Deployment' && (ticket.status === 'Completed' || ticket.status === 'completed')) {
+    ticket.progress = 100
+    ticket.harborAgentActive = false
+  }
 
   ticket.updatedAt = new Date().toISOString()
   saveData()
@@ -442,9 +499,21 @@ app.post('/api/harbor-agent/start', (req, res) => {
     })
   }
 
+  // ✅ FIX: Auto-sync progress based on stage
+  const stageProgressMap = {
+    'Planning': 0,
+    'Analysis': 25,
+    'Development': 50,
+    'Testing': 75,
+    'Deployment': 90
+  }
+
+  const newStage = stage || 'Development'
+
   // Update ticket
   ticket.status = 'In Progress'
-  ticket.stage = stage || 'Development'
+  ticket.stage = newStage
+  ticket.progress = stageProgressMap[newStage] || 0  // ✅ Auto-set progress based on stage
   ticket.harborAgentActive = true
   ticket.agentDescription = message || `Harbor Agent started working on ${ticket.title}`
   ticket.updatedAt = new Date().toISOString()

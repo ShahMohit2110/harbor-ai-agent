@@ -51,11 +51,13 @@ function promptQuestion(rl, question) {
  * Load or create .env file with Azure DevOps credentials
  */
 async function loadEnv() {
-  // Try multiple possible .env locations
+  // Try multiple possible .env locations (dynamic paths)
   const possiblePaths = [
     path.join(__dirname, '../../.env'),
-    '/Users/mohitshah/Documents/HarborService/harbor-ai/.env',
-    path.join(process.cwd(), '.env')
+    path.join(__dirname, '../../../.env'),
+    path.join(__dirname, '../../../../.env'),
+    path.join(process.cwd(), '.env'),
+    path.join(process.env.HOME || '', '.env')
   ];
 
   // First, try to find existing .env file
@@ -187,13 +189,14 @@ function log(message, level = 'INFO') {
 function autoDetectReposPath() {
   log('Auto-detecting Harbor repos path...', 'INFO');
 
-  // Possible locations
+  // Possible locations (dynamic paths)
   const possiblePaths = [
-    '/Users/mohitshah/Documents/HarborService',
-    path.join(process.env.HOME || '', 'Documents', 'HarborService'),
     path.join(process.cwd(), '..'),
     path.join(process.cwd(), '..', '..'),
-    '/Users/mohitshah/Documents/HarborService/harbor-ai/..'
+    path.join(process.cwd(), '..', '..', '..'),
+    path.join(__dirname, '..', '..', '..', '..'),
+    path.join(process.env.HOME || '', 'Documents', 'HarborService'),
+    path.join(process.env.HOME || '', 'HarborService')
   ];
 
   for (const basePath of possiblePaths) {
