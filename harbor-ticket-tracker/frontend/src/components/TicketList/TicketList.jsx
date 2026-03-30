@@ -156,7 +156,14 @@ function TicketList({ tickets, onDeleteTicket }) {
                 <td>
                   <div className="ticket-title-cell">
                     <div className="ticket-title">{ticket.title}</div>
-                    <div className="ticket-description">{ticket.description}</div>
+                    <div
+                      className="ticket-description"
+                      dangerouslySetInnerHTML={{
+                        __html: ticket.description.length > 200
+                          ? ticket.description.substring(0, 200) + '...'
+                          : ticket.description
+                      }}
+                    />
                   </div>
                 </td>
                 <td>

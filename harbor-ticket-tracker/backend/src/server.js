@@ -3,6 +3,8 @@ import cors from 'cors'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import fs from 'fs'
+import https from 'https'
+import { spawn } from 'child_process'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -249,8 +251,20 @@ app.put('/api/tickets/:id/progress', (req, res) => {
   if (progress !== undefined) ticket.progress = progress
   if (stage) ticket.stage = stage
   if (status) ticket.status = status
+
+  // Auto-set stage to Deployment when progress reaches 100%
+  if (ticket.progress >= 100) {
+    ticket.stage = 'Deployment'
+    ticket.status = 'Completed'
+    ticket.harborAgentActive = false
+  }
+
   ticket.updatedAt = new Date().toISOString()
-  ticket.harborAgentActive = true
+
+  // Keep harborAgentActive true for in-progress tickets
+  if (ticket.progress < 100 && ticket.status !== 'Completed') {
+    ticket.harborAgentActive = true
+  }
 
   saveData()
 
@@ -368,6 +382,34 @@ app.get('/api/activities', (req, res) => {
   })
 })
 
+// Update latest activity with file changes (called by automatic tracker)
+app.put('/api/tickets/:id/activities/latest/files', (req, res) => {
+  const { id } = req.params
+  const { filesChanged, summary } = req.body
+
+  // Find the latest activity for this ticket
+  const latestActivity = activities.find(a => a.ticketId === id)
+
+  if (!latestActivity) {
+    return res.status(404).json({
+      success: false,
+      error: 'No activity found for this ticket'
+    })
+  }
+
+  // Update the latest activity with file changes
+  latestActivity.filesChanged = filesChanged || []
+  latestActivity.summary = summary || null
+
+  saveData()
+
+  res.json({
+    success: true,
+    message: 'File changes added to latest activity',
+    data: latestActivity
+  })
+})
+
 // Harbor Agent webhook - When agent starts working on a ticket
 app.post('/api/harbor-agent/start', (req, res) => {
   const { ticketId, stage, message } = req.body
@@ -424,7 +466,7 @@ app.post('/api/harbor-agent/complete', (req, res) => {
   // Update ticket
   ticket.status = 'Completed'
   ticket.stage = 'Deployment'
-  ticket.progress = 100
+  ticket.progress = 100  // Ensure progress is set to 100%
   ticket.harborAgentActive = false
   ticket.updatedAt = new Date().toISOString()
 
@@ -451,6 +493,295 @@ app.post('/api/harbor-agent/complete', (req, res) => {
   })
 })
 
+// Azure DevOps Sync endpoint
+app.post('/api/azure/sync', async (req, res) => {
+  try {
+    // Load environment variables
+    const envPath = join(__dirname, '../.env')
+    let AZURE_DEVOPS_PAT, AZURE_DEVOPS_ORG, AZURE_DEVOPS_PROJECT
+
+    // Try to load from .env file
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, 'utf8')
+      envContent.split('\n').forEach(line => {
+        const [key, ...valueParts] = line.split('=')
+        const value = valueParts.join('=').trim()
+        if (key && value && !key.startsWith('#')) {
+          if (key.trim() === 'AZURE_DEVOPS_PAT') AZURE_DEVOPS_PAT = value
+          if (key.trim() === 'AZURE_DEVOPS_ORG') AZURE_DEVOPS_ORG = value
+          if (key.trim() === 'AZURE_DEVOPS_PROJECT') AZURE_DEVOPS_PROJECT = value
+        }
+      })
+    }
+
+    // Use process.env as fallback
+    AZURE_DEVOPS_PAT = AZURE_DEVOPS_PAT || process.env.AZURE_DEVOPS_PAT
+    AZURE_DEVOPS_ORG = AZURE_DEVOPS_ORG || process.env.AZURE_DEVOPS_ORG
+    AZURE_DEVOPS_PROJECT = AZURE_DEVOPS_PROJECT || process.env.AZURE_DEVOPS_PROJECT
+
+    if (!AZURE_DEVOPS_PAT || !AZURE_DEVOPS_ORG || !AZURE_DEVOPS_PROJECT) {
+      return res.status(400).json({
+        success: false,
+        error: 'Azure DevOps credentials not configured'
+      })
+    }
+
+    const auth = Buffer.from(`:${AZURE_DEVOPS_PAT}`).toString('base64')
+
+    // WIQL Query to fetch active tickets
+    const wiqlQuery = {
+      query: `
+        SELECT [System.Id], [System.Title], [System.State], [System.WorkItemType],
+               [Microsoft.VSTS.Common.Priority], [System.AssignedTo],
+               [System.Description], [System.Tags], [System.AreaPath],
+               [System.IterationPath], [Microsoft.VSTS.Common.ValueArea],
+               [Microsoft.VSTS.Common.ActivatedDate]
+        FROM WorkItems
+        WHERE [System.TeamProject] = '${AZURE_DEVOPS_PROJECT}'
+          AND [System.State] = 'Active'
+          AND [System.WorkItemType] IN ('User Story', 'Task', 'Bug')
+        ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.ChangedDate] ASC
+      `
+    }
+
+    // Function to make HTTPS request to Azure DevOps
+    function makeAzureRequest(apiPath, method = 'GET', body = null) {
+      return new Promise((resolve, reject) => {
+        const options = {
+          hostname: 'dev.azure.com',
+          path: `/${AZURE_DEVOPS_ORG}/${apiPath}`,
+          method: method,
+          headers: {
+            'Authorization': `Basic ${auth}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+
+        if (body) {
+          options.headers['Content-Length'] = Buffer.byteLength(JSON.stringify(body))
+        }
+
+        const req = https.request(options, (res) => {
+          let data = ''
+          res.on('data', (chunk) => { data += chunk })
+          res.on('end', () => {
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              try {
+                resolve(JSON.parse(data))
+              } catch (e) {
+                resolve(data)
+              }
+            } else {
+              reject(new Error(`HTTP ${res.statusCode}: ${data}`))
+            }
+          })
+        })
+
+        req.on('error', reject)
+
+        if (body) {
+          req.write(JSON.stringify(body))
+        }
+
+        req.end()
+      })
+    }
+
+    // Execute WIQL query
+    const queryResult = await makeAzureRequest(
+      `${AZURE_DEVOPS_PROJECT}/_apis/wit/wiql?api-version=6.0`,
+      'POST',
+      wiqlQuery
+    )
+
+    if (!queryResult.workItems || queryResult.workItems.length === 0) {
+      return res.json({
+        success: true,
+        message: 'No active tickets found in Azure DevOps',
+        synced: 0
+      })
+    }
+
+    // Get work item IDs
+    const workItemIds = queryResult.workItems.map(wi => wi.id)
+
+    // Batch fetch work item details
+    const batchSize = 200
+    const batches = []
+    for (let i = 0; i < workItemIds.length; i += batchSize) {
+      batches.push(workItemIds.slice(i, i + batchSize))
+    }
+
+    let allTickets = []
+    for (const batch of batches) {
+      const ids = batch.join(',')
+      const detailsResult = await makeAzureRequest(
+        `${AZURE_DEVOPS_PROJECT}/_apis/wit/workitems?ids=${ids}&$expand=all&api-version=6.0`
+      )
+      if (detailsResult.value) {
+        allTickets = allTickets.concat(detailsResult.value)
+      }
+    }
+
+    // Process and sync tickets
+    let synced = 0
+    let updated = 0
+
+    for (const task of allTickets) {
+      const fields = task.fields
+      const ticketId = `TKT-${task.id}`
+      const title = fields['System.Title'] || 'No Title'
+      const description = fields['System.Description'] || ''
+      const priority = fields['Microsoft.VSTS.Common.Priority'] || 3
+      const areaPath = fields['System.AreaPath'] || ''
+
+      // Determine repo from area path
+      let assignedRepos = []
+      const areaLower = areaPath.toLowerCase()
+      if (areaLower.includes('harborjobsvc') || areaLower.includes('job')) {
+        assignedRepos = ['harborJobSvc']
+      } else if (areaLower.includes('harborusersvc') || areaLower.includes('user')) {
+        assignedRepos = ['harborUserSvc']
+      } else if (areaLower.includes('harborwebsite') || areaLower.includes('website')) {
+        assignedRepos = ['harborWebsite']
+      }
+
+      // Check if ticket exists
+      const existingTicket = tickets.find(t => t.id === ticketId)
+
+      if (existingTicket) {
+        // Update existing ticket
+        Object.assign(existingTicket, {
+          title,
+          description,
+          priority: priority === 1 ? 'High' : priority === 2 ? 'Medium' : 'Low',
+          assignedRepos,
+          updatedAt: new Date().toISOString()
+        })
+        updated++
+      } else {
+        // Create new ticket
+        const newTicket = {
+          id: ticketId,
+          title,
+          description,
+          status: 'Pending',
+          stage: 'Planning',
+          priority: priority === 1 ? 'High' : priority === 2 ? 'Medium' : 'Low',
+          assignedRepos,
+          assignee: 'Harbor Agent',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          progress: 0,
+          tags: ['azure-devops', 'auto-synced'],
+          harborAgentActive: true
+        }
+
+        tickets.push(newTicket)
+
+        // Log activity
+        const activity = {
+          id: `ACT-${Date.now()}`,
+          ticketId,
+          timestamp: new Date().toISOString(),
+          action: "Ticket Created",
+          description: "Azure DevOps ticket synced automatically",
+          user: "Azure DevOps",
+          stage: "Planning"
+        }
+        activities.unshift(activity)
+
+        synced++
+      }
+    }
+
+    saveData()
+
+    res.json({
+      success: true,
+      message: `Synced ${synced} new tickets, updated ${updated} existing tickets`,
+      synced,
+      updated,
+      total: synced + updated
+    })
+
+  } catch (error) {
+    console.error('Azure sync error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+// Start Automatic Tracker (for real-time file changes capture)
+let trackerProcess = null
+
+function startAutomaticTracker() {
+  try {
+    const trackerPath = join(__dirname, 'utils/automatic-tracker-global.js')
+
+    // Check if tracker file exists
+    if (!fs.existsSync(trackerPath)) {
+      console.log('⚠️  Automatic tracker not found, skipping...')
+      return
+    }
+
+    console.log('🔄 Starting Automatic Tracker...')
+
+    // Spawn the tracker process
+    trackerProcess = spawn('node', [trackerPath, 'start'], {
+      cwd: __dirname,
+      detached: false,
+      stdio: 'ignore'
+    })
+
+    trackerProcess.on('error', (error) => {
+      console.error('❌ Failed to start automatic tracker:', error.message)
+    })
+
+    trackerProcess.on('exit', (code, signal) => {
+      if (code !== 0 && code !== null) {
+        console.log(`⚠️  Automatic tracker exited with code ${code}`)
+      }
+      console.log('🔄 Automatic tracker stopped')
+    })
+
+    // Give it a moment to start
+    setTimeout(() => {
+      if (trackerProcess.pid) {
+        console.log(`✅ Automatic tracker started (PID: ${trackerProcess.pid})`)
+      }
+    }, 2000)
+
+  } catch (error) {
+    console.error('❌ Error starting automatic tracker:', error.message)
+  }
+}
+
+// Cleanup function to stop tracker when server stops
+function cleanup() {
+  if (trackerProcess) {
+    console.log('🛑 Stopping automatic tracker...')
+    trackerProcess.kill('SIGTERM')
+    trackerProcess = null
+  }
+}
+
+// Handle shutdown signals
+process.on('SIGINT', () => {
+  console.log('\n\n🛑 Shutting down gracefully...')
+  cleanup()
+  process.exit(0)
+})
+
+process.on('SIGTERM', () => {
+  cleanup()
+  process.exit(0)
+})
+
 // Start server
 app.listen(PORT, () => {
   console.log(`
@@ -460,8 +791,14 @@ app.listen(PORT, () => {
 ║  Server running on: http://localhost:${PORT}                      ║
 ║  Health check:     http://localhost:${PORT}/api/health            ║
 ║  Get tickets:      http://localhost:${PORT}/api/tickets           ║
+║  Azure Sync:       http://localhost:${PORT}/api/azure/sync        ║
 ║                                                                ║
 ║  ✅ Ready to integrate Harbor Agent with Ticket Tracker UI    ║
+║  ✅ Azure DevOps sync endpoint active                          ║
+║  🔄 Automatic tracker starting...                              ║
 ╚════════════════════════════════════════════════════════════════╝
   `)
+
+  // Start automatic tracker
+  startAutomaticTracker()
 })

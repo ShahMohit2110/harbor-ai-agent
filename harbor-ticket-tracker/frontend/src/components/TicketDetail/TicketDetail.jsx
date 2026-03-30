@@ -63,9 +63,9 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
     })
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (onDeleteTicket) {
-      const deleted = onDeleteTicket(id)
+      const deleted = await onDeleteTicket(id)
       if (deleted) {
         navigate('/tickets')
       }
@@ -199,7 +199,10 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
 
           <div className="info-section">
             <span className="info-label">Description</span>
-            <p className="description-text">{ticket.description}</p>
+            <div
+              className="description-text"
+              dangerouslySetInnerHTML={{ __html: ticket.description }}
+            />
           </div>
 
           <div className="info-section">
