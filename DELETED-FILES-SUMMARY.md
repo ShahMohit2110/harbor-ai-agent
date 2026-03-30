@@ -7,8 +7,8 @@
 
 ## 📊 Deletion Summary
 
-**Total Files Deleted:** 34 .md files
-**Files Remaining:** 60 critical .md files
+**Total Files Deleted:** 34 .md files + 3 .sh test scripts = 37 files
+**Files Remaining:** 60 critical .md files + 1 required .sh script
 **System Status:** ✅ FULLY FUNCTIONAL
 
 ---
@@ -62,11 +62,19 @@ These were superseded by newer integration docs:
 1. ❌ `harbor-ticket-tracker/frontend/PROJECT_SUMMARY.md`
 2. ❌ `harbor-ticket-tracker/frontend/QUICKSTART.md`
 
+### **4. Test Scripts (3 .sh files) - harbor-ai root**
+
+These were one-time test scripts that are no longer needed:
+
+1. ❌ `test-completion-sync.sh` - Test completion sync feature (one-time test)
+2. ❌ `test-counter-offer-api.sh` - Test counter offer API for task #137 (task-specific)
+3. ❌ `update-ticket-137.sh` - Manually update Azure DevOps ticket #137 (one-time use)
+
 ---
 
-## ✅ Files Kept (Critical - 60 files)
+## ✅ Files Kept (Critical - 60 files + 1 script)
 
-### **harbor-ai root (10 files):**
+### **harbor-ai root (10 files + 1 script):**
 1. ✅ `README.md` - Main README
 2. ✅ `START_HERE.md` - Getting started guide
 3. ✅ `RULES.md` - Core rules
@@ -77,6 +85,9 @@ These were superseded by newer integration docs:
 8. ✅ `DYNAMIC-PATHS-MIGRATION-GUIDE.md` - Dynamic paths guide
 9. ✅ `DYNAMIC-PATHS-CHANGES-SUMMARY.md` - Changes summary
 10. ✅ `README-DYNAMIC-PATHS.md` - Quick start
+
+**Shell Scripts (1):**
+1. ✅ `setup-dynamic-paths.sh` - Dynamic paths setup (REQUIRED)
 
 ### **workflows/ (16 files):**
 1. ✅ `global-agent-workflow-v11.md` - Main workflow
@@ -146,15 +157,17 @@ These were superseded by newer integration docs:
 
 ### **Before Cleanup:**
 - Total .md files: 94
-- Critical files: 60
-- Redundant files: 34
+- Total .sh test scripts: 3
+- Critical files: 60 .md + 1 script
+- Redundant files: 34 .md + 3 scripts
 
 ### **After Cleanup:**
 - Total .md files: 60
-- Critical files: 60
+- Total .sh scripts: 1 (required)
+- Critical files: 60 .md + 1 script
 - Redundant files: 0
 
-### **Reduction:** 36% fewer files (34 deleted)
+### **Reduction:** 39% fewer files (37 deleted total)
 
 ---
 
@@ -227,7 +240,9 @@ ls workflows/global-agent-workflow-v11.md
 
 **Summary:**
 - Deleted 34 non-essential .md files
-- Kept 60 critical files
+- Deleted 3 non-essential .sh test scripts
+- Kept 60 critical .md files
+- Kept 1 required .sh script (setup-dynamic-paths.sh)
 - System fully functional
 - No functionality lost
 - Repository cleaner and easier to navigate
@@ -243,6 +258,6 @@ ls workflows/global-agent-workflow-v11.md
 ---
 
 **Date:** 2026-03-30
-**Files Deleted:** 34
-**Files Kept:** 60
+**Files Deleted:** 37 total (34 .md + 3 .sh)
+**Files Kept:** 61 total (60 .md + 1 .sh)
 **System Status:** ✅ FULLY FUNCTIONAL
