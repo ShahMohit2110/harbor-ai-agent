@@ -159,6 +159,66 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
         </div>
       </div>
 
+      {/* ✅ NEW: Phase Summaries */}
+      {(ticket.phaseSummaries && Object.keys(ticket.phaseSummaries).some(key => ticket.phaseSummaries[key])) && (
+        <div className="card">
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            Phase Summaries
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {stages.map((stage) => {
+              const stageStatus = getStageStatus(stage)
+              const summary = ticket.phaseSummaries?.[stage] || ''
+
+              if (!summary && stageStatus === 'pending') return null
+
+              return (
+                <div
+                  key={stage}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '8px',
+                    border: `1px solid ${
+                      stageStatus === 'completed' ? 'rgba(34, 197, 94, 0.3)' :
+                      stageStatus === 'active' ? 'rgba(59, 130, 246, 0.3)' :
+                      'rgba(156, 163, 175, 0.2)'
+                    }`,
+                    background: (
+                      stageStatus === 'completed' ? 'rgba(34, 197, 94, 0.05)' :
+                      stageStatus === 'active' ? 'rgba(59, 130, 246, 0.05)' :
+                      'rgba(156, 163, 175, 0.02)'
+                    ),
+                    borderLeft: `4px solid ${
+                      stageStatus === 'completed' ? '#22c55e' :
+                      stageStatus === 'active' ? '#3b82f6' :
+                      '#9ca3af'
+                    }`
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <strong style={{ fontSize: '1rem' }}>
+                      {stage}
+                    </strong>
+                    <span className={`badge badge-${stageStatus === 'completed' ? 'completed' : stageStatus === 'active' ? 'in-progress' : 'pending'}`}>
+                      {stageStatus.charAt(0).toUpperCase() + stageStatus.slice(1)}
+                    </span>
+                  </div>
+                  {summary ? (
+                    <p style={{ margin: 0, color: '#4b5563', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                      {summary}
+                    </p>
+                  ) : (
+                    <p style={{ margin: 0, color: '#9ca3af', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                      {stageStatus === 'pending' ? 'Not started yet' : 'In progress...'}
+                    </p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Ticket Details */}
       <div className="detail-grid">
         <div className="card detail-info">

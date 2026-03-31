@@ -71,7 +71,13 @@ function initializeSampleData() {
       estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       progress: 65,
       tags: ["authentication", "security", "oauth"],
-      harborAgentActive: false
+      harborAgentActive: false,
+      phaseSummaries: {
+        "Planning": "Initial planning and architecture design completed",
+        "Analysis": "Analyzed OAuth2 requirements and selected providers",
+        "Development": "Implementing authentication flow",
+        "Testing": ""
+      }
     },
     {
       id: "TKT-002",
@@ -87,7 +93,13 @@ function initializeSampleData() {
       estimatedCompletion: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
       progress: 15,
       tags: ["websocket", "notifications", "real-time"],
-      harborAgentActive: false
+      harborAgentActive: false,
+      phaseSummaries: {
+        "Planning": "Requirements gathering completed",
+        "Analysis": "Analyzing WebSocket architecture",
+        "Development": "",
+        "Testing": ""
+      }
     },
     {
       id: "TKT-003",
@@ -103,7 +115,13 @@ function initializeSampleData() {
       estimatedCompletion: now,
       progress: 100,
       tags: ["database", "optimization", "performance"],
-      harborAgentActive: false
+      harborAgentActive: false,
+      phaseSummaries: {
+        "Planning": "Identified slow queries and bottlenecks",
+        "Analysis": "Analyzed query patterns and access frequency",
+        "Development": "Added indexes and optimized queries",
+        "Testing": "Performance testing completed - 50% improvement"
+      }
     }
   ]
 
@@ -166,7 +184,7 @@ app.get('/api/tickets/:id', (req, res) => {
 
 // Create new ticket (called by Harbor Agent when it starts working)
 app.post('/api/tickets', (req, res) => {
-  const { id, title, description, agentDescription, priority, assignedRepos, assignee, tags } = req.body
+  const { id, title, description, agentDescription, priority, assignedRepos, assignee, tags, phaseSummaries } = req.body
 
   // Check if ticket already exists
   const existingTicket = tickets.find(t => t.id === id)
@@ -181,6 +199,13 @@ app.post('/api/tickets', (req, res) => {
     if (assignedRepos) existingTicket.assignedRepos = assignedRepos
     if (assignee) existingTicket.assignee = assignee
     if (tags) existingTicket.tags = tags
+    // ✅ NEW: Update phaseSummaries if provided
+    if (phaseSummaries) {
+      existingTicket.phaseSummaries = {
+        ...(existingTicket.phaseSummaries || {}),
+        ...phaseSummaries
+      }
+    }
 
     existingTicket.updatedAt = new Date().toISOString()
     saveData()
@@ -220,7 +245,14 @@ app.post('/api/tickets', (req, res) => {
     estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     progress: 0,
     tags: tags || [],
-    harborAgentActive: true
+    harborAgentActive: true,
+    // ✅ NEW: Initialize phaseSummaries with empty strings
+    phaseSummaries: phaseSummaries || {
+      "Planning": "",
+      "Analysis": "",
+      "Development": "",
+      "Testing": ""
+    }
   }
 
   tickets.push(newTicket)
@@ -255,7 +287,7 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     })
   }
 
-  const { progress, stage, status, message } = req.body
+  const { progress, stage, status, message, phaseSummary } = req.body
 
   // ✅ FIX: Auto-sync stage based on progress (agent controls progress, stage follows)
   const progressStageMap = {
@@ -277,6 +309,16 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     return 'Planning'
   }
 
+  // ✅ NEW: Initialize phaseSummaries if not exists (backward compatibility)
+  if (!ticket.phaseSummaries) {
+    ticket.phaseSummaries = {
+      "Planning": "",
+      "Analysis": "",
+      "Development": "",
+      "Testing": ""
+    }
+  }
+
   // Update ticket
   if (progress !== undefined) {
     ticket.progress = progress
@@ -293,6 +335,12 @@ app.put('/api/tickets/:id/progress', (req, res) => {
 
   if (status !== undefined) {
     ticket.status = status
+  }
+
+  // ✅ NEW: Update phase summary for current stage if provided
+  if (phaseSummary) {
+    const currentStage = ticket.stage
+    ticket.phaseSummaries[currentStage] = phaseSummary
   }
 
   // Update agentDescription with the latest message

@@ -126,7 +126,7 @@ async function startTicket(ticketId, stage = 'Development', message = null) {
 /**
  * Update ticket progress
  */
-async function updateProgress(ticketId, progress, stage = null, message = null, fileChanges = null) {
+async function updateProgress(ticketId, progress, stage = null, message = null, fileChanges = null, phaseSummary = null) {
   console.log(`📈 Updating progress: ${ticketId} -> ${progress}%`);
 
   const requestBody = {
@@ -141,6 +141,12 @@ async function updateProgress(ticketId, progress, stage = null, message = null, 
     if (fileChanges.filesChanged) {
       console.log(`📊 Including ${fileChanges.filesChanged.length} file changes`);
     }
+  }
+
+  // ✅ NEW: Add phase summary if provided
+  if (phaseSummary) {
+    requestBody.phaseSummary = phaseSummary;
+    console.log(`📝 Phase summary updated: ${phaseSummary.substring(0, 50)}...`);
   }
 
   try {
@@ -228,12 +234,34 @@ async function main() {
 
       case 'update':
         if (args.length < 4) {
-          console.error('Usage: node ticketTrackerIntegration.js update <ticketId> <progress> <stage> <message> [fileChanges.json]');
+          console.error('Usage: node ticketTrackerIntegration.js update <ticketId> <progress> <stage> <message> [phaseSummary] [fileChanges.json]');
+          console.error('Example: node ticketTrackerIntegration.js update TKT-123 33 Analysis "Documentation complete" "Read all architecture docs"');
           process.exit(1);
         }
         const progress = parseInt(args[2]);
-        const fileChangesData = args[5] ? JSON.parse(fs.readFileSync(args[5], 'utf8')) : null;
-        await updateProgress(args[1], progress, args[3], args[4], fileChangesData);
+        // ✅ NEW: Support optional phaseSummary parameter and fileChanges
+        // args[0]=update, args[1]=ticketId, args[2]=progress, args[3]=stage, args[4]=message
+        // args[5]=phaseSummary (optional), args[6]=fileChanges.json (optional)
+        let phaseSummary = null;
+        let fileChangesData = null;
+
+        // Check if args[5] exists
+        if (args.length >= 6) {
+          // Check if args[5] is a JSON file
+          if (args[5] && args[5].endsWith('.json')) {
+            // args[5] is fileChanges, no phaseSummary
+            fileChangesData = JSON.parse(fs.readFileSync(args[5], 'utf8'));
+          } else {
+            // args[5] is phaseSummary
+            phaseSummary = args[5];
+            // Check if args[6] exists and is a JSON file
+            if (args.length >= 7 && args[6] && args[6].endsWith('.json')) {
+              fileChangesData = JSON.parse(fs.readFileSync(args[6], 'utf8'));
+            }
+          }
+        }
+
+        await updateProgress(args[1], progress, args[3], args[4], fileChangesData, phaseSummary);
         break;
 
       case 'complete':
