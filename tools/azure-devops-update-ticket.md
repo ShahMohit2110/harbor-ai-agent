@@ -309,7 +309,7 @@ BRANCH_NAME="feature/12345-add-user-filter"
 IMPLEMENTATION_SUMMARY="Added user filtering functionality with support for multiple filter criteria"
 
 # Load environment
-source /Users/mohitshah/Documents/HarborService/harbor-ai/.env
+source HARBOR_AI_ROOT/.env
 
 # Encode PAT
 PAT_B64=$(echo -n ":$AZURE_DEVOPS_PAT" | base64)

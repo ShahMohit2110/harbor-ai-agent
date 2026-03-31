@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ACT-001",
+    "ticketId": "TKT-001",
+    "timestamp": "2026-03-28T10:30:00Z",
+    "action": "Status Update",
+    "description": "Status changed from 'Pending' to 'In Progress'",
+    "user": "John Doe",
+    "stage": "Development"
+  },
+  {
+    "id": "ACT-002",
+    "ticketId": "TKT-001",
+    "timestamp": "2026-03-27T14:15:00Z",
+    "action": "Stage Progress",
+    "description": "Moved from 'Analysis' to 'Development' stage",
+    "user": "John Doe",
+    "stage": "Development"
+  },
+  {
+    "id": "ACT-003",
+    "ticketId": "TKT-001",
+    "timestamp": "2026-03-26T09:00:00Z",
+    "action": "Assignment",
+    "description": "Ticket assigned to John Doe",
+    "user": "System",
+    "stage": "Analysis"
+  },
+  {
+    "id": "ACT-004",
+    "ticketId": "TKT-002",
+    "timestamp": "2026-03-27T16:45:00Z",
+    "action": "Comment",
+    "description": "Added technical requirements document",
+    "user": "Jane Smith",
+    "stage": "Analysis"
+  },
+  {
+    "id": "ACT-005",
+    "ticketId": "TKT-003",
+    "timestamp": "2026-03-26T14:20:00Z",
+    "action": "Completion",
+    "description": "Ticket marked as completed and deployed to production",
+    "user": "Mike Johnson",
+    "stage": "Deployment"
+  },
+  {
+    "id": "ACT-006",
+    "ticketId": "TKT-003",
+    "timestamp": "2026-03-26T11:30:00Z",
+    "action": "Stage Progress",
+    "description": "Moved from 'Testing' to 'Deployment' stage",
+    "user": "Mike Johnson",
+    "stage": "Deployment"
+  },
+  {
+    "id": "ACT-007",
+    "ticketId": "TKT-004",
+    "timestamp": "2026-03-28T09:15:00Z",
+    "action": "Progress Update",
+    "description": "Implemented rate limiting algorithms - 85% complete",
+    "user": "Sarah Williams",
+    "stage": "Testing"
+  },
+  {
+    "id": "ACT-008",
+    "ticketId": "TKT-005",
+    "timestamp": "2026-03-27T11:30:00Z",
+    "action": "Planning",
+    "description": "Created wireframes and design mockups",
+    "user": "Alex Brown",
+    "stage": "Planning"
+  },
+  {
+    "id": "ACT-009",
+    "ticketId": "TKT-006",
+    "timestamp": "2026-03-28T12:00:00Z",
+    "action": "Progress Update",
+    "description": "Implemented retry logic - 70% complete",
+    "user": "Chris Davis",
+    "stage": "Development"
+  },
+  {
+    "id": "ACT-010",
+    "ticketId": "TKT-007",
+    "timestamp": "2026-03-27T09:00:00Z",
+    "action": "Documentation",
+    "description": "Added validation rules documentation",
+    "user": "Emma Wilson",
+    "stage": "Analysis"
+  },
+  {
+    "id": "ACT-011",
+    "ticketId": "TKT-008",
+    "timestamp": "2026-03-28T08:45:00Z",
+    "action": "Testing",
+    "description": "Load testing completed - optimizing connection pool",
+    "user": "David Lee",
+    "stage": "Testing"
+  }
+]

@@ -1,0 +1,160 @@
+================================================================================
+  HARBOR AI AGENT WORKFLOW v9.0 UPDATE - COMPLETE
+================================================================================
+
+Date: 2026-03-24
+Status: ✅ SUCCESSFULLY COMPLETED
+
+================================================================================
+  CHANGES MADE
+================================================================================
+
+1. VERSION UPDATE
+   - Old: v8.0.0 (10-phase workflow)
+   - New: v9.0.0 (12-phase workflow)
+
+2. NEW PHASES ADDED
+   ✅ Phase 0: Documentation Gate (MANDATORY)
+   ✅ Phase 1: Full Repository Analysis Engine (ENHANCED)
+   ✅ Phase 2: Cross-Service Intelligence (NEW)
+   ✅ Phase 3: Documentation Generation (NEW)
+
+3. EXISTING PHASES RENUMBERED
+   - Phase 2 → Phase 4: Execution Planning
+   - Phase 3 → Phase 5: Implicit Requirement Inference
+   - Phase 4 → Phase 6: Pattern-Based Implementation
+   - Phase 5 → Phase 7: Runtime Execution
+   - Phase 6 → Phase 8: API Testing
+   - Phase 7 → Phase 9: Auto Debug & Fix Loop
+   - Phase 8 → Phase 10: Dependency Integrity Check
+   - Phase 9 → Phase 11: Fully Autonomous Execution
+   - Phase 10 → Phase 12: Evidence-Based Validation
+
+================================================================================
+  NEW FEATURES IMPLEMENTED
+================================================================================
+
+📚 DOCUMENTATION-FIRST APPROACH
+   - /docs is now the SINGLE SOURCE OF TRUTH
+   - Agent MUST check /docs before ANY implementation
+   - Auto-generates missing documentation
+   - 12 required documentation files
+
+🌐 CROSS-SERVICE INTELLIGENCE
+   - Maps upstream/downstream dependencies
+   - Identifies shared services and consumers
+   - Predicts impact of changes across services
+   - Enforces service boundaries
+
+🔍 FULL REPOSITORY ANALYSIS ENGINE
+   - Deep analysis of architecture, models, data flow
+   - Shared service detection
+   - Dependency mapping
+   - Model flow intelligence
+
+📋 AUTO-DOCUMENTATION GENERATION
+   - Generates complete /docs for any repository
+   - 12 required files with templates
+   - Validates accuracy
+
+🎯 MODEL FLOW INTELLIGENCE
+   - Understands complete data flow (controller → service → repository → DB)
+   - Tracks model lifecycle
+   - Documents validation and transformation logic
+
+🔄 CHANGE IMPACT ANALYSIS
+   - Predicts impact (LOW/MEDIUM/HIGH)
+   - Lists affected services
+   - Provides safe change guidelines
+
+================================================================================
+  FILES MODIFIED
+================================================================================
+
+1. /harbor-ai/workflows/global-agent-workflow.md
+   - Version: 8.0.0 → 9.0.0
+   - Phases: 10 → 12
+   - Added: ~400+ lines of new documentation
+   - Backup: global-agent-workflow.md.backup ✅
+
+2. /.claude/projects/.../memory/MEMORY.md
+   - Updated version to 9.0.0
+   - Added Documentation-First section
+   - Added Cross-Service Intelligence section
+
+3. /harbor-ai/workflows/VERSION_9.0_SUMMARY.md
+   - Created comprehensive summary
+   - Details all changes and benefits
+
+================================================================================
+  12 REQUIRED DOCUMENTATION FILES
+================================================================================
+
+Every repository MUST have these files in /docs:
+
+1.  ARCHITECTURE.md      - Service overview, relationships, dependency graph
+2.  STRUCTURE.md         - Folder structure, layer responsibilities
+3.  DEPENDENCIES.md      - External and internal dependencies
+4.  DATABASE.md          - DB type, ORM, schema, relationships
+5.  MODEL_FLOW.md        - Complete data flow documentation
+6.  API_PATTERNS.md      - Request/response, error handling
+7.  AUTH.md              - Authentication & authorization flow
+8.  SERVICE_RULES.md     - DOs and DON'Ts, boundaries
+9.  SHARED_SERVICES.md   - Shared service inventory and impact
+10. CHANGE_IMPACT.md     - Impact analysis and guidelines
+11. DEVELOPMENT_RULES.md - Coding standards, conventions
+12. GIT_RULES.md         - Git rules (no push, no branches)
+
+================================================================================
+  KEY BENEFITS
+================================================================================
+
+✅ Better Understanding - Agent has deeper knowledge of system architecture
+✅ Safer Changes - Cross-service impact analysis prevents breaking changes
+✅ Improved Documentation - Complete, up-to-date documentation for all repos
+✅ Shared Service Safety - Special protections for high-impact shared services
+✅ Model Flow Clarity - Complete understanding of data flow
+✅ Reduced Errors - Documentation-first approach reduces assumptions
+
+================================================================================
+  TESTING RECOMMENDATIONS
+================================================================================
+
+1. Test agent with repositories that:
+   - Have no /docs folder
+   - Have incomplete /docs
+   - Have complete /docs
+
+2. Verify cross-service intelligence:
+   - Shared services are detected
+   - Dependencies are mapped correctly
+   - Impact analysis is accurate
+
+3. Validate documentation generation:
+   - All 12 files are created
+   - Content is accurate
+   - Format is consistent
+
+================================================================================
+  NEXT STEPS
+================================================================================
+
+The Harbor AI Agent is now ready to use with v9.0!
+
+The agent will:
+1. Check /docs before any implementation
+2. Generate missing documentation automatically
+3. Understand cross-service relationships
+4. Predict impact of changes
+5. Make safer, more informed decisions
+
+================================================================================
+  SUPPORT
+================================================================================
+
+For questions or issues:
+- Reference: /harbor-ai/workflows/global-agent-workflow.md
+- Summary: /harbor-ai/workflows/VERSION_9.0_SUMMARY.md
+- Backup: /harbor-ai/workflows/global-agent-workflow.md.backup
+
+================================================================================

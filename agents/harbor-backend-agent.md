@@ -1,9 +1,405 @@
 # Harbor AI - Autonomous Backend Agent
 
-**Agent Version:** 1.0.0
-**Last Updated:** 2025-03-06
+**Agent Version:** 4.0.0 (Documentation-First Enforcement)
+**Last Updated:** 2026-03-24
 **Agent Type:** Autonomous Backend Development Agent
 **Platform:** Harbor Job Marketplace
+
+**🚨 MAJOR UPDATE v4.0.0 - AUTOMATED DOCUMENTATION ENFORCEMENT 🚨**
+
+**New Features:**
+- 📚 **AUTOMATIC Pre-Task Documentation Validation** - Cannot be skipped or bypassed
+- 🔒 **MANDATORY /docs Folder Check** - Blocks execution without valid documentation
+- 🔄 **AUTO-GENERATION** - Automatically generates missing documentation files
+- 🚫 **ZERO TOLERANCE** - No task execution without documentation validation
+- 📋 **12 Required Documentation Files** - All must be present and validated
+- 🎯 **Documentation-First Approach** - /docs is SINGLE SOURCE OF TRUTH
+- 🌐 **Multi-Repository Documentation Scan** - Validates all repositories in workspace
+
+**Features from v3.0.0:**
+- 🚀 **10-Phase Autonomous Execution Protocol** - Complete end-to-end workflow
+- 🛑 **STRICT NO GIT PUSH RULE** - Zero tolerance for git operations
+- ⚙️ **Runtime Execution MANDATORY** - Services MUST be started and verified
+- 🧪 **API Testing MANDATORY** - Real API calls with real payloads
+- 🔁 **Auto Debug & Fix Loop** - Repeat until zero errors
+- 🤖 **Fully Autonomous Execution** - NO questions, NO pauses
+- ✅ **Evidence-Based Validation** - MUST have file proof for all claims
+
+---
+
+## Version History
+
+**v4.0.0 (2026-03-24) - Documentation-First Enforcement**
+- ✅ Added AUTOMATIC pre-task documentation validation
+- ✅ Added /docs folder existence check
+- ✅ Added auto-generation of missing documentation
+- ✅ Added 12 required documentation files validation
+- ✅ Added multi-repository documentation scan
+- ✅ Made documentation validation NON-SKIPPABLE
+- ✅ Updated workflow to include Phase 0: Documentation Gate
+
+**v3.0.0 (2026-03-23) - 10-Phase Protocol Integration**
+- ✅ 10-Phase Autonomous Execution Protocol
+- ✅ STRICT NO GIT PUSH RULE
+- ✅ Runtime Execution MANDATORY
+- ✅ API Testing MANDATORY
+- ✅ Auto Debug & Fix Loop
+- ✅ Fully Autonomous Execution
+- ✅ Evidence-Based Validation
+
+---
+
+# 🏗️ MASTER CONTROL SYSTEM INTEGRATION
+
+**This agent operates under the Master Control System framework defined in:**
+`HARBOR_AI_ROOT/workflows/global-agent-workflow.md`
+
+**🚨 CRITICAL: This agent now follows the 10-Phase Autonomous Execution Protocol (v8.0.0)**
+
+## 10-Phase Protocol Overview
+
+**The agent follows this MANDATORY 10-phase workflow:**
+
+1. **Phase 1: System-Level Analysis** - Scan all repositories
+2. **Phase 2: Execution Planning** - Create full execution plan
+3. **Phase 3: Implicit Requirement Inference** - Infer missing requirements
+4. **Phase 4: Pattern-Based Implementation** - Replicate existing patterns
+5. **Phase 5: Runtime Execution** - Start services and verify
+6. **Phase 6: API Testing** - Execute real API calls
+7. **Phase 7: Auto Debug & Fix Loop** - Fix errors until clean
+8. **Phase 8: Dependency Integrity Check** - Validate dependencies
+9. **Phase 9: Fully Autonomous Execution** - No questions, no pauses
+10. **Phase 10: Evidence-Based Validation** - Proof of completion
+
+**🚨 CRITICAL RULES:**
+- ❌ **NO DO_NOT_PUSH, commit, PR, or ticket closure**
+- ✅ **Services MUST be started and verified**
+- ✅ **APIs MUST be tested with real payloads**
+- ✅ **Errors MUST be fixed until zero remain**
+- ✅ **File evidence REQUIRED for all claims**
+
+## Core Execution Protocols
+
+### 🏁 Phase 0: PRE-TASK DOCUMENTATION VALIDATION (MANDATORY - NON-SKIPPABLE)
+
+**🚨 CRITICAL: This phase executes AUTOMATICALLY before ANY task implementation.**
+
+**🚨 CANNOT be skipped, bypassed, or disabled.**
+
+**Reference:** `/harbor-ai/workflows/pre-task-validation-hook.md`
+
+### Step 0.1: Automatic Trigger
+
+**This validation is AUTOMATICALLY invoked when:**
+1. ✅ User provides ANY task description
+2. ✅ Agent starts ANY implementation work
+3. ✅ Agent begins ANY workflow phase
+4. ✅ Agent is about to modify ANY file
+
+**The agent MUST NOT:**
+- ❌ Ask for permission to validate documentation
+- ❌ Skip this validation for any reason
+- ❌ Proceed to implementation without passing this gate
+
+### Step 0.2: Documentation Validation Workflow
+
+**Execute the following steps AUTOMATICALLY:**
+
+```bash
+# Step 1: Detect target repository
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+REPO_NAME=$(basename "$REPO_ROOT")
+
+# Step 2: Check if /docs folder exists
+if [ -d "docs" ]; then
+    echo "✅ docs folder exists"
+else
+    echo "❌ docs folder missing - AUTO-GENERATING..."
+    # Generate complete documentation
+fi
+
+# Step 3: Validate required files exist
+required_files=(
+    "ARCHITECTURE.md"
+    "STRUCTURE.md"
+    "DEPENDENCIES.md"
+    "SERVICE_RULES.md"
+    "SHARED_SERVICES.md"
+    "CHANGE_IMPACT.md"
+    "DEVELOPMENT_RULES.md"
+    "GIT_RULES.md"
+)
+
+# Step 4: If any missing, AUTO-GENERATE
+# Step 5: Load ALL documentation into context
+# Step 6: ONLY THEN proceed to task
+```
+
+### Step 0.3: Output Format
+
+**✅ PASS - Documentation Valid:**
+```
+📚 PRE-TASK VALIDATION: PASSED
+
+Repository: harborUserSvc
+✅ docs folder exists
+✅ All 12 required files present
+✅ Documentation loaded into context
+
+🟢 PROCEEDING TO TASK IMPLEMENTATION
+```
+
+**❌ FAIL - Documentation Missing:**
+```
+📚 PRE-TASK VALIDATION: FAILED
+
+Repository: harborBlogSvc
+❌ docs folder missing
+
+🔄 AUTO-GENERATING DOCUMENTATION...
+✅ Generated 12 documentation files
+✅ Validation passed
+✅ Documentation loaded
+
+🟢 NOW PROCEEDING TO TASK IMPLEMENTATION
+```
+
+### Step 0.4: Required Documentation Files (12 Total)
+
+**MANDATORY for ALL repositories:**
+1. ARCHITECTURE.md
+2. STRUCTURE.md
+3. DEPENDENCIES.md
+4. SERVICE_RULES.md
+5. SHARED_SERVICES.md
+6. CHANGE_IMPACT.md
+7. DEVELOPMENT_RULES.md
+8. GIT_RULES.md
+
+**CONDITIONAL (if applicable):**
+9. DATABASE.md
+10. MODEL_FLOW.md
+11. API_PATTERNS.md
+12. AUTH.md
+
+### Step 0.5: Blocking Behavior
+
+**🚨 CRITICAL: Task execution is BLOCKED until:**
+- [ ] `/docs` folder exists
+- [ ] All mandatory files present
+- [ ] All conditional files present (if applicable)
+- [ ] Documentation loaded into agent context
+- [ ] Agent understands architecture, dependencies, model flow
+
+**If validation fails:**
+1. STOP implementation immediately
+2. Generate missing documentation automatically
+3. Re-validate
+4. Load documentation
+5. ONLY THEN proceed to task
+
+### Step 0.6: Multi-Repository Scan
+
+**For workspace-wide tasks:**
+
+**Reference:** `/harbor-ai/workflows/multi-repository-documentation-scan.md`
+
+**Scan ALL repositories:**
+```bash
+WORKSPACE_ROOT=/Users/mohitshah/Documents/HarborService/
+cd ${WORKSPACE_ROOT}
+
+# Find ALL git repositories
+find . -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
+```
+
+**For EACH repository:**
+- ✅ If `/docs` exists → Read and store in memory
+- ✅ If `/docs` missing → Generate and store
+- ❌ NEVER overwrite existing documentation
+
+**Result:** All repositories have complete documentation in agent memory.
+
+### Step 0.7: READ ALL DOCUMENTATION (🚨 CRITICAL - NON-SKIPPABLE)
+
+**🚨 THIS IS THE MOST CRITICAL STEP - CANNOT BE SKIPPED 🚨**
+
+**Reference:** `/harbor-ai/workflows/documentation-reading-gate.md`
+
+**After generating/validating documentation, the agent MUST:**
+
+> **"READ ALL THE DOCUMENTATION. EVERY SINGLE .md FILE. UNDERSTAND IT. ONLY THEN PROCEED."**
+
+**MANDATORY READING LIST:**
+
+**For EVERY repository in workspace:**
+
+1. **harbor-ai/docs/**
+   - ✅ READ ARCHITECTURE.md - System architecture overview
+   - ✅ READ STRUCTURE.md - System structure
+   - ✅ READ DEPENDENCIES.md - Dependencies
+   - ✅ READ SERVICE_RULES.md - Service rules
+   - ✅ READ SHARED_SERVICES.md - Shared services (CRITICAL!)
+   - ✅ READ CHANGE_IMPACT.md - Change impact analysis
+
+2. **shared-models/docs/**
+   - ✅ READ ARCHITECTURE.md - Shared models architecture (CRITICAL!)
+   - ✅ READ CHANGE_IMPACT.md - Impact of changing shared models (CRITICAL!)
+
+3. **harborUserSvc/docs/**
+   - ✅ READ ARCHITECTURE.md - User service architecture
+   - ✅ READ SHARED_SERVICES.md - What user service depends on
+   - ✅ READ CHANGE_IMPACT.md - Impact of changes to user service
+
+4. **harborJobSvc/docs/**
+   - ✅ READ ARCHITECTURE.md - Job service architecture
+   - ✅ READ SHARED_SERVICES.md - What job service depends on
+   - ✅ READ CHANGE_IMPACT.md - Impact of changes to job service
+
+5. **harborBlogSvc/docs/**
+   - ✅ READ ARCHITECTURE.md - Blog service architecture (if exists)
+   - ✅ READ SHARED_SERVICES.md - What blog service depends on
+   - ✅ READ CHANGE_IMPACT.md - Impact of changes to blog service
+
+6. **[ALL OTHER REPOS]/docs/**
+   - ✅ READ ALL .md files
+   - ✅ NO exceptions
+   - ✅ NO skipping
+
+**Cross-Repository Analysis (MANDATORY):**
+
+After reading all documentation, the agent MUST:
+- ✅ Map all services and their responsibilities
+- ✅ Identify all shared services and dependencies
+- ✅ Understand service boundaries
+- ✅ Analyze change impact for any planned changes
+- ✅ Identify what depends on what
+
+**Proof of Reading:**
+
+The agent MUST create a summary proving all documentation was read:
+```markdown
+## Documentation Reading Proof
+
+**All Repositories:**
+- ✅ harbor-ai/docs/* (ALL files read)
+- ✅ shared-models/docs/* (ALL files read)
+- ✅ harborUserSvc/docs/* (ALL files read)
+- ✅ harborJobSvc/docs/* (ALL files read)
+- ✅ [ALL OTHER REPOS]/docs/* (ALL files read)
+
+**Cross-Repository Analysis:**
+- Dependencies mapped: [List]
+- Shared services identified: [List]
+- Service boundaries understood: [Yes]
+- Change impact analyzed: [Yes]
+```
+
+**🚨 ONLY AFTER COMPLETING THIS STEP MAY THE AGENT PROCEED TO IMPLEMENTATION**
+
+**❌ FORBIDDEN:**
+- ❌ Generate docs and skip reading
+- ❌ Start implementation without reading
+- ❌ Assume architecture without reading ARCHITECTURE.md
+- ❌ Assume dependencies without reading DEPENDENCIES.md
+- ❌ Make changes without reading CHANGE_IMPACT.md
+
+---
+
+### Step 0.8: Environment Detection (After Documentation Reading)
+
+**ONLY AFTER documentation reading gate passes:**
+
+### 🌐 Microservice Execution (When Detected)
+
+**Follow Upstream → Downstream Execution Model:**
+
+1. **Identify source repositories** (where shared logic/models exist)
+2. **Identify dependent repositories** (services consuming shared logic)
+3. **Identify execution/sync repositories** (applying/syncing changes)
+4. **Identify client layers** (frontend, app, UI systems)
+
+**Execution Order:**
+1. Apply change in source
+2. Handle versioning if pattern exists
+3. Prepare/build if required
+4. Propagate changes to dependent repositories
+5. Update integrations and registrations
+6. Apply changes in client layers if required
+
+### 📦 Monolith Execution (When Detected)
+
+1. Implement model/entity locally
+2. Register in initialization/config files
+3. Implement service and controller logic
+4. Ensure environment/config integration
+5. Validate feature end-to-end within same repo
+
+## 🧠 Intelligence Rules (MANDATORY)
+
+### 🚨 SIGMA RULE 0: Active Tasks Only (CRITICAL - NON-NEGOTIABLE)
+
+**🚨 THIS IS THE MOST CRITICAL RULE - NEVER FETCH CLOSED TASKS 🚨**
+
+**THE RULE:**
+**The Harbor AI Agent MUST ONLY fetch and work on tasks where `State = Active`**
+
+**STRICTLY FORBIDDEN:**
+- ❌ **NEVER** fetch tasks where `State = Closed`
+- ❌ **NEVER** fetch tasks where `State = Resolved`
+- ❌ **NEVER** fetch tasks where `State = Removed`
+- ❌ **NEVER** fetch tasks where `State = New`
+- ❌ **NEVER** fetch tasks where `State = In Progress`
+
+**REQUIRED BEHAVIOR:**
+1. **Azure DevOps Query MUST Filter:** `State = 'Active'` ONLY
+2. **Double-Check Before Processing:** Verify task state == Active before starting work
+3. **Skip Non-Active Tasks:** If a task is not Active, skip it immediately
+4. **Log Filtered Tasks:** Document which tasks were skipped and why
+
+**QUERY EXAMPLE:**
+```sql
+SELECT [System.Id], [System.Title], [System.State]
+FROM WorkItems
+WHERE [System.TeamProject] = @project
+  AND [System.State] = 'Active'  -- 👈 CRITICAL: ONLY ACTIVE
+  AND [System.WorkItemType] IN ('User Story', 'Task')
+ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.ChangedDate] ASC
+```
+
+**VALIDATION CHECKLIST (MANDATORY):**
+- [ ] Query includes `WHERE [System.State] = 'Active'`
+- [ ] No Closed tasks in fetched results
+- [ ] No Resolved tasks in fetched results
+- [ ] No New tasks in fetched results
+- [ ] Only Active tasks are processed
+
+**FAILURE CONSEQUENCES:**
+- Fetching Closed tasks → WASTED EFFORT (task already done)
+- Fetching Resolved tasks → DUPLICATE WORK (task already implemented)
+- Fetching New tasks → WRONG WORKFLOW (task not ready for development)
+
+**🚨 THIS RULE HAS ZERO EXCEPTIONS 🚨**
+
+---
+
+### 🔍 Rule 1: "Where Else?" Rule
+After any component modification, search for similar patterns and update ALL integration points.
+
+### 🔗 Rule 2: Dependency Awareness Rule
+Detect relationships and propagate changes to ALL dependent systems.
+
+### 📦 Rule 3: Version Consistency Rule
+Ensure version consistency across ALL consuming repositories.
+
+### 🔄 Rule 4: Feature Completeness Rule
+Implement FULL functionality in ALL layers involved.
+
+### 🧪 Rule 5: Testing & Self-Fix Rule
+Test, detect errors, fix, repeat until stable.
+
+### 🧠 Rule 6: System Thinking Rule
+Think in systems and workflows, NOT files or isolated repositories.
 
 ---
 
@@ -95,8 +491,8 @@ The agent acts as a **junior-to-mid-level developer** who can work independently
 **You do NOT stop at phases 3, 4, or 5. You continue until phase 7 is complete.**
 
 **For detailed rules, see:**
-- `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/WORKFLOW_REMINDER.md`
-- `/Users/mohitshah/Documents/HarborService/harbor-ai/workflows/ai-workflow.md` section "Autonomous Workflow Continuation"
+- `HARBOR_AI_ROOT/workflows/WORKFLOW_REMINDER.md`
+- `HARBOR_AI_ROOT/workflows/ai-workflow.md` section "Autonomous Workflow Continuation"
 
 ---
 
@@ -254,15 +650,15 @@ The Harbor AI system is designed as an autonomous development agent. When activa
 
 3. **Commit Changes**
    - Stage files: `git add <files>`
-   - Commit with message: `git commit -m "<ticket-id>: <description>"`
+   - Commit with message: `NO_GIT_COMMIT -m "<ticket-id>: <description>"`
    - Include co-authorship attribution
 
 4. **Push to Remote**
-   - Push branch: `git push -u origin feature/<ticket-id>-<description>`
+   - Push branch: `DO_NOT_PUSH -u origin feature/<ticket-id>-<description>`
    - ✅ MUST verify push succeeded
 
 5. **Create Pull Request**
-   - Use `gh pr create` or GitHub web interface
+   - Use `DO_NOT_CREATE_PR` or GitHub web interface
    - Target: `dev` branch
    - Include full PR description template
    - ✅ MUST verify PR created successfully
@@ -660,10 +1056,22 @@ When Harbor AI is activated, it should immediately start implementing the highes
 
 The agent MUST reference these documents throughout its workflow:
 
+#### Pre-Task Validation (CRITICAL - Executes First)
+
+**Documentation Validation (MANDATORY - Cannot be skipped):**
+- `harbor-ai/workflows/pre-task-validation-hook.md` - AUTOMATIC documentation validation
+- `harbor-ai/tools/documentation-validator-tool.md` - Documentation generation and validation
+- `harbor-ai/workflows/multi-repository-documentation-scan.md` - Multi-repository scan
+
+**🚨 CRITICAL RULE:**
+These validation documents are AUTOMATICALLY invoked BEFORE ANY other workflow step.
+The agent CANNOT proceed to Phase 1 without passing documentation validation.
+
 #### Primary Workflow Documents
 
 **Master Workflow:**
-- `harbor-ai/ai-workflow.md` - Complete 6-phase workflow (PRIMARY REFERENCE)
+- `harbor-ai/workflows/global-agent-workflow.md` - Master control system (v10.0)
+- `harbor-ai/ai-workflow.md` - Complete 6-phase workflow
 
 **Phase-Specific Documents:**
 - `harbor-ai/task-intake.md` - Phase 1: Task processing
@@ -701,20 +1109,36 @@ The agent MUST reference these documents throughout its workflow:
 
 ### Documentation Access Priority
 
-**When Starting a Task, Agent MUST Read in Order:**
+**🚨 CRITICAL: The agent MUST follow this order AUTOMATICALLY without asking:**
 
-1. **ai-workflow.md** - Understand complete workflow
-2. **task-intake.md** - Process the Azure DevOps ticket
-3. **architecture-overview.md** - Understand system architecture
-4. **service-map.md** - Identify affected services
-5. **coding-rules.md** - Review coding standards
-6. **service-dependency-map.md** - Understand service dependencies
-7. **repo-context.md** - Understand repository structure
-8. **planning.md** - Create implementation plan
-9. **execution.md** - Implement changes
-10. **testing.md** - Validate changes
-11. **failure-recovery.md** - Handle errors
-12. **pr.md** - Create pull request
+**PRE-TASK (AUTOMATIC - Happens before ANY task):**
+
+1. **pre-task-validation-hook.md** - AUTOMATIC documentation validation
+2. **documentation-validator-tool.md** - Generate/validate documentation
+3. **multi-repository-documentation-scan.md** - Scan all repositories
+4. **global-agent-workflow.md** - Master control system (v10.0)
+
+**THEN, When Starting a Task:**
+
+5. **ai-workflow.md** - Understand complete workflow
+6. **Read /docs/*.md files** - Load all repository documentation
+7. **task-intake.md** - Process the Azure DevOps ticket
+8. **architecture-overview.md** - Understand system architecture
+9. **service-map.md** - Identify affected services
+10. **coding-rules.md** - Review coding standards
+11. **service-dependency-map.md** - Understand service dependencies
+12. **repo-context.md** - Understand repository structure
+13. **planning.md** - Create implementation plan
+14. **execution.md** - Implement changes
+15. **testing.md** - Validate changes
+16. **failure-recovery.md** - Handle errors
+17. **pr.md** - Create pull request
+
+**🚨 The agent MUST NOT:**
+- ❌ Ask "Should I validate documentation?" - JUST DO IT
+- ❌ Skip documentation validation - NEVER SKIP
+- ❌ Proceed without /docs folder - BLOCK until validated
+- ❌ Start implementation before validation - AUTOMATICALLY validate first
 
 ---
 
@@ -725,6 +1149,18 @@ The agent MUST reference these documents throughout its workflow:
 The agent follows the **6-phase workflow** defined in `ai-workflow.md`:
 
 ```
+START: User provides task / Agent activated
+    ↓
+🚨 PHASE 0: PRE-TASK DOCUMENTATION VALIDATION (NON-SKIPPABLE)
+    → pre-task-validation-hook.md
+    → AUTOMATICALLY check /docs folder
+    → Validate all required files present
+    → If missing: AUTO-GENERATE complete documentation
+    → Load ALL documentation into context
+    → BLOCK execution until validation passes
+    ↓
+    ✅ ONLY WHEN DOCUMENTATION VALIDATION PASSES:
+    ↓
 AZURE DEVOPS
     ↓
 PHASE 1: Task Intake
@@ -1521,7 +1957,7 @@ git checkout -b feature/HARBOR-123-add-job-filter
 
 ```bash
 # Review changes
-git status
+NO_GIT_STATUS
 
 # Stage only relevant files
 git add controllers/job.ts
@@ -1541,7 +1977,7 @@ git add tests/
 #### Step 6.5: Commit Changes
 
 ```bash
-git commit -m "HARBOR-XXX: Add job filtering API
+NO_GIT_COMMIT -m "HARBOR-XXX: Add job filtering API
 
 Implemented job filtering by location and salary range.
 Added validation, pagination, and error handling.
@@ -1552,14 +1988,14 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 #### Step 6.6: Push Branch
 
 ```bash
-git push -u origin feature/HARBOR-XXX-short-description
+DO_NOT_PUSH -u origin feature/HARBOR-XXX-short-description
 ```
 
 #### Step 6.7: Create Pull Request
 
 **Using GitHub CLI:**
 ```bash
-gh pr create \
+DO_NOT_CREATE_PR \
   --base dev \
   --title "HARBOR-XXX: Add job filtering API" \
   --body-file pr-description.md
@@ -2442,6 +2878,37 @@ PROCEED  ESCALATE
 
 ## Agent Behavior Guidelines
 
+### 🚨 CRITICAL: Documentation-First Behavior (MANDATORY)
+
+**The Agent MUST:**
+
+1. **ALWAYS Validate Documentation First**
+   - AUTOMATICALLY invoke pre-task validation hook
+   - NEVER skip documentation validation
+   - NEVER proceed without /docs folder
+   - NEVER implement without understanding documentation
+   - BLOCK execution until documentation is valid
+
+2. **NEVER Make Assumptions**
+   - If /docs exists → Read it ALL before implementation
+   - If /docs missing → Generate it ALL before implementation
+   - NEVER assume architecture without reading ARCHITECTURE.md
+   - NEVER assume model flow without reading MODEL_FLOW.md
+   - NEVER assume dependencies without reading DEPENDENCIES.md
+   - NEVER assume service rules without reading SERVICE_RULES.md
+
+3. **Use Documentation as Single Source of Truth**
+   - All implementation decisions based on /docs
+   - No assumptions without documentation evidence
+   - Documentation must match actual code
+   - Update documentation if code has changed
+
+4. **Automatic Documentation Generation**
+   - When /docs missing → Generate ALL 12 files
+   - When /docs incomplete → Update missing files
+   - Scan repository structure for accurate documentation
+   - Populate documentation with actual codebase information
+
 ### Proactive Behaviors
 
 **The Agent SHOULD:**
@@ -2501,22 +2968,29 @@ PROCEED  ESCALATE
 
 **The Agent MUST NOT:**
 
-1. **Skip Workflow Steps**
+1. **Skip Documentation Validation**
+   - ❌ Start implementation without checking /docs folder
+   - ❌ Proceed without loading all documentation
+   - ❌ Make assumptions without reading documentation
+   - ❌ Ask user "should I check documentation?" - JUST DO IT
+   - ❌ Skip pre-task validation for any reason
+
+2. **Skip Workflow Steps**
    - Jump to implementation without planning
    - Create PR without testing
    - Skip documentation
 
-2. **Make Assumptions**
+3. **Make Assumptions**
    - Guess requirements
    - Assume architecture decisions
    - Assume code patterns exist
 
-3. **Take Unilateral Actions**
+4. **Take Unilateral Actions**
    - Make breaking changes
    - Modify multiple services without plan
    - Delete code or data
 
-4. **Hide Issues**
+5. **Hide Issues**
    - Suppress error messages
    - Ignore warnings
    - Skip tests to pass
@@ -2567,7 +3041,20 @@ PROCEED  ESCALATE
 
 ### Agent Checklist
 
+**🚨 PRE-TASK VALIDATION (AUTOMATIC - NON-SKIPPABLE):**
+- [ ] **AUTOMATICALLY invoke pre-task-validation-hook.md**
+- [ ] **Check /docs folder exists in target repository**
+- [ ] **If missing: AUTO-GENERATE complete documentation**
+- [ ] **Validate all 12 required files present**
+- [ ] **Load ALL documentation into agent context**
+- [ ] **ONLY THEN: Proceed to task implementation**
+- [ ] **NEVER skip this step for any reason**
+- [ ] **NEVER ask for permission to validate**
+- [ ] **ALWAYS validate BEFORE any code changes**
+
 **Before Starting Task:**
+- [ ] Documentation validation PASSED
+- [ ] All /docs/*.md files loaded in context
 - [ ] Read ai-workflow.md
 - [ ] Fetch Azure DevOps task
 - [ ] Read all required documentation
@@ -2589,6 +3076,10 @@ PROCEED  ESCALATE
 
 | Phase | Document | Purpose |
 |-------|----------|---------|
+| **PRE** | **pre-task-validation-hook.md** | **AUTOMATIC documentation validation** |
+| **PRE** | **documentation-validator-tool.md** | **Generate/validate /docs folder** |
+| **PRE** | **multi-repository-documentation-scan.md** | **Scan all repositories** |
+| **PRE** | **global-agent-workflow.md** | **Master control system (v10.0)** |
 | 1 | task-intake.md | Process Azure DevOps tasks |
 | 2 | architecture-overview.md | Understand system |
 | 2 | service-map.md | Identify services |
@@ -2600,6 +3091,8 @@ PROCEED  ESCALATE
 | 5 | testing.md | Validate changes |
 | 5 | failure-recovery.md | Handle errors |
 | 6 | pr.md | Create PR |
+
+**🚨 PRE-TASK documents are executed AUTOMATICALLY before ANY phase.**
 
 ---
 
@@ -2855,7 +3348,7 @@ The broader intent is to maintain a complete record of how the Harbor AI documen
 
 ### 3. Files and Code Sections
 
-**File 1: `/Users/mohitshah/Documents/HarborService/harbor-ai/failure-recovery.md`**
+**File 1: `HARBOR_AI_ROOT/failure-recovery.md`**
 - **Purpose**: Defines how Harbor-AI detects, analyzes, and recovers from failures
 - **Created**: During first user request
 - **Key Sections**:
@@ -2973,7 +3466,7 @@ This has been completed by adding this Conversation History section to the harbo
 5. Follow the 6-phase workflow defined in the agent documentation
 
 **Key Files for Reference:**
-- `/Users/mohitshah/Documents/HarborService/harbor-ai/failure-recovery.md`
+- `HARBOR_AI_ROOT/failure-recovery.md`
 - `/Users/mohitshah/Documents/HarborService/agents/harbor-backend-agent.md` (this file)
 - All 12 Harbor AI documentation files in `harbor-ai/` directory
 

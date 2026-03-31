@@ -667,6 +667,52 @@ Next steps: Select a task to begin work, or specify task ID.
 
 ## Task Selection Criteria
 
+### 🚨 SIGMA RULE: Active Tasks Only (CRITICAL - NON-NEGOTIABLE)
+
+**🚨 THIS IS THE MOST CRITICAL RULE - NEVER FETCH CLOSED TASKS 🚨**
+
+**THE RULE:**
+**The Harbor AI Agent MUST ONLY fetch and work on tasks where `State = Active`**
+
+**STRICTLY FORBIDDEN:**
+- ❌ **NEVER** fetch tasks where `State = Closed`
+- ❌ **NEVER** fetch tasks where `State = Resolved`
+- ❌ **NEVER** fetch tasks where `State = Removed`
+- ❌ **NEVER** fetch tasks where `State = New`
+- ❌ **NEVER** fetch tasks where `State = In Progress`
+
+**REQUIRED BEHAVIOR:**
+1. **Azure DevOps Query MUST Filter:** `State = 'Active'` ONLY
+2. **Double-Check Before Processing:** Verify task state == Active before starting work
+3. **Skip Non-Active Tasks:** If a task is not Active, skip it immediately
+4. **Log Filtered Tasks:** Document which tasks were skipped and why
+
+**QUERY EXAMPLE:**
+```sql
+SELECT [System.Id], [System.Title], [System.State]
+FROM WorkItems
+WHERE [System.TeamProject] = @project
+  AND [System.State] = 'Active'  -- 👈 CRITICAL: ONLY ACTIVE
+  AND [System.WorkItemType] IN ('User Story', 'Task')
+ORDER BY [Microsoft.VSTS.Common.Priority] ASC, [System.ChangedDate] ASC
+```
+
+**VALIDATION CHECKLIST (MANDATORY):**
+- [ ] Query includes `WHERE [System.State] = 'Active'`
+- [ ] No Closed tasks in fetched results
+- [ ] No Resolved tasks in fetched results
+- [ ] No New tasks in fetched results
+- [ ] Only Active tasks are processed
+
+**FAILURE CONSEQUENCES:**
+- Fetching Closed tasks → WASTED EFFORT (task already done)
+- Fetching Resolved tasks → DUPLICATE WORK (task already implemented)
+- Fetching New tasks → WRONG WORKFLOW (task not ready for development)
+
+**🚨 THIS RULE HAS ZERO EXCEPTIONS 🚨**
+
+---
+
 ### Prioritization Factors
 
 **Priority Level:**
