@@ -47,6 +47,14 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
     const currentIndex = stages.indexOf(ticket.stage)
     const stageIndex = stages.indexOf(stage)
 
+    // ✅ FIX: If ticket is completed, mark ALL stages as completed
+    if (ticket.status === 'Completed' || ticket.status === 'completed') {
+      // All stages including current should be completed when ticket is done
+      if (stageIndex <= currentIndex) return 'completed'
+      return 'pending'
+    }
+
+    // Normal progression for in-progress tickets
     if (stageIndex < currentIndex) return 'completed'
     if (stageIndex === currentIndex) return 'active'
     return 'pending'
