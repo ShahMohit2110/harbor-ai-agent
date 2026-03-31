@@ -220,7 +220,7 @@ function App() {
   }
 
   const getStageDistribution = () => {
-    const stages = ['Planning', 'Analysis', 'Development', 'Testing', 'Deployment']
+    const stages = ['Planning', 'Analysis', 'Development', 'Testing']
     return stages.map(stage => ({
       name: stage,
       count: tickets.filter(t => t.stage === stage).length

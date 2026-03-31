@@ -15,7 +15,7 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
     [activities, id]
   )
 
-  const stages = ['Planning', 'Analysis', 'Development', 'Testing', 'Deployment']
+  const stages = ['Planning', 'Analysis', 'Development', 'Testing']
 
   const getStatusBadgeClass = (status) => {
     switch (status.toLowerCase()) {

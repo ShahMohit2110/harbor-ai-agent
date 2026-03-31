@@ -94,7 +94,7 @@ function initializeSampleData() {
       title: "Database Schema Optimization",
       description: "Optimize database queries and add proper indexing for improved performance.",
       status: "Completed",
-      stage: "Deployment",
+      stage: "Testing",
       priority: "Medium",
       assignedRepos: ["harborDatabaseSvc"],
       assignee: "Mike Johnson",
@@ -257,32 +257,43 @@ app.put('/api/tickets/:id/progress', (req, res) => {
 
   const { progress, stage, status, message } = req.body
 
-  // ✅ FIX: Auto-sync progress based on stage if progress not provided
-  const stageProgressMap = {
-    'Planning': 0,
-    'Analysis': 25,
-    'Development': 50,
-    'Testing': 75,
-    'Deployment': 90
+  // ✅ FIX: Auto-sync stage based on progress (agent controls progress, stage follows)
+  const progressStageMap = {
+    // 0% → Planning
+    [0]: 'Planning',
+    // 1-32% → Planning (not yet started Analysis)
+    // 33% → Analysis (Analysis complete)
+    // 34-66% → Analysis (in Development)
+    // 67% → Development (Development complete)
+    // 68-99% → Development (in Testing)
+    // 100% → Testing (complete)
+  }
+
+  // Helper function to determine stage from progress
+  const getStageFromProgress = (progress) => {
+    if (progress >= 100) return 'Testing'
+    if (progress >= 67) return 'Development'
+    if (progress >= 33) return 'Analysis'
+    return 'Planning'
   }
 
   // Update ticket
   if (progress !== undefined) {
     ticket.progress = progress
-  } else if (stage) {
-    // Auto-set progress based on stage if progress not provided
-    ticket.progress = stageProgressMap[stage] || ticket.progress
-  }
-
-  if (stage) {
-    ticket.stage = stage
-    // ✅ FIX: Also update progress if stage changed and progress wasn't explicitly set
-    if (progress === undefined) {
-      ticket.progress = stageProgressMap[stage] || ticket.progress
+    // ✅ CRITICAL FIX: Auto-set stage based on progress (agent drives progress, stage follows)
+    // Only if stage is not explicitly provided
+    if (stage === undefined) {
+      ticket.stage = getStageFromProgress(progress)
     }
   }
 
-  if (status) ticket.status = status
+  if (stage !== undefined) {
+    ticket.stage = stage
+  }
+
+  if (status !== undefined) {
+    ticket.status = status
+  }
 
   // Update agentDescription with the latest message
   if (message) {
@@ -297,7 +308,7 @@ app.put('/api/tickets/:id/progress', (req, res) => {
   // ✅ FIX: Auto-sync ALL completion-related fields
   // When progress reaches 100%, auto-set stage and status
   if (ticket.progress >= 100) {
-    ticket.stage = 'Deployment'
+    ticket.stage = 'Testing'
     ticket.status = 'Completed'
     ticket.harborAgentActive = false
   }
@@ -305,13 +316,7 @@ app.put('/api/tickets/:id/progress', (req, res) => {
   // ✅ FIX: When status is set to Completed, auto-set progress and stage
   if (ticket.status === 'Completed' || ticket.status === 'completed') {
     ticket.progress = 100
-    ticket.stage = 'Deployment'
-    ticket.harborAgentActive = false
-  }
-
-  // ✅ FIX: When stage is set to Deployment and status is Completed, ensure progress is 100%
-  if (ticket.stage === 'Deployment' && (ticket.status === 'Completed' || ticket.status === 'completed')) {
-    ticket.progress = 100
+    ticket.stage = 'Testing'
     ticket.harborAgentActive = false
   }
 
@@ -366,22 +371,22 @@ app.put('/api/tickets/:id', (req, res) => {
   })
 
   // ✅ FIX: Auto-sync completion fields (progress, stage, status)
-  // When status is set to Completed, auto-set progress to 100% and stage to Deployment
+  // When status is set to Completed, auto-set progress to 100% and stage to Testing
   if (ticket.status === 'Completed' || ticket.status === 'completed') {
     ticket.progress = 100
-    ticket.stage = 'Deployment'
+    ticket.stage = 'Testing'
     ticket.harborAgentActive = false
   }
 
-  // When progress reaches 100%, auto-set status to Completed and stage to Deployment
+  // When progress reaches 100%, auto-set status to Completed and stage to Testing
   if (ticket.progress >= 100) {
     ticket.status = 'Completed'
-    ticket.stage = 'Deployment'
+    ticket.stage = 'Testing'
     ticket.harborAgentActive = false
   }
 
-  // When stage is Deployment and status is Completed, ensure progress is 100%
-  if (ticket.stage === 'Deployment' && (ticket.status === 'Completed' || ticket.status === 'completed')) {
+  // When stage is Testing and status is Completed, ensure progress is 100%
+  if (ticket.stage === 'Testing' && (ticket.status === 'Completed' || ticket.status === 'completed')) {
     ticket.progress = 100
     ticket.harborAgentActive = false
   }
@@ -499,21 +504,17 @@ app.post('/api/harbor-agent/start', (req, res) => {
     })
   }
 
-  // ✅ FIX: Auto-sync progress based on stage
-  const stageProgressMap = {
-    'Planning': 0,
-    'Analysis': 25,
-    'Development': 50,
-    'Testing': 75,
-    'Deployment': 90
-  }
-
-  const newStage = stage || 'Development'
+  const newStage = stage || 'Planning'  // ✅ FIX: Default to 'Planning', not 'Development'
 
   // Update ticket
   ticket.status = 'In Progress'
   ticket.stage = newStage
-  ticket.progress = stageProgressMap[newStage] || 0  // ✅ Auto-set progress based on stage
+  // ✅ CRITICAL FIX: Don't auto-set progress based on stage
+  // Let agent control progress through explicit updateProgress() calls
+  // Only set progress if it's currently 0 (first time starting)
+  if (ticket.progress === 0 || ticket.progress === undefined) {
+    ticket.progress = 0  // Start at 0%, agent will update as it progresses
+  }
   ticket.harborAgentActive = true
   ticket.agentDescription = message || `Harbor Agent started working on ${ticket.title}`
   ticket.updatedAt = new Date().toISOString()
@@ -555,7 +556,7 @@ app.post('/api/harbor-agent/complete', (req, res) => {
 
   // Update ticket
   ticket.status = 'Completed'
-  ticket.stage = 'Deployment'
+  ticket.stage = 'Testing'
   ticket.progress = 100  // Ensure progress is set to 100%
   ticket.harborAgentActive = false
   ticket.updatedAt = new Date().toISOString()
@@ -570,7 +571,7 @@ app.post('/api/harbor-agent/complete', (req, res) => {
     action: "Harbor Agent Completed",
     description: message || `Harbor Agent completed ${ticket.title}`,
     user: "Harbor Agent",
-    stage: "Deployment",
+    stage: "Testing",
     filesChanged: req.body.filesChanged || [],
     summary: req.body.summary || null
   }

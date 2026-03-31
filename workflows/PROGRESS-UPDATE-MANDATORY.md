@@ -39,14 +39,12 @@ export HARBOR_TRACKER_UTILS="${HARBOR_AI_ROOT}/harbor-ticket-tracker/backend/src
 
 **🚨 MANDATORY RULE: Progress MUST be updated at EACH phase completion**
 
-**Progress Update Timeline:**
+**Progress Update Timeline (4-Stage System):**
 ```
-Phase Start:     0%   → Initial state
-Phase 1 Complete: 25%  → Documentation/Analysis done
-Phase 2 Complete: 50%  → Implementation started
-Phase 3 Complete: 75%  → Implementation complete, testing started
-Phase 4 Complete: 90%  → Testing complete, ready for deployment
-Phase 5 Complete: 100% → Task complete
+Phase Start:     0%   → Initial state (Planning)
+Phase 1 Complete: 33%  → Documentation/Analysis complete (Analysis stage)
+Phase 2 Complete: 67%  → Implementation started (Development stage)
+Phase 3 Complete: 100% → Implementation complete, testing done (Testing stage - COMPLETE)
 ```
 
 ---
@@ -56,21 +54,15 @@ Phase 5 Complete: 100% → Task complete
 ### **Method 1: Bash Command (REQUIRED during workflow execution)**
 
 ```bash
-# Update progress to 25%
+# Update progress to 33%
 cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-137" 25 "Development" "Documentation and analysis complete"
+node ticketTrackerIntegration.js update "TKT-137" 33 "Analysis" "Documentation and analysis complete"
 
-# Update progress to 50%
-node ticketTrackerIntegration.js update "TKT-137" 50 "Development" "Implementation started - core features in progress"
-
-# Update progress to 75%
-node ticketTrackerIntegration.js update "TKT-137" 75 "Testing" "Implementation complete - testing started"
-
-# Update progress to 90%
-node ticketTrackerIntegration.js update "TKT-137" 90 "Deployment" "Testing complete - ready for deployment"
+# Update progress to 67%
+node ticketTrackerIntegration.js update "TKT-137" 67 "Development" "Implementation started - core features in progress"
 
 # Complete ticket (100%)
-node ticketTrackerIntegration.js complete "TKT-137" "Task completed successfully"
+node ticketTrackerIntegration.js complete "TKT-137" "Task completed successfully - implementation and testing complete"
 ```
 
 ### **Method 2: API Call (Alternative)**
@@ -80,7 +72,7 @@ node ticketTrackerIntegration.js complete "TKT-137" "Task completed successfully
 curl -X PUT http://localhost:3001/api/tickets/TKT-137/progress \
   -H "Content-Type: application/json" \
   -d '{
-    "progress": 50,
+    "progress": 67,
     "stage": "Development",
     "message": "Implementation started - core features in progress"
   }'
@@ -92,29 +84,19 @@ curl -X PUT http://localhost:3001/api/tickets/TKT-137/progress \
 
 **🚨 At EACH phase completion, AGENT MUST:**
 
-### **Checkpoint 1: After Documentation Gate (25%)**
+### **Checkpoint 1: After Documentation Gate (33%)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-{ID}" 25 "Development" "Documentation gate complete - all docs read and validated"
+node ticketTrackerIntegration.js update "TKT-{ID}" 33 "Analysis" "Documentation gate complete - all docs read and validated"
 ```
 
-### **Checkpoint 2: After Implementation Starts (50%)**
+### **Checkpoint 2: After Implementation Starts (67%)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-{ID}" 50 "Development" "Core implementation started - main features in progress"
+node ticketTrackerIntegration.js update "TKT-{ID}" 67 "Development" "Core implementation started - main features in progress"
 ```
 
-### **Checkpoint 3: After Implementation Complete (75%)**
+### **Checkpoint 3: After Testing Complete (100%)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-{ID}" 75 "Testing" "Implementation complete - testing phase started"
-```
-
-### **Checkpoint 4: After Testing Complete (90%)**
-```bash
-node ticketTrackerIntegration.js update "TKT-{ID}" 90 "Deployment" "Testing complete - ready for deployment"
-```
-
-### **Checkpoint 5: Task Complete (100%)**
-```bash
-node ticketTrackerIntegration.js complete "TKT-{ID}" "Task completed successfully - all tests passing"
+node ticketTrackerIntegration.js complete "TKT-{ID}" "Task completed successfully - all tests passing, implementation complete"
 ```
 
 ---
@@ -130,10 +112,8 @@ curl -s http://localhost:3001/api/tickets/TKT-{ID} | grep -o '"progress":[0-9]*'
 
 **Expected output:**
 ```
-"progress":25
-"progress":50
-"progress":75
-"progress":90
+"progress":33
+"progress":67
 "progress":100
 ```
 
@@ -151,27 +131,17 @@ curl -s http://localhost:3001/api/tickets/TKT-{ID} | grep -o '"progress":[0-9]*'
 ```
 ✅ Phase 0: Documentation Gate
    ↓
-   Execute: node ticketTrackerIntegration.js update "TKT-137" 25 "Development" "Docs complete"
-   Verify: curl shows "progress":25
+   Execute: node ticketTrackerIntegration.js update "TKT-137" 33 "Analysis" "Docs complete"
+   Verify: curl shows "progress":33
    ↓
 ✅ Phase 1: Implementation Starts
    ↓
-   Execute: node ticketTrackerIntegration.js update "TKT-137" 50 "Development" "Implementation started"
-   Verify: curl shows "progress":50
+   Execute: node ticketTrackerIntegration.js update "TKT-137" 67 "Development" "Implementation started"
+   Verify: curl shows "progress":67
    ↓
-✅ Phase 2: Implementation Complete
+✅ Phase 2: Testing Complete
    ↓
-   Execute: node ticketTrackerIntegration.js update "TKT-137" 75 "Testing" "Implementation complete"
-   Verify: curl shows "progress":75
-   ↓
-✅ Phase 3: Testing Complete
-   ↓
-   Execute: node ticketTrackerIntegration.js update "TKT-137" 90 "Deployment" "Testing complete"
-   Verify: curl shows "progress":90
-   ↓
-✅ Phase 4: Task Complete
-   ↓
-   Execute: node ticketTrackerIntegration.js complete "TKT-137" "Task complete"
+   Execute: node ticketTrackerIntegration.js complete "TKT-137" "Task complete - implementation and testing done"
    Verify: curl shows "progress":100
 ```
 
@@ -211,11 +181,9 @@ node ticketTrackerIntegration.js update "TKT-{ID}" 50 "Development" "Manual prog
 
 Before marking task as complete, verify:
 
-- [ ] Progress updated to 25% after documentation
-- [ ] Progress updated to 50% after implementation starts
-- [ ] Progress updated to 75% after implementation complete
-- [ ] Progress updated to 90% after testing complete
-- [ ] Progress updated to 100% when task complete
+- [ ] Progress updated to 33% after documentation
+- [ ] Progress updated to 67% after implementation starts
+- [ ] Progress updated to 100% when task complete (testing done)
 - [ ] Each update verified with curl command
 - [ ] UI shows progress bar movement
 - [ ] Activities timeline shows all progress updates

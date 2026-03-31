@@ -50,7 +50,7 @@ if curl -s http://localhost:3001/api/tickets/${TICKET_ID} | grep -q "\"id\":\"${
   # ✅ FIX 2: Only start ticket if it's not already in progress
   if curl -s http://localhost:3001/api/tickets/${TICKET_ID} | grep -q '"status":"In Progress"\|"status":"Pending"'; then
     echo "▶️  Step 2: Starting existing ticket..."
-    node ticketTrackerIntegration.js start "${TICKET_ID}" "Development" "Harbor AI Agent resumed working on ${TITLE}"
+    node ticketTrackerIntegration.js start "${TICKET_ID}" "Planning" "Harbor AI Agent resumed working on ${TITLE}"
     echo ""
     echo "✅ TICKET ${TICKET_ID} STARTED/RESUMED"
   else
@@ -107,7 +107,7 @@ echo ""
 
 # Step 5: Start ticket
 echo "▶️  Step 5: Starting ticket..."
-node ticketTrackerIntegration.js start "${TICKET_ID}" "Development" "Harbor AI Agent started working on ${TITLE}"
+node ticketTrackerIntegration.js start "${TICKET_ID}" "Planning" "Harbor AI Agent started working on ${TITLE}"
 
 # Verify started
 echo ""
@@ -125,7 +125,7 @@ echo "======================================"
 echo ""
 echo "✅ Ticket: ${TICKET_ID}"
 echo "✅ Status: In Progress"
-echo "✅ Stage: Development"
+echo "✅ Stage: Planning"
 echo ""
 echo "🟢 PROCEEDING TO PHASE 0: Documentation Gate"
 echo ""
