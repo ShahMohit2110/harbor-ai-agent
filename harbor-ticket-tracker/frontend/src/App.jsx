@@ -12,7 +12,6 @@ const API_BASE_URL = 'http://localhost:3001/api'
 
 function App() {
   const [tickets, setTickets] = useState([])
-  const [activities, setActivities] = useState([])
   const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -20,7 +19,6 @@ function App() {
   // Load initial data from API
   useEffect(() => {
     loadTickets()
-    loadActivities()
   }, [])
 
   // Real-time updates from API
@@ -28,8 +26,7 @@ function App() {
     if (!isRealTimeEnabled) return
 
     const interval = setInterval(() => {
-      loadTickets() // Fetch latest data from API
-      loadActivities() // Fetch latest activities (including file changes)
+      loadTickets() // Fetch latest data from API (tickets now include their activities)
     }, 5000) // Poll every 5 seconds
 
     return () => clearInterval(interval)
@@ -51,19 +48,6 @@ function App() {
       setError('API connection failed. Make sure the API server is running on port 3001')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const loadActivities = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/activities`)
-      const result = await response.json()
-
-      if (result.success) {
-        setActivities(result.data)
-      }
-    } catch (error) {
-      console.error('Error loading activities:', error)
     }
   }
 
@@ -159,8 +143,6 @@ function App() {
       if (result.success) {
         // Remove from local state
         setTickets(prev => prev.filter(t => t.id !== ticketId))
-        // Reload activities to get deletion log
-        loadActivities()
 
         // Show success toast
         toast.success('🗑️ Ticket deleted successfully', {
@@ -220,7 +202,8 @@ function App() {
   }
 
   const getStageDistribution = () => {
-    const stages = ['Planning', 'Analysis', 'Development', 'Testing']
+    // ✅ UPDATED: New stage sequence - Analysis → Planning → Development → Testing
+    const stages = ['Analysis', 'Planning', 'Development', 'Testing']
     return stages.map(stage => ({
       name: stage,
       count: tickets.filter(t => t.stage === stage).length
@@ -266,7 +249,7 @@ function App() {
             <Routes>
               <Route
                 path="/"
-                element={<Dashboard stats={getTicketStats()} stageDistribution={getStageDistribution()} onRefresh={() => { loadTickets(); loadActivities(); }} />}
+                element={<Dashboard stats={getTicketStats()} stageDistribution={getStageDistribution()} onRefresh={loadTickets} />}
               />
               <Route
                 path="/tickets"
@@ -274,7 +257,7 @@ function App() {
               />
               <Route
                 path="/ticket/:id"
-                element={<TicketDetail tickets={tickets} activities={activities} onDeleteTicket={deleteTicket} />}
+                element={<TicketDetail tickets={tickets} onDeleteTicket={deleteTicket} />}
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

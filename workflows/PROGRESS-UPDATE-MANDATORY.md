@@ -1,7 +1,8 @@
 # 🚨 PROGRESS UPDATE - MANDATORY EXECUTION GUIDE
 
-**Date:** 2026-03-30
-**Status:** ✅ FIXED - Progress updates now MANDATORY with specific percentages
+**Date:** 2026-04-01
+**Version:** v12.0 - NEW STAGE SEQUENCE
+**Status:** ✅ UPDATED - Progress updates now MANDATORY with new stage sequence
 **Issue:** Agent was completing phases but progress percentage stayed at 0%
 
 ---
@@ -39,13 +40,20 @@ export HARBOR_TRACKER_UTILS="${HARBOR_AI_ROOT}/harbor-ticket-tracker/backend/src
 
 **🚨 MANDATORY RULE: Progress MUST be updated at EACH phase completion**
 
-**Progress Update Timeline (4-Stage System):**
+**🆕 NEW Progress Update Timeline (4-Stage System - Updated Sequence):**
 ```
-Phase Start:     0%   → Initial state (Planning)
-Phase 1 Complete: 33%  → Documentation/Analysis complete (Analysis stage)
-Phase 2 Complete: 67%  → Implementation started (Development stage)
-Phase 3 Complete: 100% → Implementation complete, testing done (Testing stage - COMPLETE)
+Phase Start:        0%   → Initial state (Analysis)
+Phase 1 Complete:   25%  → Analysis complete, moving to Planning
+Phase 2 Complete:   50%  → Planning complete, moving to Development
+Phase 3 Complete:   75%  → Development complete, moving to Testing
+Phase 4 Complete:  100%  → Testing complete, Task DONE
 ```
+
+**🆕 NEW Stage Sequence:**
+1. **Analysis** (0-25%): Analyze requirements, documents, and existing code
+2. **Planning** (25-50%): Define implementation approach and steps
+3. **Development** (50-75%): Perform actual implementation
+4. **Testing** (75-100%): Validate and test the implementation
 
 ---
 
@@ -54,12 +62,15 @@ Phase 3 Complete: 100% → Implementation complete, testing done (Testing stage 
 ### **Method 1: Bash Command (REQUIRED during workflow execution)**
 
 ```bash
-# Update progress to 33%
+# Update progress to 25% (Analysis → Planning)
 cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-137" 33 "Analysis" "Documentation and analysis complete"
+node ticketTrackerIntegration.js update "TKT-137" 25 "Planning" "Analysis phase complete - all docs read and validated"
 
-# Update progress to 67%
-node ticketTrackerIntegration.js update "TKT-137" 67 "Development" "Implementation started - core features in progress"
+# Update progress to 50% (Planning → Development)
+node ticketTrackerIntegration.js update "TKT-137" 50 "Development" "Planning complete - starting implementation"
+
+# Update progress to 75% (Development → Testing)
+node ticketTrackerIntegration.js update "TKT-137" 75 "Testing" "Development complete - starting testing"
 
 # Complete ticket (100%)
 node ticketTrackerIntegration.js complete "TKT-137" "Task completed successfully - implementation and testing complete"
@@ -72,9 +83,9 @@ node ticketTrackerIntegration.js complete "TKT-137" "Task completed successfully
 curl -X PUT http://localhost:3001/api/tickets/TKT-137/progress \
   -H "Content-Type: application/json" \
   -d '{
-    "progress": 67,
+    "progress": 50,
     "stage": "Development",
-    "message": "Implementation started - core features in progress"
+    "message": "Planning complete - starting implementation"
   }'
 ```
 
@@ -84,17 +95,22 @@ curl -X PUT http://localhost:3001/api/tickets/TKT-137/progress \
 
 **🚨 At EACH phase completion, AGENT MUST:**
 
-### **Checkpoint 1: After Documentation Gate (33%)**
+### **Checkpoint 1: After Analysis Phase (25%)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-{ID}" 33 "Analysis" "Documentation gate complete - all docs read and validated"
+node ticketTrackerIntegration.js update "TKT-{ID}" 25 "Planning" "Analysis phase complete - all docs read and validated"
 ```
 
-### **Checkpoint 2: After Implementation Starts (67%)**
+### **Checkpoint 2: After Planning Phase (50%)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-{ID}" 67 "Development" "Core implementation started - main features in progress"
+node ticketTrackerIntegration.js update "TKT-{ID}" 50 "Development" "Planning complete - starting implementation"
 ```
 
-### **Checkpoint 3: After Testing Complete (100%)**
+### **Checkpoint 3: After Development Phase (75%)**
+```bash
+node ticketTrackerIntegration.js update "TKT-{ID}" 75 "Testing" "Development complete - starting testing"
+```
+
+### **Checkpoint 4: After Testing Complete (100%)**
 ```bash
 node ticketTrackerIntegration.js complete "TKT-{ID}" "Task completed successfully - all tests passing, implementation complete"
 ```
@@ -112,8 +128,9 @@ curl -s http://localhost:3001/api/tickets/TKT-{ID} | grep -o '"progress":[0-9]*'
 
 **Expected output:**
 ```
-"progress":33
-"progress":67
+"progress":25
+"progress":50
+"progress":75
 "progress":100
 ```
 
@@ -129,19 +146,24 @@ curl -s http://localhost:3001/api/tickets/TKT-{ID} | grep -o '"progress":[0-9]*'
 ## 📊 EXAMPLE WORKFLOW
 
 ```
-✅ Phase 0: Documentation Gate
+✅ Phase 0: Analysis (Documentation Gate)
    ↓
-   Execute: node ticketTrackerIntegration.js update "TKT-137" 33 "Analysis" "Docs complete"
-   Verify: curl shows "progress":33
+   Execute: node ticketTrackerIntegration.js update "TKT-137" 25 "Planning" "Analysis complete"
+   Verify: curl shows "progress":25
    ↓
-✅ Phase 1: Implementation Starts
+✅ Phase 1: Planning
    ↓
-   Execute: node ticketTrackerIntegration.js update "TKT-137" 67 "Development" "Implementation started"
-   Verify: curl shows "progress":67
+   Execute: node ticketTrackerIntegration.js update "TKT-137" 50 "Development" "Planning complete"
+   Verify: curl shows "progress":50
    ↓
-✅ Phase 2: Testing Complete
+✅ Phase 2: Development
    ↓
-   Execute: node ticketTrackerIntegration.js complete "TKT-137" "Task complete - implementation and testing done"
+   Execute: node ticketTrackerIntegration.js update "TKT-137" 75 "Testing" "Development complete"
+   Verify: curl shows "progress":75
+   ↓
+✅ Phase 3: Testing Complete
+   ↓
+   Execute: node ticketTrackerIntegration.js complete "TKT-137" "Task complete - testing done"
    Verify: curl shows "progress":100
 ```
 
@@ -181,8 +203,9 @@ node ticketTrackerIntegration.js update "TKT-{ID}" 50 "Development" "Manual prog
 
 Before marking task as complete, verify:
 
-- [ ] Progress updated to 33% after documentation
-- [ ] Progress updated to 67% after implementation starts
+- [ ] Progress updated to 25% after analysis phase
+- [ ] Progress updated to 50% after planning phase
+- [ ] Progress updated to 75% after development phase
 - [ ] Progress updated to 100% when task complete (testing done)
 - [ ] Each update verified with curl command
 - [ ] UI shows progress bar movement
@@ -201,4 +224,5 @@ Before marking task as complete, verify:
 ---
 
 **Status:** ✅ MANDATORY - All agents MUST follow this guide
-**Next Review:** 2026-04-30
+**Version:** v12.0 - New Stage Sequence (Analysis → Planning → Development → Testing)
+**Last Updated:** 2026-04-01

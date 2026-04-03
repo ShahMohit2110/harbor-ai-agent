@@ -18,12 +18,19 @@
 **Purpose:** System-aware decision-making agent with mandatory pre-execution intelligence analysis and MANDATORY 5-checkpoint progress progression system
 
 **🆕 v11.2.0 - MANDATORY 3-CHECKPOINT PROGRESSION SYSTEM:**
-- ✅ Checkpoint 1: After Documentation Gate → 33% (Analysis)
-- ✅ Checkpoint 2: Before Implementation → 67% (Development)
-- ✅ Checkpoint 3: After Testing Complete → 100% (Testing - Completed)
+- ✅ Checkpoint 1: After Analysis Phase → 25% (Planning Stage)
+- ✅ Checkpoint 2: After Planning Phase → 50% (Development Stage)
+- ✅ Checkpoint 3: After Development Phase → 75% (Testing Stage)
+- ✅ Checkpoint 4: After Testing Complete → 100% (Completed)
 - ✅ Each checkpoint MANDATES progress update before proceeding
 - ✅ Prevents stage skipping and ensures smooth progression
 - ✅ Reference: `workflows/PROGRESS-UPDATE-MANDATORY.md`
+
+**🆕 NEW STAGE SEQUENCE:**
+- ✅ Analysis (0-25%): Analyze requirements, documents, and existing code
+- ✅ Planning (25-50%): Define implementation approach and steps
+- ✅ Development (50-75%): Perform actual implementation
+- ✅ Testing (75-100%): Validate and test the implementation
 
 **🚨 DYNAMIC PATH CONFIGURATION:**
 
@@ -560,17 +567,17 @@ CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
 
 ## 🎯 CHECKPOINT 1: Progress Update After Documentation Gate (MANDATORY)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #1 of 5**
+**🚨 CRITICAL: This is MANDATORY checkpoint #1 of 4**
 
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
-**After Phase 0 (Documentation Gate) completes, agent MUST:**
+**After Phase 0 (Documentation Gate/Analysis) completes, agent MUST:**
 
-**✅ Update Progress to 33% (Analysis Stage)**
+**✅ Update Progress to 25% (Planning Stage)**
 
 ```bash
 cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 33 "Analysis" "Documentation gate complete - all docs read and validated"
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 25 "Planning" "Analysis phase complete - all docs read and validated"
 ```
 
 **✅ Verify Progress Updated:**
@@ -581,22 +588,22 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 **Expected Output:**
 ```
-"progress":33
+"progress":25
 ```
 
-**🚨 IF PROGRESS IS NOT 33%:**
+**🚨 IF PROGRESS IS NOT 25%:**
 - ❌ DO NOT PROCEED TO NEXT PHASE
 - ✅ RE-RUN the progress update command
-- ✅ Verify progress changed to 33%
+- ✅ Verify progress changed to 25%
 - ✅ Only then proceed
 
 **✅ Output Confirmation:**
 ```markdown
 ✅ CHECKPOINT 1 COMPLETE:
-- Progress updated to: 33%
-- Stage set to: Analysis
-- Message: Documentation gate complete
-🟢 PROCEEDING TO PHASE 0.45
+- Progress updated to: 25%
+- Stage set to: Planning
+- Message: Analysis phase complete
+🟢 PROCEEDING TO PLANNING PHASE
 ```
 
 ---
@@ -726,7 +733,7 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep '"id":"T
 **Step 2: Start Ticket**
 ```bash
 # When agent begins implementation
-node ticketTrackerIntegration.js start "TKT-${AZURE_DEVOPS_ID}" "Development" "Harbor AI Agent started working on ${AZURE_DEVOPS_TITLE}"
+node ticketTrackerIntegration.js start "TKT-${AZURE_DEVOPS_ID}" "Analysis" "Harbor AI Agent started working on ${AZURE_DEVOPS_TITLE}"
 
 # Verify ticket started
 curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep '"status":"In Progress"'
@@ -772,7 +779,7 @@ await HarborAgentTracker.createTicket(ticketData)
 // When agent begins implementation
 await HarborAgentTracker.startTicket(
   `TKT-${azureDevOpsId}`,
-  'Development',
+  'Analysis',
   `Harbor AI Agent started working on ${azureDevOpsTitle}`
 )
 ```
@@ -2312,19 +2319,19 @@ Result: ✅ All commands executed and verified
 
 ---
 
-## 🎯 CHECKPOINT 2: Progress Update When Implementation Starts (MANDATORY)
+## 🎯 CHECKPOINT 2: Progress Update After Planning Phase (MANDATORY)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #2 of 3**
+**🚨 CRITICAL: This is MANDATORY checkpoint #2 of 4**
 
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
-**Before starting Phase 6 (Implementation), agent MUST:**
+**After Phase 4 (Planning) completes, agent MUST:**
 
-**✅ Update Progress to 67% (Development Stage)**
+**✅ Update Progress to 50% (Development Stage)**
 
 ```bash
 cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 67 "Development" "Documentation and analysis complete - starting implementation"
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Planning phase complete - starting implementation"
 ```
 
 **✅ Verify Progress Updated:**
@@ -2335,21 +2342,21 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 **Expected Output:**
 ```
-"progress":67
+"progress":50
 ```
 
-**🚨 IF PROGRESS IS NOT 67%:**
+**🚨 IF PROGRESS IS NOT 50%:**
 - ❌ DO NOT START IMPLEMENTATION
 - ✅ RE-RUN the progress update command
-- ✅ Verify progress changed to 67%
+- ✅ Verify progress changed to 50%
 - ✅ Only then start implementation
 
 **✅ Output Confirmation:**
 ```markdown
 ✅ CHECKPOINT 2 COMPLETE:
-- Progress updated to: 67%
+- Progress updated to: 50%
 - Stage set to: Development
-- Message: Starting implementation
+- Message: Planning complete, starting implementation
 🟢 PROCEEDING TO PHASE 6: IMPLEMENTATION
 ```
 
@@ -2363,16 +2370,16 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 **Continue with implementation activities...**
 
-**Step 2: Mid-Implementation (50% Progress)**
+**Step 2: Mid-Implementation (60% Progress)**
 ```bash
 # After implementing core features
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Core implementation complete - following existing patterns"
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 60 "Development" "Core implementation complete - following existing patterns"
 ```
 
-**Step 3: Testing Phase (75% Progress)**
+**Step 3: Pre-Testing (70% Progress)**
 ```bash
-# When testing starts
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 75 "Testing" "Implementation complete - starting tests"
+# When implementation is complete, ready for testing
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 70 "Development" "Implementation complete - ready for testing phase"
 ```
 
 **With File Changes:**
@@ -2405,12 +2412,12 @@ node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development
 
 **JavaScript API Usage (Alternative):**
 
-**Step 1: Start Implementation (25% Progress)**
+**Step 1: Start Implementation (60% Progress)**
 ```javascript
 // Begin coding
 await HarborAgentTracker.updateProgress(
   `TKT-${azureDevOpsId}`,
-  25,
+  60,
   'Development',
   'Started implementation following existing patterns'
 )
@@ -2493,15 +2500,76 @@ await HarborAgentTracker.updateProgress(
 
 ---
 
-## 🎯 CHECKPOINT 3: Progress Update After Implementation Complete (MANDATORY)
+## 🎯 CHECKPOINT 3: Progress Update After Development Complete (MANDATORY)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #3 of 3 - FINAL CHECKPOINT**
+**🚨 CRITICAL: This is MANDATORY checkpoint #3 of 4**
 
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
-**After Phase 9 (Testing) completes, agent MUST:**
+**After Phase 6 (Development) completes, agent MUST:**
 
-**✅ Complete Ticket (100% - Testing Stage Complete)**
+**✅ Update Progress to 75% (Testing Stage)**
+
+```bash
+cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 75 "Testing" "Development phase complete - starting testing and validation"
+```
+
+**✅ Verify Progress Updated:**
+
+```bash
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"progress":[0-9]*'
+```
+
+**Expected Output:**
+```
+"progress":75
+```
+
+**🚨 IF PROGRESS IS NOT 75%:**
+- ❌ DO NOT PROCEED TO TESTING
+- ✅ RE-RUN the progress update command
+- ✅ Verify progress changed to 75%
+- ✅ Only then proceed to testing
+
+**✅ Output Confirmation:**
+```markdown
+✅ CHECKPOINT 3 COMPLETE:
+- Progress updated to: 75%
+- Stage set to: Testing
+- Message: Development complete, starting testing
+🟢 PROCEEDING TO PHASE 8: TESTING
+```
+
+---
+
+## ⚙️ Phase 7: Runtime Execution (MANDATORY)
+
+*Same as v10.1 - Run and verify services*
+
+---
+
+## 🧪 Phase 8: API Testing (MANDATORY)
+
+*Same as v10.1 - Real API testing*
+
+---
+
+## 🔁 Phase 9: Auto Debug & Fix Loop (MANDATORY)
+
+*Same as v10.1 - Debug until zero errors*
+
+---
+
+## 🎯 CHECKPOINT 4: Progress Update After Testing Complete (MANDATORY)
+
+**🚨 CRITICAL: This is MANDATORY checkpoint #4 of 4 - FINAL CHECKPOINT**
+
+**Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
+
+**After Phase 9 (Testing & Debug) completes, agent MUST:**
+
+**✅ Complete Ticket (100% - Task Complete)**
 
 ```bash
 cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
@@ -2528,31 +2596,13 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 **✅ Output Confirmation:**
 ```markdown
-✅ CHECKPOINT 3 COMPLETE - ALL CHECKPOINTS PASSED:
+✅ CHECKPOINT 4 COMPLETE - ALL CHECKPOINTS PASSED:
 - Progress updated to: 100%
 - Stage set to: Testing
 - Status set to: Completed
 - Message: Task completed successfully
 🟢 PROCEEDING TO TASK COMPLETION
 ```
-
----
-
-## ⚙️ Phase 7: Runtime Execution (MANDATORY)
-
-*Same as v10.1 - Run and verify services*
-
----
-
-## 🧪 Phase 8: API Testing (MANDATORY)
-
-*Same as v10.1 - Real API testing*
-
----
-
-## 🔁 Phase 9: Auto Debug & Fix Loop (MANDATORY)
-
-*Same as v10.1 - Debug until zero errors*
 
 ---
 
@@ -2577,10 +2627,9 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep '"status
 ```
 
 **🎯 COMPLETION CHECKLIST:**
-- [ ] 90% progress update executed
-- [ ] 100% complete command executed
+- [ ] Checkpoint 4 (100%) executed
 - [ ] Ticket status shows "Completed"
-- [ ] Ticket stage shows "Deployment"
+- [ ] Ticket stage shows "Testing"
 - [ ] Progress shows 100%
 - [ ] All file changes reported (if applicable)
 

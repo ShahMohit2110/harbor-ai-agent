@@ -3,19 +3,21 @@ import { useState, useMemo } from 'react'
 import FileChanges from './FileChanges'
 import './TicketDetail.css'
 
-function TicketDetail({ tickets, activities, onDeleteTicket }) {
+function TicketDetail({ tickets, onDeleteTicket }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const [selectedStage, setSelectedStage] = useState(null)
 
   const ticket = useMemo(() => tickets.find((t) => t.id === id), [tickets, id])
 
+  // ✅ FIX: Read activities directly from the ticket object instead of filtering global array
   const ticketActivities = useMemo(
-    () => activities.filter((a) => a.ticketId === id),
-    [activities, id]
+    () => ticket?.activities || [],
+    [ticket]
   )
 
-  const stages = ['Planning', 'Analysis', 'Development', 'Testing']
+  // ✅ UPDATED: New stage sequence - Analysis → Planning → Development → Testing
+  const stages = ['Analysis', 'Planning', 'Development', 'Testing']
 
   const getStatusBadgeClass = (status) => {
     switch (status.toLowerCase()) {
@@ -46,15 +48,29 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
   const getStageStatus = (stage) => {
     const currentIndex = stages.indexOf(ticket.stage)
     const stageIndex = stages.indexOf(stage)
+    const progress = ticket.progress || 0
 
-    // ✅ FIX: If ticket is completed, mark ALL stages as completed
+    // ✅ UPDATED: Use progress-based stage completion with new stage sequence
+    // This ensures stages light up green incrementally as progress increases
+
+    // If ticket is completed, mark ALL stages as completed
     if (ticket.status === 'Completed' || ticket.status === 'completed') {
-      // All stages including current should be completed when ticket is done
       if (stageIndex <= currentIndex) return 'completed'
       return 'pending'
     }
 
-    // Normal progression for in-progress tickets
+    // ✅ UPDATED: Progress-based completion with new stage sequence:
+    // Analysis: complete at 25%+ (stage 1)
+    // Planning: complete at 50%+ (stage 2)
+    // Development: complete at 75%+ (stage 3)
+    // Testing: complete at 100% OR when status is 'Completed' (stage 4)
+
+    if (stage === 'Analysis' && progress >= 25) return 'completed'
+    if (stage === 'Planning' && progress >= 50) return 'completed'
+    if (stage === 'Development' && progress >= 75) return 'completed'
+    if (stage === 'Testing' && (progress >= 100 || ticket.status === 'Completed' || ticket.status === 'completed')) return 'completed'
+
+    // Normal progression for active/in-progress
     if (stageIndex < currentIndex) return 'completed'
     if (stageIndex === currentIndex) return 'active'
     return 'pending'
@@ -159,7 +175,7 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
         </div>
       </div>
 
-      {/* ✅ NEW: Phase Summaries */}
+      {/* ✅ UPDATED: Phase Summaries with lowercase keys for new stage sequence */}
       {(ticket.phaseSummaries && Object.keys(ticket.phaseSummaries).some(key => ticket.phaseSummaries[key])) && (
         <div className="card">
           <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1.5rem' }}>
@@ -168,7 +184,9 @@ function TicketDetail({ tickets, activities, onDeleteTicket }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {stages.map((stage) => {
               const stageStatus = getStageStatus(stage)
-              const summary = ticket.phaseSummaries?.[stage] || ''
+              // ✅ UPDATED: Use lowercase key for phaseSummaries lookup
+              // Also handle backward compatibility for existing tickets with capitalized keys
+              const summary = ticket.phaseSummaries?.[stage.toLowerCase()] || ticket.phaseSummaries?.[stage] || ''
 
               if (!summary && stageStatus === 'pending') return null
 
