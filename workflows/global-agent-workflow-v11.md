@@ -17,17 +17,20 @@
 **Last Updated:** 2026-03-30
 **Purpose:** System-aware decision-making agent with mandatory pre-execution intelligence analysis and MANDATORY 5-checkpoint progress progression system
 
-**🆕 v11.2.0 - MANDATORY 3-CHECKPOINT PROGRESSION SYSTEM:**
+**🆕 v11.3.0 - MANDATORY 5-CHECKPOINT PROGRESSION SYSTEM (ADMIN STAGE):**
+- ✅ Checkpoint 0: Agent Starts → 10% (Analysis Stage) - Admin complete
 - ✅ Checkpoint 1: After Analysis Phase → 25% (Planning Stage)
 - ✅ Checkpoint 2: After Planning Phase → 50% (Development Stage)
 - ✅ Checkpoint 3: After Development Phase → 75% (Testing Stage)
 - ✅ Checkpoint 4: After Testing Complete → 100% (Completed)
 - ✅ Each checkpoint MANDATES progress update before proceeding
+- ✅ Real-time updates in Harbor Ticket Tracker UI
 - ✅ Prevents stage skipping and ensures smooth progression
 - ✅ Reference: `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
-**🆕 NEW STAGE SEQUENCE:**
-- ✅ Analysis (0-25%): Analyze requirements, documents, and existing code
+**🆕 NEW STAGE SEQUENCE (ADMIN STAGE):**
+- ✅ Admin (0-10%): Ticket synced, awaiting agent start
+- ✅ Analysis (10-25%): Analyze requirements, documents, and existing code
 - ✅ Planning (25-50%): Define implementation approach and steps
 - ✅ Development (50-75%): Perform actual implementation
 - ✅ Testing (75-100%): Validate and test the implementation
@@ -565,13 +568,66 @@ CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
 
 ---
 
+## 🎯 CHECKPOINT 0: Agent Start - Admin → Analysis Transition (MANDATORY)
+
+**🚨 CRITICAL: This is MANDATORY checkpoint #0 of 5**
+
+**Reference:** `workflows/HARBOR-TICKET-TRACKER-UPDATE.md`
+
+**When agent STARTS working on ticket, agent MUST:**
+
+**✅ Update Progress to 10% (Analysis Stage) - Admin Complete**
+
+```bash
+cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
+node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 10 "Analysis" "Harbor AI Agent started working - Admin phase complete"
+```
+
+**✅ Verify Progress Updated:**
+
+```bash
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | jq '.data | {progress, stage}'
+```
+
+**Expected Output:**
+```json
+{
+  "progress": 10,
+  "stage": "Analysis"
+}
+```
+
+**🚨 IF PROGRESS IS NOT 10%:**
+- ❌ DO NOT PROCEED TO NEXT PHASE
+- ✅ RE-RUN the progress update command
+- ✅ Verify progress changed to 10%
+- ✅ Verify stage changed to "Analysis"
+- ✅ Only then proceed
+
+**✅ Output Confirmation:**
+```markdown
+✅ CHECKPOINT 0 COMPLETE:
+- Progress updated to: 10%
+- Stage set to: Analysis
+- Message: Agent started working
+🟢 PROCEEDING TO ANALYSIS PHASE
+```
+
+**UI Expected Behavior:**
+- Admin stage: ✅ Green (completed)
+- Admin → Analysis animation: ✅ Plays (1.5s)
+- Analysis stage: 🔄 Blue/active
+- Progress bar: 10%
+
+---
+
 ## 🎯 CHECKPOINT 1: Progress Update After Documentation Gate (MANDATORY)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #1 of 4**
+**🚨 CRITICAL: This is MANDATORY checkpoint #1 of 5**
 
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
-**After Phase 0 (Documentation Gate/Analysis) completes, agent MUST:**
+**After Phase 0 (Documentation Gate) completes, agent MUST:**
 
 **✅ Update Progress to 25% (Planning Stage)**
 

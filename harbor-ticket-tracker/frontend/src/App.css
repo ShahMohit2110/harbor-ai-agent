@@ -678,6 +678,202 @@ body {
   font-weight: 600;
 }
 
+/* Admin stage special styling */
+.stage-step.admin-active .stage-step-icon {
+  background: var(--bg-tertiary);
+  border-color: var(--border-medium);
+  color: var(--text-muted);
+  box-shadow: none;
+}
+
+.stage-step.admin-active .stage-step-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Admin stage completion animation */
+@keyframes adminToAnalysis {
+  0% {
+    background: var(--bg-tertiary);
+    border-color: var(--border-medium);
+    color: var(--text-muted);
+    transform: scale(1);
+  }
+  50% {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.5), rgba(139, 92, 246, 0.5));
+    border-color: var(--accent-primary);
+    transform: scale(1.15);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+  }
+  100% {
+    background: var(--accent-success);
+    border-color: var(--accent-success);
+    color: white;
+    transform: scale(1);
+  }
+}
+
+.stage-step.admin-completing .stage-step-icon {
+  animation: adminToAnalysis 1.5s ease-in-out;
+}
+
+/* Progress line animation for Admin → Analysis transition */
+@keyframes progressLineFlow {
+  0% {
+    width: 0%;
+    opacity: 0;
+  }
+  50% {
+    width: 50%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+.stage-stepper.admin-transition::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-success), var(--accent-primary));
+  animation: progressLineFlow 1.5s ease-in-out;
+  z-index: 0;
+}
+
+/* ============================================
+   STAGE CONNECTORS - Animated Lines Between Stages
+   ============================================ */
+
+.stage-connector {
+  height: 2px;
+  background: var(--bg-tertiary);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Base connector line */
+.stage-connector::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-tertiary);
+  transition: background 0.3s ease;
+}
+
+/* Animated connector line */
+.stage-connector.connector-animating::before {
+  background: linear-gradient(90deg, var(--accent-success) 0%, var(--accent-primary) 100%);
+  animation: connectorPulse 1.5s ease-in-out;
+}
+
+@keyframes connectorPulse {
+  0% {
+    width: 0%;
+    opacity: 0;
+  }
+  50% {
+    width: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+    background: linear-gradient(90deg, var(--accent-success), var(--accent-primary));
+  }
+}
+
+/* Completion animation classes */
+.stage-step.admin-completing .stage-step-icon {
+  animation: adminToAnalysis 1.5s ease-in-out;
+}
+
+.stage-step.analysis-completing .stage-step-icon {
+  animation: analysisToPlanning 1.5s ease-in-out;
+}
+
+.stage-step.planning-completing .stage-step-icon {
+  animation: planningToDevelopment 1.5s ease-in-out;
+}
+
+.stage-step.development-completing .stage-step-icon {
+  animation: developmentToTesting 1.5s ease-in-out;
+}
+
+/* Stage transition animations */
+@keyframes analysisToPlanning {
+  0% {
+    background: var(--bg-tertiary);
+    border-color: var(--border-medium);
+    color: var(--text-muted);
+    transform: scale(1);
+  }
+  50% {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.5), rgba(16, 185, 129, 0.5));
+    border-color: var(--accent-success);
+    color: white;
+    transform: scale(1.15);
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+  }
+  100% {
+    background: var(--accent-success);
+    border-color: var(--accent-success);
+    color: white;
+    transform: scale(1);
+  }
+}
+
+@keyframes planningToDevelopment {
+  0% {
+    background: var(--bg-tertiary);
+    border-color: var(--border-medium);
+    color: var(--text-muted);
+    transform: scale(1);
+  }
+  50% {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.5), rgba(16, 185, 129, 0.5));
+    border-color: var(--accent-success);
+    color: white;
+    transform: scale(1.15);
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+  }
+  100% {
+    background: var(--accent-success);
+    border-color: var(--accent-success);
+    color: white;
+    transform: scale(1);
+  }
+}
+
+@keyframes developmentToTesting {
+  0% {
+    background: var(--bg-tertiary);
+    border-color: var(--border-medium);
+    color: var(--text-muted);
+    transform: scale(1);
+  }
+  50% {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.5), rgba(16, 185, 129, 0.5));
+    border-color: var(--accent-success);
+    color: white;
+    transform: scale(1.15);
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+  }
+  100% {
+    background: var(--accent-success);
+    border-color: var(--accent-success);
+    color: white;
+    transform: scale(1);
+  }
+}
+
 /* ============================================
    ACTIVITY TIMELINE
    ============================================ */

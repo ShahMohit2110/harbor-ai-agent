@@ -1,8 +1,8 @@
 # 🚨 PROGRESS UPDATE - MANDATORY EXECUTION GUIDE
 
-**Date:** 2026-04-01
-**Version:** v12.0 - NEW STAGE SEQUENCE
-**Status:** ✅ UPDATED - Progress updates now MANDATORY with new stage sequence
+**Date:** 2026-04-04
+**Version:** v13.0 - ADMIN STAGE SYSTEM
+**Status:** ✅ UPDATED - Progress updates now MANDATORY with Admin stage system
 **Issue:** Agent was completing phases but progress percentage stayed at 0%
 
 ---
@@ -14,11 +14,12 @@
 - Activities were logged with descriptions
 - **BUT progress percentage stayed at 0%**
 - UI showed no progress bar movement
+- Admin → Analysis transition didn't trigger
 
 **Root Cause:**
-- Agent was NOT calling the progress update API
-- Agent was only logging activities
-- No actual progress percentage was being set
+- Agent was NOT calling the progress update API correctly
+- Agent was using `node -e` with direct JSON manipulation
+- No actual progress percentage was being set via API
 
 ---
 
@@ -40,9 +41,10 @@ export HARBOR_TRACKER_UTILS="${HARBOR_AI_ROOT}/harbor-ticket-tracker/backend/src
 
 **🚨 MANDATORY RULE: Progress MUST be updated at EACH phase completion**
 
-**🆕 NEW Progress Update Timeline (4-Stage System - Updated Sequence):**
+**🆕 NEW Progress Update Timeline (5-Checkpoint System - Admin Stage):**
 ```
-Phase Start:        0%   → Initial state (Analysis)
+Ticket Synced:       0%   → Admin stage (awaiting agent)
+Agent Starts:       10%  → Admin complete, moving to Analysis
 Phase 1 Complete:   25%  → Analysis complete, moving to Planning
 Phase 2 Complete:   50%  → Planning complete, moving to Development
 Phase 3 Complete:   75%  → Development complete, moving to Testing
@@ -50,10 +52,11 @@ Phase 4 Complete:  100%  → Testing complete, Task DONE
 ```
 
 **🆕 NEW Stage Sequence:**
-1. **Analysis** (0-25%): Analyze requirements, documents, and existing code
-2. **Planning** (25-50%): Define implementation approach and steps
-3. **Development** (50-75%): Perform actual implementation
-4. **Testing** (75-100%): Validate and test the implementation
+1. **Admin** (0-10%): Ticket synced, awaiting agent start
+2. **Analysis** (10-25%): Analyze requirements, documents, and existing code
+3. **Planning** (25-50%): Define implementation approach and steps
+4. **Development** (50-75%): Perform actual implementation
+5. **Testing** (75-100%): Validate and test the implementation
 
 ---
 
@@ -95,6 +98,27 @@ curl -X PUT http://localhost:3001/api/tickets/TKT-137/progress \
 
 **🚨 At EACH phase completion, AGENT MUST:**
 
+### **Checkpoint 0: Agent Starts Working (10%) - Admin → Analysis Transition**
+
+```bash
+node ticketTrackerIntegration.js update "TKT-{ID}" 10 "Analysis" "Harbor AI Agent started working - Admin phase complete"
+```
+
+**What This Does:**
+- Updates progress from 0% → 10%
+- Changes stage from "Admin" → "Analysis"
+- Triggers Admin → Analysis animation (1.5s)
+- Admin stage turns green (completed)
+- Analysis stage becomes active (blue)
+
+**Expected UI Behavior:**
+- ✅ Admin icon: Green with animation
+- ✅ Analysis icon: Blue/active
+- ✅ Progress bar: 10%
+- ✅ Activity logged: "Agent started working"
+
+---
+
 ### **Checkpoint 1: After Analysis Phase (25%)**
 ```bash
 node ticketTrackerIntegration.js update "TKT-{ID}" 25 "Planning" "Analysis phase complete - all docs read and validated"
@@ -128,6 +152,7 @@ curl -s http://localhost:3001/api/tickets/TKT-{ID} | grep -o '"progress":[0-9]*'
 
 **Expected output:**
 ```
+"progress":10
 "progress":25
 "progress":50
 "progress":75

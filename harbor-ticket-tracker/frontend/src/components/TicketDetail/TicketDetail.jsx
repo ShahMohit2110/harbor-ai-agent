@@ -1,5 +1,5 @@
+import React, { useState, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useState, useMemo } from 'react'
 import FileChanges from './FileChanges'
 import './TicketDetail.css'
 
@@ -16,8 +16,8 @@ function TicketDetail({ tickets, onDeleteTicket }) {
     [ticket]
   )
 
-  // ✅ UPDATED: New stage sequence - Analysis → Planning → Development → Testing
-  const stages = ['Analysis', 'Planning', 'Development', 'Testing']
+  // ✅ UPDATED: New stage sequence - Admin → Analysis → Planning → Development → Testing
+  const stages = ['Admin', 'Analysis', 'Planning', 'Development', 'Testing']
 
   const getStatusBadgeClass = (status) => {
     switch (status.toLowerCase()) {
@@ -60,11 +60,13 @@ function TicketDetail({ tickets, onDeleteTicket }) {
     }
 
     // ✅ UPDATED: Progress-based completion with new stage sequence:
-    // Analysis: complete at 25%+ (stage 1)
-    // Planning: complete at 50%+ (stage 2)
-    // Development: complete at 75%+ (stage 3)
-    // Testing: complete at 100% OR when status is 'Completed' (stage 4)
+    // Admin: complete at 10%+ (stage 1) - only when analysis starts
+    // Analysis: complete at 25%+ (stage 2)
+    // Planning: complete at 50%+ (stage 3)
+    // Development: complete at 75%+ (stage 4)
+    // Testing: complete at 100% OR when status is 'Completed' (stage 5)
 
+    if (stage === 'Admin' && progress >= 10) return 'completed'
     if (stage === 'Analysis' && progress >= 25) return 'completed'
     if (stage === 'Planning' && progress >= 50) return 'completed'
     if (stage === 'Development' && progress >= 75) return 'completed'
@@ -72,7 +74,11 @@ function TicketDetail({ tickets, onDeleteTicket }) {
 
     // Normal progression for active/in-progress
     if (stageIndex < currentIndex) return 'completed'
-    if (stageIndex === currentIndex) return 'active'
+    if (stageIndex === currentIndex) {
+      // Special handling for Admin stage - it should not be green when active
+      if (stage === 'Admin') return 'admin-active'
+      return 'active'
+    }
     return 'pending'
   }
 
@@ -154,19 +160,31 @@ function TicketDetail({ tickets, onDeleteTicket }) {
         <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1.5rem' }}>
           Progress Flow
         </h2>
-        <div className="stage-stepper">
+        <div className={`stage-stepper ${ticket.stage === 'Analysis' && ticket.progress >= 10 && ticket.progress < 25 ? 'admin-transition' : ''}`}>
           {stages.map((stage, index) => {
             const status = getStageStatus(stage)
+            const isAdminCompleting = stage === 'Admin' && ticket.stage === 'Analysis' && ticket.progress >= 10 && ticket.progress < 25
+            const isAnalysisCompleting = stage === 'Analysis' && ticket.stage === 'Planning' && ticket.progress >= 25 && ticket.progress < 50
+            const isPlanningCompleting = stage === 'Planning' && ticket.stage === 'Development' && ticket.progress >= 50 && ticket.progress < 75
+            const isDevelopmentCompleting = stage === 'Development' && ticket.stage === 'Testing' && ticket.progress >= 75 && ticket.progress < 100
+
             return (
-              <div
-                key={stage}
-                className={`stage-step ${status}`}
-                onClick={() => setSelectedStage(selectedStage === stage ? null : stage)}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="stage-step-icon">{index + 1}</div>
-                <div className="stage-step-label">{stage}</div>
-              </div>
+              <React.Fragment key={stage}>
+                <div
+                  className={`stage-step ${status} ${isAdminCompleting ? 'admin-completing' : ''} ${isAnalysisCompleting ? 'analysis-completing' : ''} ${isPlanningCompleting ? 'planning-completing' : ''} ${isDevelopmentCompleting ? 'development-completing' : ''}`}
+                  onClick={() => setSelectedStage(selectedStage === stage ? null : stage)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="stage-step-icon">{index + 1}</div>
+                  <div className="stage-step-label">{stage}</div>
+                </div>
+                {index < stages.length - 1 && (
+                  <div
+                    className={`stage-connector ${status === 'completed' && getStageStatus(stages[index + 1]) === 'active' ? 'connector-animating' : ''} ${status === 'active' ? 'connector-animating' : ''}`}
+                    style={{ flex: 1, height: '2px', margin: '0 0.5rem' }}
+                  />
+                )}
+              </React.Fragment>
             )
           })}
         </div>

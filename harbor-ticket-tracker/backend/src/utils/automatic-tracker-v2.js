@@ -203,7 +203,7 @@ async function fetchActiveAzureDevOpsTickets() {
         priority: fields['Microsoft.VSTS.Common.Priority'] || 3,
         assignedTo: fields['System.AssignedTo'] ? fields['System.AssignedTo'].displayName : 'Harbor Agent',
         status: 'Pending',
-        stage: 'Planning',
+        stage: 'Admin',
         areaPath: areaPath,
         iterationPath: fields['System.IterationPath'] || '',
         tags: fields['System.Tags'] || '',
@@ -334,7 +334,7 @@ async function syncTicketToTracker(ticketData) {
         // Start the ticket
         await makeAPIRequest('/harbor-agent/start', 'POST', {
           ticketId: ticketData.id,
-          stage: 'Planning',
+          stage: 'Admin',
           message: `Auto-synced from Azure DevOps - Ready to start`
         });
 

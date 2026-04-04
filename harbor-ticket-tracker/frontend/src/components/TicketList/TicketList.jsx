@@ -103,11 +103,11 @@ function TicketList({ tickets, onDeleteTicket }) {
           onChange={(e) => setStageFilter(e.target.value)}
         >
           <option value="all">All Stages</option>
-          <option value="Planning">Planning</option>
+          <option value="Admin">Admin</option>
           <option value="Analysis">Analysis</option>
+          <option value="Planning">Planning</option>
           <option value="Development">Development</option>
           <option value="Testing">Testing</option>
-          <option value="Deployment">Deployment</option>
         </select>
 
         <select

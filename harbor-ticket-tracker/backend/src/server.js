@@ -348,11 +348,13 @@ app.put('/api/tickets/:id/progress', (req, res) => {
   const { progress, stage, status, message, phaseSummary } = req.body
 
   // ✅ UPDATED: Auto-sync stage based on progress with new stage sequence
-  // New sequence: Analysis → Planning → Development → Testing
+  // New sequence: Admin → Analysis → Planning → Development → Testing
   const progressStageMap = {
-    // 0% → Analysis (starting stage)
-    [0]: 'Analysis',
-    // 1-24% → Analysis (analyzing requirements)
+    // 0% → Admin (starting stage - ticket just synced)
+    [0]: 'Admin',
+    // 1-9% → Admin (awaiting analysis)
+    // 10% → Analysis (Admin complete, moving to Analysis)
+    // 10-24% → Analysis (analyzing requirements)
     // 25% → Planning (Analysis complete, moving to Planning)
     // 26-49% → Planning (planning implementation)
     // 50% → Development (Planning complete, moving to Development)
@@ -368,13 +370,15 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     if (progress >= 75) return 'Testing'
     if (progress >= 50) return 'Development'
     if (progress >= 25) return 'Planning'
-    return 'Analysis'
+    if (progress >= 10) return 'Analysis'
+    return 'Admin'
   }
 
   // ✅ UPDATED: Initialize phaseSummaries if not exists (with lowercase keys for new stage names)
   // Also handle backward compatibility for existing tickets with capitalized keys
   if (!ticket.phaseSummaries) {
     ticket.phaseSummaries = {
+      "admin": "",
       "analysis": "",
       "planning": "",
       "development": "",
@@ -387,6 +391,7 @@ app.put('/api/tickets/:id/progress', (req, res) => {
   if (ticket.phaseSummaries.Planning !== undefined || ticket.phaseSummaries.Analysis !== undefined) {
     const oldSummaries = ticket.phaseSummaries
     ticket.phaseSummaries = {
+      "admin": "",
       "analysis": oldSummaries.Analysis || oldSummaries.analysis || "",
       "planning": oldSummaries.Planning || oldSummaries.planning || "",
       "development": oldSummaries.Development || oldSummaries.development || "",
@@ -412,6 +417,12 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     ticket.status = status
   }
 
+  // ✅ FIX: Auto-set status to "In Progress" when progress > 0%
+  // This ensures that any progress update (not just start) also updates status correctly
+  if (ticket.progress > 0 && ticket.status !== 'Completed' && ticket.status !== 'completed') {
+    ticket.status = 'In Progress'
+  }
+
   // ✅ UPDATED: Update phase summary for current stage if provided
   // Uses lowercase key for the stage
   if (phaseSummary) {
@@ -429,12 +440,12 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     }
   }
 
-  // ✅ FIX: Don't auto-set status to Completed on progress updates
-  // Only set stage based on progress, status is only set via complete endpoint
+  // ✅ FIX: Auto-set status to Completed when progress reaches 100%
+  // This ensures ticket status reflects completion state
   if (ticket.progress >= 100) {
+    ticket.status = 'Completed'
     ticket.stage = 'Testing'
-    // Keep status as 'In Progress' until explicitly completed
-    // Don't auto-set to 'Completed' here
+    ticket.harborAgentActive = false
   }
 
   // ✅ FIX: When status is explicitly set to Completed, auto-set progress and stage
@@ -666,11 +677,21 @@ app.post('/api/harbor-agent/start', (req, res) => {
   // Update ticket
   ticket.status = 'In Progress'
   ticket.stage = newStage
-  // ✅ CRITICAL FIX: Don't auto-set progress based on stage
-  // Let agent control progress through explicit updateProgress() calls
-  // Only set progress if it's currently 0 (first time starting)
+
+  // ✅ UPDATED: Set progress based on stage to trigger animations correctly
+  // Admin → Analysis transition requires 10%+ progress
   if (ticket.progress === 0 || ticket.progress === undefined) {
-    ticket.progress = 0  // Start at 0%, agent will update as it progresses
+    if (newStage === 'Analysis') {
+      ticket.progress = 10  // Set to 10% to trigger Admin → Analysis animation
+    } else if (newStage === 'Planning') {
+      ticket.progress = 25  // Set to 25% for Planning stage
+    } else if (newStage === 'Development') {
+      ticket.progress = 50  // Set to 50% for Development stage
+    } else if (newStage === 'Testing') {
+      ticket.progress = 75  // Set to 75% for Testing stage
+    } else {
+      ticket.progress = 0  // Admin stage stays at 0%
+    }
   }
   ticket.harborAgentActive = true
   ticket.agentDescription = message || `Harbor Agent started working on ${ticket.title}`
@@ -923,7 +944,7 @@ app.post('/api/azure/sync', async (req, res) => {
           title,
           description,
           status: 'Pending',
-          stage: 'Planning',
+          stage: 'Admin',
           priority: priority === 1 ? 'High' : priority === 2 ? 'Medium' : 'Low',
           assignedRepos,
           assignee: 'Harbor Agent',
@@ -944,7 +965,7 @@ app.post('/api/azure/sync', async (req, res) => {
           action: "Ticket Created",
           description: "Azure DevOps ticket synced automatically",
           user: "Azure DevOps",
-          stage: "Planning"
+          stage: "Admin"
         }
         newTicket.activities.unshift(activity)
 

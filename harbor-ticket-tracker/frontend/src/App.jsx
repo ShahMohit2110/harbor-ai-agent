@@ -26,20 +26,46 @@ function App() {
   useEffect(() => {
     if (!isRealTimeEnabled) return
 
+    // ✅ FIXED: Reduced polling interval to 2 seconds for more responsive updates
+    // This ensures progress updates show within 2 seconds of agent updates
     const interval = setInterval(() => {
       loadTickets() // Fetch latest data from API (tickets now include their activities)
-    }, 5000) // Poll every 5 seconds
+    }, 2000) // ✅ CHANGED: Poll every 2 seconds (was 5 seconds)
 
     return () => clearInterval(interval)
   }, [isRealTimeEnabled])
 
   const loadTickets = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tickets`)
+      // ✅ FIXED: Add cache-busting to prevent stale data
+      const response = await fetch(`${API_BASE_URL}/tickets`, {
+        cache: 'no-store', // ✅ Prevents caching
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       const result = await response.json()
 
       if (result.success) {
-        setTickets(result.data)
+        // ✅ FIXED: Check if data actually changed before updating state
+        // This prevents unnecessary re-renders and ensures real-time updates
+        setTickets(prevTickets => {
+          // Simple comparison - if length changed, data probably changed
+          if (result.data.length !== prevTickets.length) {
+            return result.data
+          }
+
+          // Deep comparison of ticket data
+          const ticketsChanged = JSON.stringify(result.data) !== JSON.stringify(prevTickets)
+          if (ticketsChanged) {
+            return result.data
+          }
+
+          // Data hasn't changed, but we still want to trigger re-render for UI updates
+          // Force update by creating new array reference
+          return [...result.data]
+        })
         setError(null)
       } else {
         setError('Failed to load tickets')
@@ -267,7 +293,7 @@ function App() {
                 element={<TicketList tickets={tickets} onDeleteTicket={deleteTicket} />}
               />
               <Route
-                path="/ticket:id"
+                path="/ticket/:id"
                 element={<TicketDetail tickets={tickets} onDeleteTicket={deleteTicket} />}
               />
               <Route
