@@ -201,6 +201,7 @@ function App() {
     }
   }
 
+  if (loading) {
   const getStageDistribution = () => {
     const stages = {}
     tickets.forEach(ticket => {
@@ -213,8 +214,6 @@ function App() {
       count
     }))
   }
-
-  if (loading) {
     return (
       <div className="app">
         <div className="loading-container">

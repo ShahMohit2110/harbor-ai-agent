@@ -3,7 +3,8 @@ import { NavLink } from 'react-router-dom'
 function Sidebar() {
   const navItems = [
     { path: '/', icon: '📊', label: 'Dashboard' },
-    { path: '/tickets', icon: '🎫', label: 'All Tickets' }
+    { path: '/tickets', icon: '🎫', label: 'All Tickets' },
+    { path: '/revenue-strategy', icon: '💰', label: 'Revenue Strategy' }
   ]
 
   return (

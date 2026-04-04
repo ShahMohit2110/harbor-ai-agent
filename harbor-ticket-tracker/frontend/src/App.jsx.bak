@@ -201,19 +201,6 @@ function App() {
     }
   }
 
-  const getStageDistribution = () => {
-    const stages = {}
-    tickets.forEach(ticket => {
-      stages[ticket.stage] = (stages[ticket.stage] || 0) + 1
-    })
-    
-    // Convert object to array format expected by Dashboard
-    return Object.entries(stages).map(([name, count]) => ({
-      name,
-      count
-    }))
-  }
-
   if (loading) {
     return (
       <div className="app">
