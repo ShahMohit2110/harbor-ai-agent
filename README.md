@@ -1,6 +1,8 @@
 # Harbor AI – Autonomous Development Agent
 
-**Harbor AI** is an intelligent autonomous development agent that integrates with Azure DevOps to automatically execute software development tasks. The system fetches active work items, analyzes requirements, implements code following architectural standards, runs tests, creates pull requests, and updates tickets—all without human intervention.
+**Harbor AI** is an intelligent autonomous development agent that integrates with **Harbor Ticket Tracker** to automatically execute software development tasks. The system fetches pending tickets from local JSON files, analyzes requirements, implements code following architectural standards, runs tests, creates pull requests, and updates tickets—all without human intervention.
+
+**🆕 v2.0 Update:** Ticket source migrated from Azure DevOps API to Harbor Ticket Tracker (local JSON files) for faster, more reliable, offline-capable operation.
 
 ---
 
@@ -23,15 +25,15 @@
 
 Harbor AI is designed to automate the end-to-end software development lifecycle for the Harbor platform. When activated, the agent:
 
-1. **Fetches Active Tasks** – Retrieves work items from Azure DevOps where `State = Active`
+1. **Fetches Pending Tickets** – Retrieves tickets from Harbor Ticket Tracker where `status = "pending"` or `"In Progress"`
 2. **Analyzes Architecture** – Studies system architecture, service dependencies, and affected components
 3. **Plans Implementation** – Creates detailed technical plans with specifications
 4. **Generates Code** – Writes production-ready code following Harbor coding standards
 5. **Validates & Tests** – Runs automated tests to verify functionality
 6. **Creates Branches** – Generates feature branches from the `dev` branch
-7. **Commits & Pushes** – Commits changes with descriptive messages and pushes to remote
+7. **Commits Changes** – Commits changes with descriptive messages (NO PUSH per rule)
 8. **Generates Pull Requests** – Creates comprehensive PRs targeting the `dev` branch
-9. **Closes Tickets** – Updates Azure DevOps ticket status to **Closed** with PR links
+9. **Updates Tickets** – Marks tickets as completed in Harbor Ticket Tracker
 
 ### Purpose
 
@@ -41,7 +43,7 @@ Harbor AI exists to:
 - **Enforce consistent architecture** across all code changes
 - **Accelerate development velocity** by handling routine tasks autonomously
 - **Maintain code quality** through automated testing and validation
-- **Streamline workflow** by integrating directly with Azure DevOps and Git
+- **Streamline workflow** by integrating directly with Harbor Ticket Tracker and Git
 
 ---
 
@@ -53,11 +55,12 @@ Harbor AI exists to:
 - No manual intervention required for standard development tasks
 - Continuous operation through multiple queued tasks
 
-### Azure DevOps Integration
+### Harbor Ticket Tracker Integration
 
-- Direct API integration for work item retrieval and updates
-- Automatic filtering for `State = Active` tickets only
-- Seamless ticket lifecycle management
+- Direct JSON file integration for ticket retrieval and updates
+- Automatic filtering for `status = "pending"` or `"In Progress"` tickets only
+- Seamless ticket lifecycle management with real-time progress tracking
+- Offline-capable operation (no external API dependencies)
 
 ### Architecture-Aware Code Generation
 

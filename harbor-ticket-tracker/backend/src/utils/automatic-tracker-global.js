@@ -444,7 +444,7 @@ async function fetchActiveAzureDevOpsTickets() {
         priority: fields['Microsoft.VSTS.Common.Priority'] || 3,
         assignedTo: fields['System.AssignedTo'] ? fields['System.AssignedTo'].displayName : 'Harbor Agent',
         status: 'Pending',
-        stage: 'Planning',
+        stage: 'Admin',
         areaPath: areaPath,
         iterationPath: fields['System.IterationPath'] || '',
         tags: fields['System.Tags'] || '',
@@ -1021,7 +1021,7 @@ async function checkProgress() {
       lastCommitHash: latestCommit,
       startCommitCount: currentCommitCount,
       currentProgress: activeTicket.progress || 0,
-      currentStage: activeTicket.stage || 'Planning'
+      currentStage: activeTicket.stage || 'Admin'
     };
 
     saveState(newState);

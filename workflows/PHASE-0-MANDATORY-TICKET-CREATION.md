@@ -1,4 +1,4 @@
-# 🚨 PHASE 0.0: MANDATORY TICKET CREATION (NON-SKIPPABLE)
+# 🚨 PHASE 0.0: MANDATORY TICKET SELECTION (NON-SKIPPABLE)
 
 **🚨 THIS IS THE ABSOLUTE FIRST STEP - CANNOT BE SKIPPED - ZERO EXCEPTIONS**
 
@@ -10,11 +10,10 @@
 
 **BEFORE DOING ANYTHING ELSE, AGENT MUST:**
 
-1. ✅ Fetch Azure DevOps task
-2. ✅ **IMMEDIATELY CREATE TICKET IN TRACKER** (using bash command)
-3. ✅ **IMMEDIATELY START TICKET** (using bash command)
-4. ✅ Verify ticket exists in tracker
-5. ✅ ONLY THEN proceed to Phase 0 (Documentation Gate)
+1. ✅ Fetch pending ticket from **Harbor Ticket Tracker** (local JSON files)
+2. ✅ **IMMEDIATELY START TICKET** (using bash command)
+3. ✅ Verify ticket exists in tracker
+4. ✅ ONLY THEN proceed to Phase 0 (Documentation Gate)
 
 **🚨 IF THIS STEP IS SKIPPED: CRITICAL FAILURE**
 
@@ -22,69 +21,100 @@
 
 ## 🎯 EXECUTION STEPS (MANDATORY)
 
-### **Step 1: Fetch Azure DevOps Task**
+### **Step 1: Fetch Pending Ticket from Harbor Ticket Tracker**
+
+**🎯 NEW SOURCE: Harbor Ticket Tracker JSON Files**
+
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
-node .azure-fetch-query.js
+# Read tickets from Harbor Ticket Tracker
+cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data
+
+# View all tickets
+cat tickets-data.json | jq '.tickets[] | select(.status == "pending" or .status == "In Progress") | {id, title, priority, status, assignee}'
 ```
 
-### **Step 2: EXTRACT TASK INFORMATION**
+**Expected Output:**
+```json
+{
+  "id": "TKT-146",
+  "title": "API Requirement: Fetch Jobs Matching User Skills",
+  "priority": "High",
+  "status": "pending",
+  "assignee": "Harbor Agent"
+}
+```
 
-From the output, extract:
-- `AZURE_DEVOPS_ID` (the task ID)
-- `AZURE_DEVOPS_TITLE` (the task title)
-- `AZURE_DEVOPS_DESCRIPTION` (the task description)
-- `SELECTED_SERVICE` (the service to work on)
+### **Step 2: SELECT HIGHEST PRIORITY TICKET**
 
-### **Step 3: CREATE TICKET IN TRACKER (MANDATORY - NON-SKIPPABLE)**
+**Automatic Selection Logic:**
+
+```bash
+# Get highest priority pending ticket
+cat tickets-data.json | jq '[.tickets[] | select(.status == "pending" or .status == "In Progress")] | sort_by(.priority, .createdAt) | .[0]'
+```
+
+**Priority Order:** High > Medium > Low
+**Secondary Sort:** Oldest first (by createdAt)
+
+**Expected Output:**
+```json
+{
+  "id": "TKT-146",
+  "title": "API Requirement: Fetch Jobs Matching User Skills",
+  "description": "...",
+  "priority": "High",
+  "status": "pending",
+  "assignee": "Harbor Agent",
+  "stage": "Admin",
+  "progress": 0,
+  "assignedRepos": [],
+  "tags": ["azure-devops", "auto-synced"]
+}
+```
+
+### **Step 3: EXTRACT TICKET INFORMATION**
+
+From the selected ticket, extract:
+- `TICKET_ID` (e.g., "TKT-146")
+- `TICKET_TITLE` (the ticket title)
+- `TICKET_DESCRIPTION` (the ticket description)
+- `TICKET_PRIORITY` (High/Medium/Low)
+
+### **Step 4: START TICKET IN TRACKER (MANDATORY - NON-SKIPPABLE)**
 
 **🚨 SIMPLIFIED ONE-LINE COMMAND:**
 
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
-./mandatory-ticket-creation.sh "${AZURE_DEVOPS_ID}" "${AZURE_DEVOPS_TITLE}" "${AZURE_DEVOPS_DESCRIPTION}" "${SELECTED_SERVICE}"
+# Start the ticket in Harbor Ticket Tracker
+curl -X POST http://localhost:3001/api/harbor-agent/start \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"ticketId\": \"${TICKET_ID}\",
+    \"stage\": \"Analysis\",
+    \"message\": \"Harbor AI Agent started working on this ticket\"
+  }"
 ```
-
-**This single command will:**
-1. Create ticket data JSON
-2. Create ticket in tracker
-3. Start ticket in tracker
-4. Verify ticket exists
-5. Confirm success or fail
 
 **Expected Output:**
-```
-🎯 MANDATORY TICKET CREATION - PHASE 0.0
-======================================
-📋 Task Information:
-  ID: 12345
-  Title: Implement feature
-  Service: harborUserSvc
-
-📝 Step 1: Creating ticket data...
-✅ Ticket data created: /tmp/ticket-data.json
-
-🎫 Step 2: Creating ticket in tracker...
-✅ TICKET TKT-12345 CREATED SUCCESSFULLY
-
-▶️  Step 4: Starting ticket...
-✅ TICKET TKT-12345 STARTED SUCCESSFULLY
-
-🎉 MANDATORY TICKET CREATION COMPLETE
-======================================
-✅ Ticket: TKT-12345
-✅ Status: In Progress
-✅ Stage: Development
-
-🟢 PROCEEDING TO PHASE 0: Documentation Gate
+```json
+{
+  "success": true,
+  "message": "Ticket started successfully",
+  "data": {
+    "id": "TKT-146",
+    "status": "In Progress",
+    "stage": "Analysis",
+    "progress": 10
+  }
+}
 ```
 
-### **Step 4: CONFIRMATION CHECKLIST (MANDATORY)**
+### **Step 5: CONFIRMATION CHECKLIST (MANDATORY)**
 
 Before proceeding to Phase 0, verify:
 
 ```bash
-curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID}
+curl -s http://localhost:3001/api/tickets/${TICKET_ID}
 ```
 
 **Expected Output:**
@@ -92,11 +122,11 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID}
 {
   "success": true,
   "data": {
-    "id": "TKT-${AZURE_DEVOPS_ID}",
-    "title": "${AZURE_DEVOPS_TITLE}",
+    "id": "TKT-146",
+    "title": "API Requirement: Fetch Jobs Matching User Skills",
     "status": "In Progress",
-    "stage": "Development",
-    "progress": 0
+    "stage": "Analysis",
+    "progress": 10
   }
 }
 ```
@@ -105,7 +135,7 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID}
 - ❌ **TASK IS BLOCKED**
 - ❌ **DO NOT PROCEED TO IMPLEMENTATION**
 - ❌ **DO NOT PROCEED TO PHASE 0**
-- ✅ **Fix ticket creation**
+- ✅ **Fix ticket start**
 - ✅ **Only then proceed**
 
 ---
@@ -115,17 +145,17 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID}
 **Agent MUST execute this command and verify output:**
 
 ```bash
-curl -s http://localhost:3001/api/tickets | grep "TKT-${AZURE_DEVOPS_ID}"
+curl -s http://localhost:3001/api/tickets | jq ".data[] | select(.id == \"${TICKET_ID}\")"
 ```
 
 **Expected Output:**
 ```json
 {
-  "id": "TKT-${AZURE_DEVOPS_ID}",
-  "title": "${AZURE_DEVOPS_TITLE}",
+  "id": "TKT-146",
+  "title": "API Requirement: Fetch Jobs Matching User Skills",
   "status": "In Progress",
-  "stage": "Development",
-  "progress": 0
+  "stage": "Analysis",
+  "progress": 10
 }
 ```
 
@@ -133,7 +163,7 @@ curl -s http://localhost:3001/api/tickets | grep "TKT-${AZURE_DEVOPS_ID}"
 - ❌ **TASK IS BLOCKED**
 - ❌ **DO NOT PROCEED TO IMPLEMENTATION**
 - ❌ **DO NOT PROCEED TO PHASE 0**
-- ✅ **Create ticket first**
+- ✅ **Start ticket first**
 - ✅ **Only then proceed**
 
 ---
@@ -141,8 +171,8 @@ curl -s http://localhost:3001/api/tickets | grep "TKT-${AZURE_DEVOPS_ID}"
 ## 🚨 ANTI-PATTERN PREVENTION
 
 **What happens if this step is skipped:**
-- ❌ Agent completes work but no ticket in tracker
-- ❌ User sees nothing in Ticket Tracker UI
+- ❌ Agent completes work but no ticket status update
+- ❌ User sees incorrect status in Ticket Tracker UI
 - ❌ No progress tracking
 - ❌ No file changes visible
 - ❌ Complete waste of agent execution
@@ -161,22 +191,21 @@ curl -s http://localhost:3001/api/tickets | grep "TKT-${AZURE_DEVOPS_ID}"
 ```
 1. User says: "start harbor-ai"
    ↓
-2. **PHASE 0.0: MANDATORY TICKET CREATION** ← NEW! NON-SKIPPABLE!
-   - Fetch Azure DevOps task
-   - Extract task information
-   - Create ticket in tracker ← MANDATORY
+2. **PHASE 0.0: MANDATORY TICKET SELECTION** ← NON-SKIPPABLE!
+   - Read tickets from Harbor Ticket Tracker JSON
+   - Filter for pending/In Progress status
+   - Select highest priority ticket
    - Start ticket in tracker ← MANDATORY
-   - Verify ticket exists ← MANDATORY
+   - Verify ticket started ← MANDATORY
    ↓
 3. PHASE 0: Documentation Gate
    - Validate documentation
    ↓
 4. PHASE 0.5: Pre-Execution Intelligence Analysis
    ↓
-5. PHASE 6: Implementation (with progress updates)
+5. PHASE 1-12: Implementation (with progress updates)
    ↓
-6. PHASE 10: Completion
-   - Complete ticket
+6. COMPLETION: Mark ticket as completed
 ```
 
 ---
@@ -186,48 +215,43 @@ curl -s http://localhost:3001/api/tickets | grep "TKT-${AZURE_DEVOPS_ID}"
 **When user says "start harbor-ai":**
 
 ```bash
-# Step 1: Fetch task
-cd /Users/mohitshah/Documents/HarborService/harbor-ai
-node .azure-fetch-query.js
+# Step 1: Read tickets from Harbor Ticket Tracker
+cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data
+
+# Step 2: Get highest priority pending ticket
+cat tickets-data.json | jq '[.tickets[] | select(.status == "pending" or .status == "In Progress")] | sort_by(.priority, .createdAt) | .[0]'
 
 # Output:
-# 🆔 ID: 12345
-# 📌 Title: Implement job recurring schedule feature
-# 📦 Type: User Story
+# {
+#   "id": "TKT-146",
+#   "title": "API Requirement: Fetch Jobs Matching User Skills",
+#   "priority": "High",
+#   "status": "pending"
+# }
 
-# Step 2: Set variables
-AZURE_DEVOPS_ID=12345
-AZURE_DEVOPS_TITLE="Implement job recurring schedule feature"
-AZURE_DEVOPS_DESCRIPTION="As an employer, I want to schedule recurring jobs..."
-SELECTED_SERVICE="harborJobSvc"
-
-# Step 3: Create ticket (MANDATORY)
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
-cat > /tmp/ticket-data.json << EOF
-{
-  "id": "TKT-12345",
-  "title": "Implement job recurring schedule feature",
-  "description": "As an employer, I want to schedule recurring jobs...",
-  "priority": "High",
-  "assignedRepos": ["harborJobSvc"],
-  "assignee": "Harbor Agent",
-  "tags": ["azure-devops", "automation"]
-}
-EOF
-
-node ticketTrackerIntegration.js create /tmp/ticket-data.json
-# Output: ✅ Ticket TKT-12345 created successfully
+# Step 3: Set variables
+TICKET_ID="TKT-146"
+TICKET_TITLE="API Requirement: Fetch Jobs Matching User Skills"
+TICKET_DESCRIPTION="We need to create a new API endpoint..."
+TICKET_PRIORITY="High"
 
 # Step 4: Start ticket (MANDATORY)
-node ticketTrackerIntegration.js start "TKT-12345" "Development" "Starting implementation"
-# Output: ✅ Ticket TKT-12345 started successfully
+curl -X POST http://localhost:3001/api/harbor-agent/start \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"ticketId\": \"${TICKET_ID}\",
+    \"stage\": \"Analysis\",
+    \"message\": \"Harbor AI Agent started working on this ticket\"
+  }"
+
+# Output: ✅ Ticket TKT-146 started successfully
 
 # Step 5: Verify (MANDATORY)
-curl -s http://localhost:3001/api/tickets/TKT-12345
-# Output: {"success":true,"data":{"id":"TKT-12345","status":"In Progress",...}}
+curl -s http://localhost:3001/api/tickets/TKT-146 | jq '.data.status'
+# Output: "In Progress"
 
 # Step 6: Confirm and proceed
-echo "✅ TICKET TKT-12345 CREATED AND STARTED"
+echo "✅ TICKET ${TICKET_ID} STARTED"
 echo "🟢 PROCEEDING TO PHASE 0: Documentation Gate"
 ```
 
@@ -238,11 +262,10 @@ echo "🟢 PROCEEDING TO PHASE 0: Documentation Gate"
 **🚨 THIS STEP CANNOT BE SKIPPED - ZERO EXCEPTIONS**
 
 **Before ANY implementation work:**
-1. ✅ Fetch Azure DevOps task
-2. ✅ **Create ticket in tracker** ← MANDATORY
-3. ✅ **Start ticket in tracker** ← MANDATORY
-4. ✅ **Verify ticket exists** ← MANDATORY
-5. ✅ Only then proceed to Phase 0
+1. ✅ Read tickets from Harbor Ticket Tracker JSON
+2. ✅ **Start ticket in tracker** ← MANDATORY
+3. ✅ **Verify ticket started** ← MANDATORY
+4. ✅ Only then proceed to Phase 0
 
 **If agent skips this step:**
 - ❌ **CRITICAL FAILURE**
@@ -251,6 +274,31 @@ echo "🟢 PROCEEDING TO PHASE 0: Documentation Gate"
 
 ---
 
-**Last Updated:** 2026-03-28
-**Version:** 1.0.0
+## 🆕 vs 🔄 COMPARISON
+
+### **OLD FLOW (Azure DevOps):**
+```bash
+node .azure-fetch-query.js
+# → Fetches from Azure DevOps API
+# → Creates new ticket in tracker
+```
+
+### **NEW FLOW (Harbor Ticket Tracker):**
+```bash
+cat tickets-data.json | jq '.tickets[] | select(.status == "pending")'
+# → Reads from local JSON file
+# → Starts existing ticket in tracker
+```
+
+**Key Differences:**
+- ✅ No external API calls to Azure DevOps
+- ✅ No new ticket creation (ticket already exists)
+- ✅ Direct read from local JSON file
+- ✅ Faster and more reliable
+- ✅ Better integration with Ticket Tracker UI
+
+---
+
+**Last Updated:** 2026-04-04
+**Version:** 2.0.0 - Harbor Ticket Tracker Integration
 **Status:** MANDATORY - NON-SKIPPABLE

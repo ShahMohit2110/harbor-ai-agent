@@ -1,38 +1,39 @@
+/* ============================================
+   LINEAR / MODERN DESIGN SYSTEM
+   Harbor Ticket Tracker - Ticket List
+   ============================================ */
+
 .ticket-list {
-  animation: fadeIn 0.5s ease;
+  animation: fadeIn 0.5s var(--ease-out);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* === RESULTS COUNT === */
 
 .results-count {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+  font-family: var(--font-mono);
 }
+
+/* === TICKET TITLE CELL === */
 
 .ticket-title-cell {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--spacing-xs);
+  max-width: 350px;
 }
 
 .ticket-title {
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
 }
 
 .ticket-description {
-  font-size: 0.875rem;
-  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
   max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -44,55 +45,116 @@
 
 /* Ticket list description HTML styling */
 .ticket-description strong {
-  color: var(--text-secondary);
-  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
 }
 
 .ticket-description code {
   background: rgba(96, 165, 250, 0.15);
   color: #60a5fa;
   padding: 0.125rem 0.25rem;
-  border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
   font-size: 0.8em;
+  border: 1px solid rgba(96, 165, 250, 0.2);
 }
 
 .ticket-description p {
   margin: 0;
 }
 
+.ticket-description ul,
+.ticket-description ol {
+  margin: 0;
+  padding-left: var(--spacing-md);
+}
+
+/* === PROGRESS CELL === */
+
 .progress-cell {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-md);
   min-width: 120px;
 }
 
 .progress-text {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
   min-width: 35px;
   text-align: right;
+  font-family: var(--font-mono);
 }
+
+/* === EMPTY STATE === */
 
 .empty-state {
   text-align: center;
-  padding: 3rem;
-  color: var(--text-muted);
+  padding: var(--spacing-4xl) var(--spacing-xl);
+  color: var(--color-text-muted);
 }
 
 .empty-state-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  font-size: var(--font-size-5xl);
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.4;
 }
 
 .empty-state h3 {
-  font-size: 1.25rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
 }
 
 .empty-state p {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
+}
+
+/* === DELETE BUTTON === */
+
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-normal) var(--ease-out);
+  font-size: var(--font-size-base);
+}
+
+.btn-delete:hover {
+  background: var(--color-error-bg);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--color-error);
+  transform: translateY(-1px);
+}
+
+.btn-delete:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* === RESPONSIVE === */
+
+@media (max-width: 768px) {
+  .ticket-title-cell {
+    max-width: 250px;
+  }
+
+  .progress-cell {
+    min-width: 100px;
+  }
+
+  .empty-state {
+    padding: var(--spacing-3xl) var(--spacing-md);
+  }
+
+  .empty-state-icon {
+    font-size: var(--font-size-4xl);
+  }
 }

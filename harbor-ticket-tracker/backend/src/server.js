@@ -18,7 +18,6 @@ app.use(express.json())
 
 // Data storage (in-memory for now, can be upgraded to database)
 let tickets = []
-let activities = []
 let dataFilePath = join(__dirname, '../data/tickets-data.json')
 
 // Load data from file on startup
@@ -27,8 +26,51 @@ function loadData() {
     if (fs.existsSync(dataFilePath)) {
       const data = JSON.parse(fs.readFileSync(dataFilePath, 'utf8'))
       tickets = data.tickets || []
-      activities = data.activities || []
-      console.log(`✅ Loaded ${tickets.length} tickets and ${activities.length} activities`)
+
+      // ✅ MIGRATION: Convert old global activities array to ticket-specific activities
+      if (data.activities && Array.isArray(data.activities)) {
+        console.log(`🔄 Migrating ${data.activities.length} activities from global array to ticket-specific structure...`)
+
+        // Initialize activities array for each ticket if not exists
+        tickets.forEach(ticket => {
+          if (!ticket.activities) {
+            ticket.activities = []
+          }
+        })
+
+        // Migrate activities to their respective tickets
+        let migratedCount = 0
+        data.activities.forEach(activity => {
+          const ticket = tickets.find(t => t.id === activity.ticketId)
+          if (ticket) {
+            // Add activity to the ticket's activities array
+            ticket.activities.push(activity)
+            migratedCount++
+          }
+        })
+
+        // Sort activities by timestamp (newest first) for each ticket
+        tickets.forEach(ticket => {
+          if (ticket.activities) {
+            ticket.activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+          }
+        })
+
+        console.log(`✅ Migrated ${migratedCount} activities to ticket-specific structure`)
+
+        // Save the migrated data immediately
+        saveData()
+      }
+
+      // Ensure all tickets have activities array
+      tickets.forEach(ticket => {
+        if (!ticket.activities) {
+          ticket.activities = []
+        }
+      })
+
+      const totalActivities = tickets.reduce((sum, ticket) => sum + (ticket.activities?.length || 0), 0)
+      console.log(`✅ Loaded ${tickets.length} tickets with ${totalActivities} activities`)
     } else {
       // Initialize with sample data
       initializeSampleData()
@@ -39,14 +81,15 @@ function loadData() {
   }
 }
 
-// Save data to file
+// Save data to file (new format - activities nested in tickets)
 function saveData() {
   try {
     const dataDir = join(__dirname, '../data')
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true })
     }
-    fs.writeFileSync(dataFilePath, JSON.stringify({ tickets, activities }, null, 2))
+    // Save only tickets (activities are now nested inside each ticket)
+    fs.writeFileSync(dataFilePath, JSON.stringify({ tickets }, null, 2))
   } catch (error) {
     console.error('Error saving data:', error)
   }
@@ -71,13 +114,32 @@ function initializeSampleData() {
       estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       progress: 65,
       tags: ["authentication", "security", "oauth"],
-      harborAgentActive: false
+      harborAgentActive: false,
+      // ✅ UPDATED: Lowercase keys for phaseSummaries
+      phaseSummaries: {
+        "analysis": "Analyzed OAuth2 requirements and selected providers",
+        "planning": "Initial planning and architecture design completed",
+        "development": "Implementing authentication flow",
+        "testing": ""
+      },
+      activities: [
+        {
+          id: "ACT-001",
+          ticketId: "TKT-001",
+          timestamp: now,
+          action: "Status Update",
+          description: "Ticket created and assigned to John Doe",
+          user: "System",
+          stage: "Development"
+        }
+      ]
     },
     {
       id: "TKT-002",
       title: "Create Real-Time Notification System",
       description: "Build WebSocket-based notification system for real-time updates across all services.",
       status: "Pending",
+      // ✅ UPDATED: New starting stage is 'Analysis'
       stage: "Analysis",
       priority: "High",
       assignedRepos: ["harborNotificationSvc", "harborSocketSvc"],
@@ -87,7 +149,15 @@ function initializeSampleData() {
       estimatedCompletion: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
       progress: 15,
       tags: ["websocket", "notifications", "real-time"],
-      harborAgentActive: false
+      harborAgentActive: false,
+      // ✅ UPDATED: Lowercase keys for phaseSummaries
+      phaseSummaries: {
+        "analysis": "Analyzing WebSocket architecture and requirements",
+        "planning": "Requirements gathering completed",
+        "development": "",
+        "testing": ""
+      },
+      activities: []
     },
     {
       id: "TKT-003",
@@ -103,19 +173,15 @@ function initializeSampleData() {
       estimatedCompletion: now,
       progress: 100,
       tags: ["database", "optimization", "performance"],
-      harborAgentActive: false
-    }
-  ]
-
-  activities = [
-    {
-      id: "ACT-001",
-      ticketId: "TKT-001",
-      timestamp: now,
-      action: "Status Update",
-      description: "Ticket created and assigned to John Doe",
-      user: "System",
-      stage: "Development"
+      harborAgentActive: false,
+      // ✅ UPDATED: Lowercase keys for phaseSummaries
+      phaseSummaries: {
+        "analysis": "Analyzed query patterns and access frequency",
+        "planning": "Identified slow queries and bottlenecks",
+        "development": "Added indexes and optimized queries",
+        "testing": "Performance testing completed - 50% improvement"
+      },
+      activities: []
     }
   ]
 
@@ -132,11 +198,12 @@ loadData()
 
 // Health check
 app.get('/api/health', (req, res) => {
+  const totalActivities = tickets.reduce((sum, ticket) => sum + (ticket.activities?.length || 0), 0)
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     ticketsCount: tickets.length,
-    activitiesCount: activities.length
+    activitiesCount: totalActivities
   })
 })
 
@@ -166,7 +233,7 @@ app.get('/api/tickets/:id', (req, res) => {
 
 // Create new ticket (called by Harbor Agent when it starts working)
 app.post('/api/tickets', (req, res) => {
-  const { id, title, description, agentDescription, priority, assignedRepos, assignee, tags } = req.body
+  const { id, title, description, agentDescription, priority, assignedRepos, assignee, tags, phaseSummaries } = req.body
 
   // Check if ticket already exists
   const existingTicket = tickets.find(t => t.id === id)
@@ -181,9 +248,15 @@ app.post('/api/tickets', (req, res) => {
     if (assignedRepos) existingTicket.assignedRepos = assignedRepos
     if (assignee) existingTicket.assignee = assignee
     if (tags) existingTicket.tags = tags
+    // ✅ NEW: Update phaseSummaries if provided
+    if (phaseSummaries) {
+      existingTicket.phaseSummaries = {
+        ...(existingTicket.phaseSummaries || {}),
+        ...phaseSummaries
+      }
+    }
 
     existingTicket.updatedAt = new Date().toISOString()
-    saveData()
 
     // Log activity
     const activity = {
@@ -195,7 +268,13 @@ app.post('/api/tickets', (req, res) => {
       user: "Harbor Agent",
       stage: existingTicket.stage
     }
-    activities.unshift(activity)
+    // Initialize activities array if not exists
+    if (!existingTicket.activities) {
+      existingTicket.activities = []
+    }
+    existingTicket.activities.unshift(activity)
+
+    saveData()
 
     return res.json({
       success: true,
@@ -211,7 +290,8 @@ app.post('/api/tickets', (req, res) => {
     description: description || '',  // Original Azure DevOps description
     agentDescription: agentDescription || '',  // Agent's description/updates
     status: 'Pending',
-    stage: 'Planning',
+    // ✅ FIXED: New tickets start with 'Admin' stage (progress=0%, no work started yet)
+    stage: 'Admin',
     priority: priority || 'Medium',
     assignedRepos: assignedRepos || [],
     assignee: assignee || 'Unassigned',
@@ -220,11 +300,19 @@ app.post('/api/tickets', (req, res) => {
     estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     progress: 0,
     tags: tags || [],
-    harborAgentActive: true
+    // ✅ FIXED: Agent is NOT active yet for Pending tickets (becomes active at 5%)
+    harborAgentActive: false,
+    // ✅ Initialize phaseSummaries with all stages (lowercase keys)
+    phaseSummaries: phaseSummaries || {
+      "admin": "",
+      "analysis": "",
+      "planning": "",
+      "development": "",
+      "testing": ""
+    },
+    // ✅ Initialize activities array
+    activities: []
   }
-
-  tickets.push(newTicket)
-  saveData()
 
   // Log activity
   const activity = {
@@ -234,9 +322,13 @@ app.post('/api/tickets', (req, res) => {
     action: "Ticket Created",
     description: "Harbor Agent created new ticket",
     user: "Harbor Agent",
-    stage: "Planning"
+    // ✅ FIXED: Use 'Admin' as initial stage for Pending tickets
+    stage: "Admin"
   }
-  activities.unshift(activity)
+  newTicket.activities.unshift(activity)
+
+  tickets.push(newTicket)
+  saveData()
 
   res.json({
     success: true,
@@ -255,26 +347,67 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     })
   }
 
-  const { progress, stage, status, message } = req.body
+  const { progress, stage, status, message, phaseSummary } = req.body
 
-  // ✅ FIX: Auto-sync stage based on progress (agent controls progress, stage follows)
+  // ✅ UPDATED: Auto-sync stage based on progress with new stage sequence
+  // New sequence: Admin → Analysis → Planning → Development → Testing
   const progressStageMap = {
-    // 0% → Planning
-    [0]: 'Planning',
-    // 1-32% → Planning (not yet started Analysis)
-    // 33% → Analysis (Analysis complete)
-    // 34-66% → Analysis (in Development)
-    // 67% → Development (Development complete)
-    // 68-99% → Development (in Testing)
+    // 0% → Admin (starting stage - ticket just synced)
+    [0]: 'Admin',
+    // 1-9% → Admin (awaiting analysis)
+    // 10% → Analysis (Admin complete, moving to Analysis)
+    // 10-24% → Analysis (analyzing requirements)
+    // 25% → Planning (Analysis complete, moving to Planning)
+    // 26-49% → Planning (planning implementation)
+    // 50% → Development (Planning complete, moving to Development)
+    // 51-74% → Development (implementing)
+    // 75% → Testing (Development complete, moving to Testing)
+    // 76-99% → Testing (testing and validation)
     // 100% → Testing (complete)
   }
 
-  // Helper function to determine stage from progress
+  // ✅ CRITICAL FIX: Helper function to determine stage from progress
+  // Progress mapping - Stage completes when NEXT stage threshold is reached:
+  // 0% = Pending (no stage active)
+  // 1-9% = Admin active (agent started working)
+  // 10-24% = Analysis active (Admin complete at 10%)
+  // 25-49% = Planning active (Analysis complete at 25%)
+  // 50-74% = Development active (Planning complete at 50%)
+  // 75-99% = Testing active (Development complete at 75%)
+  // 100% = Complete (Testing complete)
   const getStageFromProgress = (progress) => {
     if (progress >= 100) return 'Testing'
-    if (progress >= 67) return 'Development'
-    if (progress >= 33) return 'Analysis'
-    return 'Planning'
+    if (progress >= 75) return 'Testing'
+    if (progress >= 50) return 'Development'
+    if (progress >= 25) return 'Planning'
+    if (progress >= 10) return 'Analysis'
+    if (progress > 0) return 'Admin' // 1-9% = Admin active
+    return 'Admin' // 0% = Pending (will show as no active stage in UI)
+  }
+
+  // ✅ UPDATED: Initialize phaseSummaries if not exists (with lowercase keys for new stage names)
+  // Also handle backward compatibility for existing tickets with capitalized keys
+  if (!ticket.phaseSummaries) {
+    ticket.phaseSummaries = {
+      "admin": "",
+      "analysis": "",
+      "planning": "",
+      "development": "",
+      "testing": ""
+    }
+  }
+
+  // ✅ MIGRATION: Convert old capitalized keys to lowercase for new structure
+  // This ensures backward compatibility with existing tickets
+  if (ticket.phaseSummaries.Planning !== undefined || ticket.phaseSummaries.Analysis !== undefined) {
+    const oldSummaries = ticket.phaseSummaries
+    ticket.phaseSummaries = {
+      "admin": "",
+      "analysis": oldSummaries.Analysis || oldSummaries.analysis || "",
+      "planning": oldSummaries.Planning || oldSummaries.planning || "",
+      "development": oldSummaries.Development || oldSummaries.development || "",
+      "testing": oldSummaries.Testing || oldSummaries.testing || ""
+    }
   }
 
   // Update ticket
@@ -295,6 +428,19 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     ticket.status = status
   }
 
+  // ✅ FIX: Auto-set status to "In Progress" when progress > 0%
+  // This ensures that any progress update (not just start) also updates status correctly
+  if (ticket.progress > 0 && ticket.status !== 'Completed' && ticket.status !== 'completed') {
+    ticket.status = 'In Progress'
+  }
+
+  // ✅ UPDATED: Update phase summary for current stage if provided
+  // Uses lowercase key for the stage
+  if (phaseSummary) {
+    const currentStage = ticket.stage.toLowerCase()
+    ticket.phaseSummaries[currentStage] = phaseSummary
+  }
+
   // Update agentDescription with the latest message
   if (message) {
     // Append to existing agentDescription or create new one
@@ -305,15 +451,16 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     }
   }
 
-  // ✅ FIX: Auto-sync ALL completion-related fields
-  // When progress reaches 100%, auto-set stage and status
+  // ✅ FIX: Auto-set status to Completed when progress reaches 100%
+  // This ensures ticket status reflects completion state
   if (ticket.progress >= 100) {
-    ticket.stage = 'Testing'
     ticket.status = 'Completed'
+    ticket.stage = 'Testing'
     ticket.harborAgentActive = false
   }
 
-  // ✅ FIX: When status is set to Completed, auto-set progress and stage
+  // ✅ FIX: When status is explicitly set to Completed, auto-set progress and stage
+  // This allows manual completion via the UI or complete endpoint
   if (ticket.status === 'Completed' || ticket.status === 'completed') {
     ticket.progress = 100
     ticket.stage = 'Testing'
@@ -323,11 +470,9 @@ app.put('/api/tickets/:id/progress', (req, res) => {
   ticket.updatedAt = new Date().toISOString()
 
   // Keep harborAgentActive true for in-progress tickets
-  if (ticket.progress < 100 && ticket.status !== 'Completed') {
+  if (ticket.progress < 100 && ticket.status !== 'Completed' && ticket.status !== 'completed') {
     ticket.harborAgentActive = true
   }
-
-  saveData()
 
   // Log activity
   if (message) {
@@ -342,8 +487,14 @@ app.put('/api/tickets/:id/progress', (req, res) => {
       filesChanged: req.body.filesChanged || [],
       summary: req.body.summary || null
     }
-    activities.unshift(activity)
+    // Initialize activities array if not exists
+    if (!ticket.activities) {
+      ticket.activities = []
+    }
+    ticket.activities.unshift(activity)
   }
+
+  saveData()
 
   res.json({
     success: true,
@@ -392,7 +543,6 @@ app.put('/api/tickets/:id', (req, res) => {
   }
 
   ticket.updatedAt = new Date().toISOString()
-  saveData()
 
   // Log activity
   const activity = {
@@ -404,7 +554,13 @@ app.put('/api/tickets/:id', (req, res) => {
     user: "User",
     stage: ticket.stage
   }
-  activities.unshift(activity)
+  // Initialize activities array if not exists
+  if (!ticket.activities) {
+    ticket.activities = []
+  }
+  ticket.activities.unshift(activity)
+
+  saveData()
 
   res.json({
     success: true,
@@ -424,19 +580,11 @@ app.delete('/api/tickets/:id', (req, res) => {
   }
 
   const deletedTicket = tickets.splice(ticketIndex, 1)[0]
-  saveData()
 
-  // Log activity
-  const activity = {
-    id: `ACT-${Date.now()}`,
-    ticketId: req.params.id,
-    timestamp: new Date().toISOString(),
-    action: "Ticket Deleted",
-    description: `Ticket "${deletedTicket.title}" was deleted`,
-    user: "User",
-    stage: deletedTicket.stage
-  }
-  activities.unshift(activity)
+  // Note: We don't log activity for deleted tickets since the ticket is gone
+  // If we want to keep a record, we'd need a separate "deleted tickets" collection
+
+  saveData()
 
   res.json({
     success: true,
@@ -447,7 +595,14 @@ app.delete('/api/tickets/:id', (req, res) => {
 
 // Get activities for a ticket
 app.get('/api/tickets/:id/activities', (req, res) => {
-  const ticketActivities = activities.filter(a => a.ticketId === req.params.id)
+  const ticket = tickets.find(t => t.id === req.params.id)
+  if (!ticket) {
+    return res.status(404).json({
+      success: false,
+      error: 'Ticket not found'
+    })
+  }
+  const ticketActivities = ticket.activities || []
   res.json({
     success: true,
     data: ticketActivities,
@@ -455,12 +610,20 @@ app.get('/api/tickets/:id/activities', (req, res) => {
   })
 })
 
-// Get all activities
+// Get all activities (aggregated from all tickets)
 app.get('/api/activities', (req, res) => {
+  const allActivities = []
+  tickets.forEach(ticket => {
+    if (ticket.activities) {
+      allActivities.push(...ticket.activities)
+    }
+  })
+  // Sort by timestamp (newest first)
+  allActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
   res.json({
     success: true,
-    data: activities,
-    count: activities.length
+    data: allActivities,
+    count: allActivities.length
   })
 })
 
@@ -469,8 +632,23 @@ app.put('/api/tickets/:id/activities/latest/files', (req, res) => {
   const { id } = req.params
   const { filesChanged, summary } = req.body
 
-  // Find the latest activity for this ticket
-  const latestActivity = activities.find(a => a.ticketId === id)
+  // Find the ticket
+  const ticket = tickets.find(t => t.id === id)
+
+  if (!ticket) {
+    return res.status(404).json({
+      success: false,
+      error: 'Ticket not found'
+    })
+  }
+
+  // Initialize activities array if not exists
+  if (!ticket.activities) {
+    ticket.activities = []
+  }
+
+  // Find the latest activity for this ticket (first one since activities are sorted newest first)
+  const latestActivity = ticket.activities[0]
 
   if (!latestActivity) {
     return res.status(404).json({
@@ -504,22 +682,42 @@ app.post('/api/harbor-agent/start', (req, res) => {
     })
   }
 
-  const newStage = stage || 'Planning'  // ✅ FIX: Default to 'Planning', not 'Development'
+  // ✅ UPDATED: Default to 'Admin' as the starting stage (agent just started)
+  const newStage = stage || 'Admin'
 
   // Update ticket
   ticket.status = 'In Progress'
   ticket.stage = newStage
-  // ✅ CRITICAL FIX: Don't auto-set progress based on stage
-  // Let agent control progress through explicit updateProgress() calls
-  // Only set progress if it's currently 0 (first time starting)
+
+  // ✅ CRITICAL FIX: Set progress to 5% when agent starts (Admin stage active)
+  // This ensures Admin is active at 5%, then completes at 10% when Analysis starts
+  // Progress mapping:
+  // 0% = Pending (no stage active)
+  // 5% = Admin active (agent started working)
+  // 10% = Analysis active (Admin complete, documentation analysis)
+  // 25% = Planning active (Analysis complete)
+  // 50% = Development active (Planning complete)
+  // 75% = Testing active (Development complete)
+  // 100% = Complete
+
   if (ticket.progress === 0 || ticket.progress === undefined) {
-    ticket.progress = 0  // Start at 0%, agent will update as it progresses
+    if (newStage === 'Admin') {
+      ticket.progress = 5   // Agent just started - Admin stage active
+    } else if (newStage === 'Analysis') {
+      ticket.progress = 10  // Analysis starts - Admin complete
+    } else if (newStage === 'Planning') {
+      ticket.progress = 25  // Planning starts - Analysis complete
+    } else if (newStage === 'Development') {
+      ticket.progress = 50  // Development starts - Planning complete
+    } else if (newStage === 'Testing') {
+      ticket.progress = 75  // Testing starts - Development complete
+    } else {
+      ticket.progress = 5   // Default to Admin stage starting
+    }
   }
   ticket.harborAgentActive = true
   ticket.agentDescription = message || `Harbor Agent started working on ${ticket.title}`
   ticket.updatedAt = new Date().toISOString()
-
-  saveData()
 
   // Log activity
   const activity = {
@@ -533,7 +731,13 @@ app.post('/api/harbor-agent/start', (req, res) => {
     filesChanged: req.body.filesChanged || [],
     summary: req.body.summary || null
   }
-  activities.unshift(activity)
+  // Initialize activities array if not exists
+  if (!ticket.activities) {
+    ticket.activities = []
+  }
+  ticket.activities.unshift(activity)
+
+  saveData()
 
   res.json({
     success: true,
@@ -561,8 +765,6 @@ app.post('/api/harbor-agent/complete', (req, res) => {
   ticket.harborAgentActive = false
   ticket.updatedAt = new Date().toISOString()
 
-  saveData()
-
   // Log activity
   const activity = {
     id: `ACT-${Date.now()}`,
@@ -575,7 +777,13 @@ app.post('/api/harbor-agent/complete', (req, res) => {
     filesChanged: req.body.filesChanged || [],
     summary: req.body.summary || null
   }
-  activities.unshift(activity)
+  // Initialize activities array if not exists
+  if (!ticket.activities) {
+    ticket.activities = []
+  }
+  ticket.activities.unshift(activity)
+
+  saveData()
 
   res.json({
     success: true,
@@ -758,7 +966,7 @@ app.post('/api/azure/sync', async (req, res) => {
           title,
           description,
           status: 'Pending',
-          stage: 'Planning',
+          stage: 'Admin',
           priority: priority === 1 ? 'High' : priority === 2 ? 'Medium' : 'Low',
           assignedRepos,
           assignee: 'Harbor Agent',
@@ -767,10 +975,18 @@ app.post('/api/azure/sync', async (req, res) => {
           estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           progress: 0,
           tags: ['azure-devops', 'auto-synced'],
-          harborAgentActive: true
+          // ✅ FIXED: Agent is NOT active yet for Pending tickets
+          harborAgentActive: false,
+          // ✅ Initialize phaseSummaries for all stages
+          phaseSummaries: {
+            "admin": "",
+            "analysis": "",
+            "planning": "",
+            "development": "",
+            "testing": ""
+          },
+          activities: []
         }
-
-        tickets.push(newTicket)
 
         // Log activity
         const activity = {
@@ -780,9 +996,11 @@ app.post('/api/azure/sync', async (req, res) => {
           action: "Ticket Created",
           description: "Azure DevOps ticket synced automatically",
           user: "Azure DevOps",
-          stage: "Planning"
+          stage: "Admin"
         }
-        activities.unshift(activity)
+        newTicket.activities.unshift(activity)
+
+        tickets.push(newTicket)
 
         synced++
       }
