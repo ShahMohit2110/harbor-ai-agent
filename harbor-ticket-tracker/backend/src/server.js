@@ -290,8 +290,8 @@ app.post('/api/tickets', (req, res) => {
     description: description || '',  // Original Azure DevOps description
     agentDescription: agentDescription || '',  // Agent's description/updates
     status: 'Pending',
-    // ✅ UPDATED: New stage sequence starts with 'Analysis'
-    stage: 'Analysis',
+    // ✅ FIXED: New tickets start with 'Admin' stage (progress=0%, no work started yet)
+    stage: 'Admin',
     priority: priority || 'Medium',
     assignedRepos: assignedRepos || [],
     assignee: assignee || 'Unassigned',
@@ -300,15 +300,17 @@ app.post('/api/tickets', (req, res) => {
     estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     progress: 0,
     tags: tags || [],
-    harborAgentActive: true,
-    // ✅ UPDATED: Initialize phaseSummaries with new stage names (lowercase keys)
+    // ✅ FIXED: Agent is NOT active yet for Pending tickets (becomes active at 5%)
+    harborAgentActive: false,
+    // ✅ Initialize phaseSummaries with all stages (lowercase keys)
     phaseSummaries: phaseSummaries || {
+      "admin": "",
       "analysis": "",
       "planning": "",
       "development": "",
       "testing": ""
     },
-    // ✅ NEW: Initialize activities array
+    // ✅ Initialize activities array
     activities: []
   }
 
@@ -320,8 +322,8 @@ app.post('/api/tickets', (req, res) => {
     action: "Ticket Created",
     description: "Harbor Agent created new ticket",
     user: "Harbor Agent",
-    // ✅ UPDATED: Use 'Analysis' as initial stage
-    stage: "Analysis"
+    // ✅ FIXED: Use 'Admin' as initial stage for Pending tickets
+    stage: "Admin"
   }
   newTicket.activities.unshift(activity)
 
@@ -364,14 +366,23 @@ app.put('/api/tickets/:id/progress', (req, res) => {
     // 100% → Testing (complete)
   }
 
-  // ✅ UPDATED: Helper function to determine stage from progress with new sequence
+  // ✅ CRITICAL FIX: Helper function to determine stage from progress
+  // Progress mapping - Stage completes when NEXT stage threshold is reached:
+  // 0% = Pending (no stage active)
+  // 1-9% = Admin active (agent started working)
+  // 10-24% = Analysis active (Admin complete at 10%)
+  // 25-49% = Planning active (Analysis complete at 25%)
+  // 50-74% = Development active (Planning complete at 50%)
+  // 75-99% = Testing active (Development complete at 75%)
+  // 100% = Complete (Testing complete)
   const getStageFromProgress = (progress) => {
     if (progress >= 100) return 'Testing'
     if (progress >= 75) return 'Testing'
     if (progress >= 50) return 'Development'
     if (progress >= 25) return 'Planning'
     if (progress >= 10) return 'Analysis'
-    return 'Admin'
+    if (progress > 0) return 'Admin' // 1-9% = Admin active
+    return 'Admin' // 0% = Pending (will show as no active stage in UI)
   }
 
   // ✅ UPDATED: Initialize phaseSummaries if not exists (with lowercase keys for new stage names)
@@ -671,26 +682,37 @@ app.post('/api/harbor-agent/start', (req, res) => {
     })
   }
 
-  // ✅ UPDATED: Default to 'Analysis' as the starting stage
-  const newStage = stage || 'Analysis'
+  // ✅ UPDATED: Default to 'Admin' as the starting stage (agent just started)
+  const newStage = stage || 'Admin'
 
   // Update ticket
   ticket.status = 'In Progress'
   ticket.stage = newStage
 
-  // ✅ UPDATED: Set progress based on stage to trigger animations correctly
-  // Admin → Analysis transition requires 10%+ progress
+  // ✅ CRITICAL FIX: Set progress to 5% when agent starts (Admin stage active)
+  // This ensures Admin is active at 5%, then completes at 10% when Analysis starts
+  // Progress mapping:
+  // 0% = Pending (no stage active)
+  // 5% = Admin active (agent started working)
+  // 10% = Analysis active (Admin complete, documentation analysis)
+  // 25% = Planning active (Analysis complete)
+  // 50% = Development active (Planning complete)
+  // 75% = Testing active (Development complete)
+  // 100% = Complete
+
   if (ticket.progress === 0 || ticket.progress === undefined) {
-    if (newStage === 'Analysis') {
-      ticket.progress = 10  // Set to 10% to trigger Admin → Analysis animation
+    if (newStage === 'Admin') {
+      ticket.progress = 5   // Agent just started - Admin stage active
+    } else if (newStage === 'Analysis') {
+      ticket.progress = 10  // Analysis starts - Admin complete
     } else if (newStage === 'Planning') {
-      ticket.progress = 25  // Set to 25% for Planning stage
+      ticket.progress = 25  // Planning starts - Analysis complete
     } else if (newStage === 'Development') {
-      ticket.progress = 50  // Set to 50% for Development stage
+      ticket.progress = 50  // Development starts - Planning complete
     } else if (newStage === 'Testing') {
-      ticket.progress = 75  // Set to 75% for Testing stage
+      ticket.progress = 75  // Testing starts - Development complete
     } else {
-      ticket.progress = 0  // Admin stage stays at 0%
+      ticket.progress = 5   // Default to Admin stage starting
     }
   }
   ticket.harborAgentActive = true
@@ -953,7 +975,16 @@ app.post('/api/azure/sync', async (req, res) => {
           estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           progress: 0,
           tags: ['azure-devops', 'auto-synced'],
-          harborAgentActive: true,
+          // ✅ FIXED: Agent is NOT active yet for Pending tickets
+          harborAgentActive: false,
+          // ✅ Initialize phaseSummaries for all stages
+          phaseSummaries: {
+            "admin": "",
+            "analysis": "",
+            "planning": "",
+            "development": "",
+            "testing": ""
+          },
           activities: []
         }
 

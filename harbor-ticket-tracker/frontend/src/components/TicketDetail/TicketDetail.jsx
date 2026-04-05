@@ -1,19 +1,50 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import FileChanges from './FileChanges'
 import './TicketDetail.css'
+
+const API_BASE_URL = 'http://localhost:3001/api'
 
 function TicketDetail({ tickets, onDeleteTicket }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const [selectedStage, setSelectedStage] = useState(null)
+  const [currentTicket, setCurrentTicket] = useState(null)
 
-  const ticket = useMemo(() => tickets.find((t) => t.id === id), [tickets, id])
+  // Fetch fresh ticket data from API
+  useEffect(() => {
+    const fetchTicketData = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/tickets/${id}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        })
+        const result = await response.json()
+        if (result.success) {
+          setCurrentTicket(result.data)
+        }
+      } catch (error) {
+        console.error('Error fetching ticket:', error)
+      }
+    }
+
+    fetchTicketData()
+
+    // Poll for updates every 2 seconds
+    const interval = setInterval(fetchTicketData, 2000)
+    return () => clearInterval(interval)
+  }, [id])
+
+  // Use currentTicket for display, fallback to props
+  const ticket = currentTicket || tickets.find((t) => t.id === id)
 
   // ✅ FIX: Read activities directly from the ticket object instead of filtering global array
   const ticketActivities = useMemo(
-    () => ticket?.activities || [],
-    [ticket]
+    () => currentTicket?.activities || ticket?.activities || [],
+    [currentTicket, ticket]
   )
 
   // ✅ UPDATED: New stage sequence - Admin → Analysis → Planning → Development → Testing
@@ -49,36 +80,47 @@ function TicketDetail({ tickets, onDeleteTicket }) {
     const currentIndex = stages.indexOf(ticket.stage)
     const stageIndex = stages.indexOf(stage)
     const progress = ticket.progress || 0
+    const status = ticket.status
 
-    // ✅ UPDATED: Use progress-based stage completion with new stage sequence
-    // This ensures stages light up green incrementally as progress increases
+    // ✅ CRITICAL FIX: Pending tickets should NOT have any active stage
+    // Admin only becomes active when agent actually starts working (status='In Progress', progress>0)
+    if (status === 'Pending' || (progress === 0 && status !== 'In Progress')) {
+      return 'pending' // All stages pending when ticket is not yet started
+    }
 
     // If ticket is completed, mark ALL stages as completed
-    if (ticket.status === 'Completed' || ticket.status === 'completed') {
-      if (stageIndex <= currentIndex) return 'completed'
-      return 'pending'
+    if (status === 'Completed' || status === 'completed') {
+      return 'completed'
     }
 
-    // ✅ UPDATED: Progress-based completion with new stage sequence:
-    // Admin: complete at 10%+ (stage 1) - only when analysis starts
-    // Analysis: complete at 25%+ (stage 2)
-    // Planning: complete at 50%+ (stage 3)
-    // Development: complete at 75%+ (stage 4)
-    // Testing: complete at 100% OR when status is 'Completed' (stage 5)
+    // ✅ PROGRESS-BASED STAGE COMPLETION - Stage completes when NEXT stage starts
+    // Progress mapping:
+    // 0% = Pending (no stage active)
+    // 1-9% = Admin active (agent started working)
+    // 10-24% = Analysis active (Admin complete)
+    // 25-49% = Planning active (Analysis complete)
+    // 50-74% = Development active (Planning complete)
+    // 75-99% = Testing active (Development complete)
+    // 100% = Complete (Testing complete)
 
-    if (stage === 'Admin' && progress >= 10) return 'completed'
-    if (stage === 'Analysis' && progress >= 25) return 'completed'
-    if (stage === 'Planning' && progress >= 50) return 'completed'
-    if (stage === 'Development' && progress >= 75) return 'completed'
-    if (stage === 'Testing' && (progress >= 100 || ticket.status === 'Completed' || ticket.status === 'completed')) return 'completed'
+    // Stage completion happens when progress reaches NEXT stage threshold
+    if (stage === 'Admin' && progress >= 10) return 'completed' // Admin complete when Analysis starts (10%)
+    if (stage === 'Analysis' && progress >= 25) return 'completed' // Analysis complete when Planning starts (25%)
+    if (stage === 'Planning' && progress >= 50) return 'completed' // Planning complete when Development starts (50%)
+    if (stage === 'Development' && progress >= 75) return 'completed' // Development complete when Testing starts (75%)
+    if (stage === 'Testing' && progress >= 100) return 'completed' // Testing complete when done (100%)
 
-    // Normal progression for active/in-progress
+    // Active stage determination based on progress ranges
+    if (progress > 0 && progress < 10 && stage === 'Admin') return 'active'
+    if (progress >= 10 && progress < 25 && stage === 'Analysis') return 'active'
+    if (progress >= 25 && progress < 50 && stage === 'Planning') return 'active'
+    if (progress >= 50 && progress < 75 && stage === 'Development') return 'active'
+    if (progress >= 75 && progress < 100 && stage === 'Testing') return 'active'
+
+    // Fallback: use ticket.stage for active determination
     if (stageIndex < currentIndex) return 'completed'
-    if (stageIndex === currentIndex) {
-      // Special handling for Admin stage - it should not be green when active
-      if (stage === 'Admin') return 'admin-active'
-      return 'active'
-    }
+    if (stageIndex === currentIndex && status === 'In Progress') return 'active'
+
     return 'pending'
   }
 
@@ -157,32 +199,23 @@ function TicketDetail({ tickets, onDeleteTicket }) {
 
       {/* Stage Stepper */}
       <div className="card">
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1.5rem' }}>
-          Progress Flow
-        </h2>
-        <div className={`stage-stepper ${ticket.stage === 'Analysis' && ticket.progress >= 10 && ticket.progress < 25 ? 'admin-transition' : ''}`}>
+        <h2 className="card-title">Progress Flow</h2>
+        <div className="stage-stepper">
           {stages.map((stage, index) => {
             const status = getStageStatus(stage)
-            const isAdminCompleting = stage === 'Admin' && ticket.stage === 'Analysis' && ticket.progress >= 10 && ticket.progress < 25
-            const isAnalysisCompleting = stage === 'Analysis' && ticket.stage === 'Planning' && ticket.progress >= 25 && ticket.progress < 50
-            const isPlanningCompleting = stage === 'Planning' && ticket.stage === 'Development' && ticket.progress >= 50 && ticket.progress < 75
-            const isDevelopmentCompleting = stage === 'Development' && ticket.stage === 'Testing' && ticket.progress >= 75 && ticket.progress < 100
+            const nextStatus = index < stages.length - 1 ? getStageStatus(stages[index + 1]) : null
 
             return (
               <React.Fragment key={stage}>
                 <div
-                  className={`stage-step ${status} ${isAdminCompleting ? 'admin-completing' : ''} ${isAnalysisCompleting ? 'analysis-completing' : ''} ${isPlanningCompleting ? 'planning-completing' : ''} ${isDevelopmentCompleting ? 'development-completing' : ''}`}
+                  className={`stage-step ${status}`}
                   onClick={() => setSelectedStage(selectedStage === stage ? null : stage)}
-                  style={{ cursor: 'pointer' }}
                 >
                   <div className="stage-step-icon">{index + 1}</div>
                   <div className="stage-step-label">{stage}</div>
                 </div>
                 {index < stages.length - 1 && (
-                  <div
-                    className={`stage-connector ${status === 'completed' && getStageStatus(stages[index + 1]) === 'active' ? 'connector-animating' : ''} ${status === 'active' ? 'connector-animating' : ''}`}
-                    style={{ flex: 1, height: '2px', margin: '0 0.5rem' }}
-                  />
+                  <div className={`stage-connector ${status === 'completed' ? 'completed' : status === 'active' ? 'active' : ''}`}></div>
                 )}
               </React.Fragment>
             )

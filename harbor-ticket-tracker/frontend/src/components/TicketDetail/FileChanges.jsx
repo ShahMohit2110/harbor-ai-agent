@@ -37,7 +37,8 @@ function FileChanges({ filesChanged, summary }) {
   }
 
   const getFileIcon = (filePath) => {
-    const ext = filePath.split('.').pop().toLowerCase()
+    if (!filePath) return '📄'
+    const ext = filePath.split('.').pop()?.toLowerCase() || ''
     const icons = {
       'js': '🟨',
       'jsx': '⚛️',

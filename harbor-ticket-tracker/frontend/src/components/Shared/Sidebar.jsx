@@ -1,20 +1,28 @@
 import { NavLink } from 'react-router-dom'
 
-function Sidebar() {
+function Sidebar({ isMobileMenuOpen, onCloseMobileMenu }) {
   const navItems = [
     { path: '/', icon: '📊', label: 'Dashboard' },
     { path: '/tickets', icon: '🎫', label: 'All Tickets' },
     { path: '/revenue-strategy', icon: '💰', label: 'Revenue Strategy' }
   ]
 
+  const handleLinkClick = () => {
+    // Close mobile menu when a link is clicked
+    if (onCloseMobileMenu && window.innerWidth < 768) {
+      onCloseMobileMenu()
+    }
+  }
+
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
       <nav className="sidebar-nav">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <span>{item.icon}</span>
             <span>{item.label}</span>

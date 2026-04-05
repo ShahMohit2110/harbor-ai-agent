@@ -568,33 +568,111 @@ CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
 
 ---
 
-## 🎯 CHECKPOINT 0: Agent Start - Admin → Analysis Transition (MANDATORY)
+## 🎯 CHECKPOINT 0: Agent Start - Admin Stage Active (MANDATORY)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #0 of 5**
+**🚨 CRITICAL: This is MANDATORY checkpoint #0 of 6**
 
 **Reference:** `workflows/HARBOR-TICKET-TRACKER-UPDATE.md`
 
+**⚠️ STAGE FLOW UNDERSTANDING:**
+- Admin (5%) = Agent starts + Repository discovery + Documentation reading
+- Analysis (10%) = Analysis phase begins (Admin completes)
+- Planning (25%) = Planning phase begins (Analysis completes)
+- Development (50%) = Implementation begins (Planning completes)
+- Testing (75%) = Testing begins (Development completes)
+- Complete (100%) = All phases complete
+
 **When agent STARTS working on ticket, agent MUST:**
 
-**✅ Update Progress to 10% (Analysis Stage) - Admin Complete**
+**✅ Update Progress to 5% (Admin Stage Active)**
 
 ```bash
-cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 10 "Analysis" "Harbor AI Agent started working - Admin phase complete"
+harbor-ticket-update "TKT-${AZURE_DEVOPS_ID}" 5 "Admin" "Harbor AI Agent started working on this ticket"
+```
+
+**✅ THEN: While in Admin phase, DO:**
+1. Discover all repositories
+2. Read documentation from each repository
+3. Validate documentation completeness
+4. ONLY after all docs are read → Proceed to Checkpoint 1
+
+**⚠️ DO NOT proceed to Checkpoint 1 until documentation gate is complete!**
+
+**✅ Verify Progress Updated:**
+
+```bash
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}, Status: {d['status']}\")"
+```
+
+**Expected Output:**
+```
+Progress: 5%, Stage: Admin, Status: In Progress
+```
+
+**🚨 IF PROGRESS IS NOT 5%:**
+- ❌ DO NOT PROCEED TO NEXT PHASE
+- ✅ RE-RUN the progress update command
+- ✅ Verify progress changed to 5%
+- ✅ Verify stage changed to "Admin"
+- ✅ Verify status is "In Progress"
+- ✅ Only then proceed
+
+**✅ Output Confirmation:**
+```markdown
+✅ CHECKPOINT 0 COMPLETE:
+- Progress updated to: 5%
+- Stage set to: Admin
+- Status: In Progress
+- Message: Agent started working
+🟢 REMAINING IN ADMIN PHASE FOR DOCUMENTATION GATE
+```
+
+**UI Expected Behavior:**
+- Admin stage: 🔄 Blue/active
+- All other stages: ⚪ Gray (pending)
+- Progress bar: 5%
+
+**⚠️ IMPORTANT: Stay in Admin phase until ALL documentation is read!**
+
+---
+
+## 🎯 CHECKPOINT 1: Documentation Gate Complete → Analysis Stage Active (MANDATORY)
+
+**🚨 CRITICAL: This is MANDATORY checkpoint #1 of 6**
+
+**Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
+
+**⚠️ WHEN TO RUN THIS CHECKPOINT:**
+- ✅ AFTER all repositories have been discovered
+- ✅ AFTER all documentation has been read
+- ✅ AFTER documentation gate is validated complete
+- ❌ DO NOT run this at the start - only AFTER documentation work is DONE!
+
+**What happens during Admin phase (before this checkpoint):**
+1. Agent starts working (Checkpoint 0)
+2. Discovers all repositories
+3. Reads ARCHITECTURE.md from each repo
+4. Reads SERVICE_RULES.md from each repo
+5. Validates all required docs exist
+6. **THEN this checkpoint marks Admin complete and Analysis begins**
+
+**After Phase 0 (Documentation Gate) completes, agent MUST:**
+
+**✅ Update Progress to 10% (Analysis Stage Active, Admin Complete ✅)**
+
+```bash
+harbor-ticket-update "TKT-${AZURE_DEVOPS_ID}" 10 "Analysis" "Documentation gate complete - all docs read and validated"
 ```
 
 **✅ Verify Progress Updated:**
 
 ```bash
-curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | jq '.data | {progress, stage}'
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}\")"
 ```
 
 **Expected Output:**
-```json
-{
-  "progress": 10,
-  "stage": "Analysis"
-}
+```
+Progress: 10%, Stage: Analysis
 ```
 
 **🚨 IF PROGRESS IS NOT 10%:**
@@ -606,10 +684,10 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | jq '.data | {
 
 **✅ Output Confirmation:**
 ```markdown
-✅ CHECKPOINT 0 COMPLETE:
+✅ CHECKPOINT 1 COMPLETE:
 - Progress updated to: 10%
 - Stage set to: Analysis
-- Message: Agent started working
+- Message: Documentation gate complete
 🟢 PROCEEDING TO ANALYSIS PHASE
 ```
 
@@ -618,49 +696,6 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | jq '.data | {
 - Admin → Analysis animation: ✅ Plays (1.5s)
 - Analysis stage: 🔄 Blue/active
 - Progress bar: 10%
-
----
-
-## 🎯 CHECKPOINT 1: Progress Update After Documentation Gate (MANDATORY)
-
-**🚨 CRITICAL: This is MANDATORY checkpoint #1 of 5**
-
-**Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
-
-**After Phase 0 (Documentation Gate) completes, agent MUST:**
-
-**✅ Update Progress to 25% (Planning Stage)**
-
-```bash
-cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 25 "Planning" "Analysis phase complete - all docs read and validated"
-```
-
-**✅ Verify Progress Updated:**
-
-```bash
-curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"progress":[0-9]*'
-```
-
-**Expected Output:**
-```
-"progress":25
-```
-
-**🚨 IF PROGRESS IS NOT 25%:**
-- ❌ DO NOT PROCEED TO NEXT PHASE
-- ✅ RE-RUN the progress update command
-- ✅ Verify progress changed to 25%
-- ✅ Only then proceed
-
-**✅ Output Confirmation:**
-```markdown
-✅ CHECKPOINT 1 COMPLETE:
-- Progress updated to: 25%
-- Stage set to: Planning
-- Message: Analysis phase complete
-🟢 PROCEEDING TO PLANNING PHASE
-```
 
 ---
 
@@ -2375,30 +2410,77 @@ Result: ✅ All commands executed and verified
 
 ---
 
-## 🎯 CHECKPOINT 2: Progress Update After Planning Phase (MANDATORY)
+## 🎯 CHECKPOINT 2: Analysis Complete - Planning Stage Active (MANDATORY)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #2 of 4**
+**🚨 CRITICAL: This is MANDATORY checkpoint #2 of 6**
 
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
-**After Phase 4 (Planning) completes, agent MUST:**
+**After Phase 1 (Analysis) completes, agent MUST:**
 
-**✅ Update Progress to 50% (Development Stage)**
+**✅ Update Progress to 25% (Planning Stage Active, Analysis Complete)**
 
 ```bash
-cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Planning phase complete - starting implementation"
+harbor-ticket-update "TKT-${AZURE_DEVOPS_ID}" 25 "Planning" "Analysis phase complete - requirements analyzed, starting planning"
 ```
 
 **✅ Verify Progress Updated:**
 
 ```bash
-curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"progress":[0-9]*'
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}\")"
 ```
 
 **Expected Output:**
 ```
-"progress":50
+Progress: 25%, Stage: Planning
+```
+
+**🚨 IF PROGRESS IS NOT 25%:**
+- ❌ DO NOT PROCEED TO PLANNING
+- ✅ RE-RUN the progress update command
+- ✅ Verify progress changed to 25%
+- ✅ Only then proceed
+
+**✅ Output Confirmation:**
+```markdown
+✅ CHECKPOINT 2 COMPLETE:
+- Progress updated to: 25%
+- Stage set to: Planning
+- Message: Analysis complete
+🟢 PROCEEDING TO PLANNING PHASE
+```
+
+**UI Expected Behavior:**
+- Admin stage: ✅ Green (completed)
+- Analysis stage: ✅ Green (completed)
+- Planning stage: 🔄 Blue/active
+- Progress bar: 25%
+
+---
+
+## 🎯 CHECKPOINT 3: Planning Complete - Development Stage Active (MANDATORY)
+
+**🚨 CRITICAL: This is MANDATORY checkpoint #3 of 6**
+
+**Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
+
+**After Phase 4 (Planning) completes, agent MUST:**
+
+**✅ Update Progress to 50% (Development Stage Active, Planning Complete)**
+
+```bash
+harbor-ticket-update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Planning complete - starting implementation"
+```
+
+**✅ Verify Progress Updated:**
+
+```bash
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}\")"
+```
+
+**Expected Output:**
+```
+Progress: 50%, Stage: Development
 ```
 
 **🚨 IF PROGRESS IS NOT 50%:**
@@ -2409,20 +2491,25 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 **✅ Output Confirmation:**
 ```markdown
-✅ CHECKPOINT 2 COMPLETE:
+✅ CHECKPOINT 3 COMPLETE:
 - Progress updated to: 50%
 - Stage set to: Development
 - Message: Planning complete, starting implementation
-🟢 PROCEEDING TO PHASE 6: IMPLEMENTATION
+🟢 PROCEEDING TO IMPLEMENTATION PHASE
 ```
+
+**UI Expected Behavior:**
+- Admin stage: ✅ Green (completed)
+- Analysis stage: ✅ Green (completed)
+- Planning stage: ✅ Green (completed)
+- Development stage: 🔄 Blue/active
+- Progress bar: 50%
 
 ---
 
 ## 🧠 Phase 6: Pattern-Based Implementation (MANDATORY)
 
 ### 📝 Implementation with Progress Tracking
-
-**🚨 NOTE: Progress already updated to 50% at CHECKPOINT 2**
 
 **Continue with implementation activities...**
 
@@ -2556,30 +2643,29 @@ await HarborAgentTracker.updateProgress(
 
 ---
 
-## 🎯 CHECKPOINT 3: Progress Update After Development Complete (MANDATORY)
+## 🎯 CHECKPOINT 4: Development Complete - Testing Stage Active (MANDATORY)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #3 of 4**
+**🚨 CRITICAL: This is MANDATORY checkpoint #4 of 6**
 
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
 **After Phase 6 (Development) completes, agent MUST:**
 
-**✅ Update Progress to 75% (Testing Stage)**
+**✅ Update Progress to 75% (Testing Stage Active, Development Complete)**
 
 ```bash
-cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 75 "Testing" "Development phase complete - starting testing and validation"
+harbor-ticket-update "TKT-${AZURE_DEVOPS_ID}" 75 "Testing" "Development complete - starting testing and validation"
 ```
 
 **✅ Verify Progress Updated:**
 
 ```bash
-curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"progress":[0-9]*'
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}\")"
 ```
 
 **Expected Output:**
 ```
-"progress":75
+Progress: 75%, Stage: Testing
 ```
 
 **🚨 IF PROGRESS IS NOT 75%:**
@@ -2590,12 +2676,20 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 **✅ Output Confirmation:**
 ```markdown
-✅ CHECKPOINT 3 COMPLETE:
+✅ CHECKPOINT 4 COMPLETE:
 - Progress updated to: 75%
 - Stage set to: Testing
 - Message: Development complete, starting testing
-🟢 PROCEEDING TO PHASE 8: TESTING
+🟢 PROCEEDING TO TESTING PHASE
 ```
+
+**UI Expected Behavior:**
+- Admin stage: ✅ Green (completed)
+- Analysis stage: ✅ Green (completed)
+- Planning stage: ✅ Green (completed)
+- Development stage: ✅ Green (completed)
+- Testing stage: 🔄 Blue/active
+- Progress bar: 75%
 
 ---
 
@@ -2617,30 +2711,29 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 ---
 
-## 🎯 CHECKPOINT 4: Progress Update After Testing Complete (MANDATORY)
+## 🎯 CHECKPOINT 5: Testing Complete - Task Done (MANDATORY - FINAL)
 
-**🚨 CRITICAL: This is MANDATORY checkpoint #4 of 4 - FINAL CHECKPOINT**
+**🚨 CRITICAL: This is MANDATORY checkpoint #5 of 6 - FINAL CHECKPOINT**
 
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
 **After Phase 9 (Testing & Debug) completes, agent MUST:**
 
-**✅ Complete Ticket (100% - Task Complete)**
+**✅ Complete Ticket (100% - All Stages Complete)**
 
 ```bash
-cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
-node ticketTrackerIntegration.js complete "TKT-${AZURE_DEVOPS_ID}" "Task completed successfully - implementation complete, all tests passing"
+harbor-ticket-complete "TKT-${AZURE_DEVOPS_ID}" "Task completed successfully - implementation complete, all tests passing"
 ```
 
 **✅ Verify Progress Updated:**
 
 ```bash
-curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"progress":[0-9]*'
+curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}, Status: {d['status']}\")"
 ```
 
 **Expected Output:**
 ```
-"progress":100
+Progress: 100%, Stage: Testing, Status: Completed
 ```
 
 **🚨 IF PROGRESS IS NOT 100%:**
@@ -2652,13 +2745,18 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 
 **✅ Output Confirmation:**
 ```markdown
-✅ CHECKPOINT 4 COMPLETE - ALL CHECKPOINTS PASSED:
+✅ CHECKPOINT 5 COMPLETE - ALL CHECKPOINTS PASSED:
 - Progress updated to: 100%
 - Stage set to: Testing
 - Status set to: Completed
 - Message: Task completed successfully
 🟢 PROCEEDING TO TASK COMPLETION
 ```
+
+**UI Expected Behavior:**
+- All stages: ✅ Green (completed)
+- Status: Completed
+- Progress bar: 100%
 
 ---
 

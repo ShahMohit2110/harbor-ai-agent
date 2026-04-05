@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import TicketModal from '../Shared/TicketModal'
 import './TicketList.css'
 
-function TicketList({ tickets, onDeleteTicket }) {
+function TicketList({ tickets, onDeleteTicket, onTicketCreated }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [stageFilter, setStageFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Filter and search tickets
   const filteredTickets = useMemo(() => {
@@ -56,10 +58,24 @@ function TicketList({ tickets, onDeleteTicket }) {
     }
   }
 
+  const handleTicketCreated = (newTicket) => {
+    if (onTicketCreated) {
+      onTicketCreated(newTicket)
+    }
+  }
+
   return (
     <div className="ticket-list">
-      <h1 className="page-title">All Tickets</h1>
-      <p className="page-subtitle">View and manage all tickets across the system</p>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">All Tickets</h1>
+          <p className="page-subtitle">View and manage all tickets across the system</p>
+        </div>
+        <button className="btn btn-primary btn-add-ticket" onClick={() => setIsModalOpen(true)}>
+          <span>+</span>
+          Add Ticket
+        </button>
+      </div>
 
       {/* Search Box */}
       <div className="search-box">
@@ -211,6 +227,13 @@ function TicketList({ tickets, onDeleteTicket }) {
           </div>
         )}
       </div>
+
+      {/* Ticket Modal */}
+      <TicketModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onTicketCreated={handleTicketCreated}
+      />
     </div>
   )
 }

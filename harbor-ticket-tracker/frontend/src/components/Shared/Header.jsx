@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
 
-function Header({ isRealTimeEnabled, onToggleRealTime }) {
+function Header({ isRealTimeEnabled, onToggleRealTime, onToggleMobileMenu, isMobileMenuOpen }) {
   return (
     <header className="header">
       <div className="header-logo">
         <Link to="/">
-          <h1>🎯 Harbor Ticket Tracker</h1>
+          <h1>Harbor Ticket Tracker</h1>
         </Link>
       </div>
       <div className="header-controls">
@@ -15,9 +15,16 @@ function Header({ isRealTimeEnabled, onToggleRealTime }) {
           title={isRealTimeEnabled ? 'Disable real-time updates' : 'Enable real-time updates'}
         >
           <div className={`toggle-switch ${isRealTimeEnabled ? 'active' : ''}`}></div>
-          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
-            {isRealTimeEnabled ? 'Live' : 'Paused'}
-          </span>
+          <span>{isRealTimeEnabled ? 'Live' : 'Paused'}</span>
+        </button>
+        <button
+          className={`mobile-menu-button ${isMobileMenuOpen ? 'open' : ''}`}
+          onClick={onToggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
       </div>
     </header>

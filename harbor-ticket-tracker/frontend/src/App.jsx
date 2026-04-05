@@ -6,6 +6,7 @@ import TicketDetail from './components/TicketDetail/TicketDetail'
 import RevenueStrategy from './components/RevenueStrategy/RevenueStrategy'
 import Sidebar from './components/Shared/Sidebar'
 import Header from './components/Shared/Header'
+import BackgroundBlobs from './components/Shared/BackgroundBlobs'
 import './App.css'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -16,6 +17,15 @@ function App() {
   const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const handleToggleMobileMenu = () => {
+    setIsMobileMenuOpen(prev => !prev)
+  }
+
+  const handleCloseMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
 
   // Load initial data from API
   useEffect(() => {
@@ -83,7 +93,7 @@ function App() {
       // Show warning toast first
       toast((t) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '320px' }}>
-          <span style={{ fontSize: '1rem', lineHeight: '1.5' }}>
+          <span style={{ fontSize: '1rem', lineHeight: '1.5', color: '#EDEDEF' }}>
             Are you sure you want to delete this ticket?
           </span>
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -94,23 +104,24 @@ function App() {
                 resolve(success)
               }}
               style={{
-                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                background: '#ef4444',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 padding: '8px 20px',
                 fontWeight: '600',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                boxShadow: '0 0 0 1px rgba(239, 68, 68, 0.3), 0 4px 12px rgba(239, 68, 68, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)'
               }}
               onMouseEnter={(e) => {
                 e.target.style.transform = 'translateY(-1px)'
-                e.target.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)'
+                e.target.style.boxShadow = '0 0 0 1px rgba(239, 68, 68, 0.5), 0 6px 16px rgba(239, 68, 68, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2)'
               }}
               onMouseLeave={(e) => {
                 e.target.style.transform = 'translateY(0)'
-                e.target.style.boxShadow = 'none'
+                e.target.style.boxShadow = '0 0 0 1px rgba(239, 68, 68, 0.3), 0 4px 12px rgba(239, 68, 68, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)'
               }}
             >
               Delete
@@ -122,9 +133,9 @@ function App() {
               }}
               style={{
                 background: 'transparent',
-                color: '#d1d5db',
-                border: '1px solid #4b5563',
-                borderRadius: '6px',
+                color: '#8A8F98',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '8px',
                 padding: '8px 20px',
                 fontWeight: '600',
                 cursor: 'pointer',
@@ -132,12 +143,12 @@ function App() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.borderColor = '#6b7280'
-                e.target.style.color = '#e5e7eb'
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'
+                e.target.style.color = '#EDEDEF'
               }}
               onMouseLeave={(e) => {
-                e.target.style.borderColor = '#4b5563'
-                e.target.style.color = '#d1d5db'
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+                e.target.style.color = '#8A8F98'
               }}
             >
               Cancel
@@ -148,12 +159,13 @@ function App() {
         duration: 5000,
         position: 'top-center',
         style: {
-          background: 'linear-gradient(135deg, #1e293b, #0f172a)',
-          color: 'white',
-          borderRadius: '12px',
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02))',
+          color: '#EDEDEF',
+          borderRadius: '16px',
           padding: '20px 24px',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
-          maxWidth: '500px'
+          boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 64px rgba(0, 0, 0, 0.3)',
+          maxWidth: '500px',
+          border: '1px solid rgba(255, 255, 255, 0.06)'
         }
       })
     })
@@ -176,14 +188,16 @@ function App() {
           duration: 3000,
           position: 'top-right',
           style: {
-            background: 'linear-gradient(135deg, #10b981, #059669)',
+            background: 'linear-gradient(to bottom, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05))',
+            color: '#EDEDEF',
             fontWeight: '600',
-            borderRadius: '8px',
-            padding: '12px 20px'
+            borderRadius: '12px',
+            padding: '14px 20px',
+            border: '1px solid rgba(34, 197, 94, 0.3)'
           },
           iconTheme: {
-            primary: '#fff',
-            secondary: 'rgba(255, 255, 255, 0.8)'
+            primary: '#22c55e',
+            secondary: '#fff'
           }
         })
 
@@ -194,10 +208,12 @@ function App() {
           duration: 4000,
           position: 'top-right',
           style: {
-            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            background: 'linear-gradient(to bottom, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05))',
+            color: '#EDEDEF',
             fontWeight: '600',
-            borderRadius: '8px',
-            padding: '12px 20px'
+            borderRadius: '12px',
+            padding: '14px 20px',
+            border: '1px solid rgba(239, 68, 68, 0.3)'
           }
         })
         return false
@@ -208,10 +224,12 @@ function App() {
         duration: 4000,
         position: 'top-right',
         style: {
-          background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+          background: 'linear-gradient(to bottom, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05))',
+          color: '#EDEDEF',
           fontWeight: '600',
-          borderRadius: '8px',
-          padding: '12px 20px'
+          borderRadius: '12px',
+          padding: '14px 20px',
+          border: '1px solid rgba(239, 68, 68, 0.3)'
         }
       })
       return false
@@ -232,12 +250,16 @@ function App() {
     tickets.forEach(ticket => {
       stages[ticket.stage] = (stages[ticket.stage] || 0) + 1
     })
-    
+
     // Convert object to array format expected by Dashboard
     return Object.entries(stages).map(([name, count]) => ({
       name,
       count
     }))
+  }
+
+  const handleTicketCreated = (newTicket) => {
+    setTickets(prev => [...prev, newTicket])
   }
 
   if (loading) {
@@ -276,12 +298,18 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app">
+        <BackgroundBlobs />
         <Header
           isRealTimeEnabled={isRealTimeEnabled}
           onToggleRealTime={() => setIsRealTimeEnabled(!isRealTimeEnabled)}
+          onToggleMobileMenu={handleToggleMobileMenu}
+          isMobileMenuOpen={isMobileMenuOpen}
         />
         <div className="app-container">
-          <Sidebar />
+          <Sidebar
+            isMobileMenuOpen={isMobileMenuOpen}
+            onCloseMobileMenu={handleCloseMobileMenu}
+          />
           <main className="main-content">
             <Routes>
               <Route
@@ -290,7 +318,7 @@ function App() {
               />
               <Route
                 path="/tickets"
-                element={<TicketList tickets={tickets} onDeleteTicket={deleteTicket} />}
+                element={<TicketList tickets={tickets} onDeleteTicket={deleteTicket} onTicketCreated={handleTicketCreated} />}
               />
               <Route
                 path="/ticket/:id"
@@ -310,20 +338,38 @@ function App() {
         toastOptions={{
           duration: 3000,
           style: {
-            background: 'linear-gradient(135deg, #1e293b, #0f172a)',
-            color: '#fff',
-            borderRadius: '8px',
-            padding: '12px 20px',
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02))',
+            color: '#EDEDEF',
+            borderRadius: '12px',
+            padding: '14px 20px',
             fontWeight: '500',
-            border: '1px solid rgba(99, 102, 241, 0.2)'
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.06), 0 2px 20px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.2)'
           },
           success: {
             iconTheme: {
-              primary: '#10b981',
+              primary: '#22c55e',
               secondary: '#fff'
             },
             style: {
-              background: 'linear-gradient(135deg, #3b82f6, #6366f1)'
+              background: 'linear-gradient(to bottom, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05))',
+              border: '1px solid rgba(34, 197, 94, 0.3)'
+            }
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff'
+            },
+            style: {
+              background: 'linear-gradient(to bottom, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05))',
+              border: '1px solid rgba(239, 68, 68, 0.3)'
+            }
+          },
+          loading: {
+            style: {
+              background: 'linear-gradient(to bottom, rgba(94, 106, 210, 0.15), rgba(94, 106, 210, 0.05))',
+              border: '1px solid rgba(94, 106, 210, 0.3)'
             }
           }
         }}

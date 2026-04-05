@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './RevenueStrategy.css'
 
 function RevenueStrategy() {
   const [activeSection, setActiveSection] = useState('overview')

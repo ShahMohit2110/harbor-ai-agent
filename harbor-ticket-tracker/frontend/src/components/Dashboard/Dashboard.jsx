@@ -17,8 +17,10 @@ function Dashboard({ stats, stageDistribution, onRefresh }) {
     const toastId = toast.loading('☁️ Syncing with Azure DevOps...', {
       position: 'top-right',
       style: {
-        background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
-        fontWeight: '600'
+        background: 'linear-gradient(to bottom, rgba(94, 106, 210, 0.15), rgba(94, 106, 210, 0.05))',
+        color: '#EDEDEF',
+        fontWeight: '600',
+        border: '1px solid rgba(94, 106, 210, 0.3)'
       }
     })
 
@@ -49,11 +51,13 @@ function Dashboard({ stats, stageDistribution, onRefresh }) {
             duration: 4000,
             position: 'top-right',
             style: {
-              background: 'linear-gradient(135deg, #10b981, #059669)',
+              background: 'linear-gradient(to bottom, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05))',
+              color: '#EDEDEF',
               fontWeight: '600',
-              borderRadius: '8px',
+              borderRadius: '12px',
               padding: '14px 24px',
-              fontSize: '0.95rem'
+              fontSize: '0.95rem',
+              border: '1px solid rgba(34, 197, 94, 0.3)'
             }
           }
         )
@@ -78,10 +82,12 @@ function Dashboard({ stats, stageDistribution, onRefresh }) {
           duration: 5000,
           position: 'top-right',
           style: {
-            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            background: 'linear-gradient(to bottom, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05))',
+            color: '#EDEDEF',
             fontWeight: '600',
-            borderRadius: '8px',
-            padding: '14px 24px'
+            borderRadius: '12px',
+            padding: '14px 24px',
+            border: '1px solid rgba(239, 68, 68, 0.3)'
           }
         })
 
@@ -164,107 +170,43 @@ function Dashboard({ stats, stageDistribution, onRefresh }) {
 
       {/* Quick Actions */}
       <div className="card">
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1.5rem' }}>
-          Quick Actions
-        </h2>
+        <h2 className="card-title">Quick Actions</h2>
         <div className="quick-actions">
           <button
             onClick={handleAzureSync}
             disabled={syncStatus === 'syncing'}
-            className={`btn ${syncStatus === 'syncing' ? 'btn-disabled' : 'btn-azure'}`}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              fontSize: '1rem',
-              fontWeight: '500',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: syncStatus === 'syncing' ? 'not-allowed' : 'pointer',
-              background: syncStatus === 'syncing'
-                ? 'linear-gradient(135deg, #6b7280, #4b5563)'
-                : syncStatus === 'success'
-                ? 'linear-gradient(135deg, #10b981, #059669)'
-                : syncStatus === 'error'
-                ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                : 'linear-gradient(135deg, #0078d4, #106ebe)',
-              color: 'white',
-              transition: 'all 0.2s'
-            }}
+            className={`btn-azure-sync ${syncStatus === 'syncing' ? '' : syncStatus === 'success' ? 'btn-success' : syncStatus === 'error' ? 'btn-error' : ''}`}
+            {...(syncStatus === 'syncing' ? { disabled: true } : {})}
           >
             {syncStatus === 'syncing' ? (
               <>
-                <span className="spinner" style={{
-                  width: '16px',
-                  height: '16px',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderTop: '2px solid white',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite'
-                }}></span>
+                <span className="spinner"></span>
                 Syncing...
               </>
             ) : syncStatus === 'success' ? (
-              '✓ Synced!'
+              <>✓ Synced!</>
             ) : syncStatus === 'error' ? (
-              '✕ Failed'
+              <>✕ Failed</>
             ) : (
               <>
-                <span style={{ fontSize: '1.2rem' }}>☁️</span>
+                <span>☁️</span>
                 Sync Azure DevOps
               </>
             )}
           </button>
 
           {syncMessage && (
-            <div style={{
-              marginTop: '0.75rem',
-              padding: '0.75rem',
-              borderRadius: '6px',
-              background: syncStatus === 'success'
-                ? 'rgba(16, 185, 129, 0.1)'
-                : syncStatus === 'error'
-                ? 'rgba(239, 68, 68, 0.1)'
-                : 'rgba(59, 130, 246, 0.1)',
-              color: syncStatus === 'success'
-                ? '#10b981'
-                : syncStatus === 'error'
-                ? '#ef4444'
-                : '#3b82f6',
-              fontSize: '0.875rem',
-              border: `1px solid ${syncStatus === 'success'
-                ? '#10b981'
-                : syncStatus === 'error'
-                ? '#ef4444'
-                : '#3b82f6'
-              }`
-            }}>
+            <div className={`sync-message sync-message-${syncStatus}`}>
               {syncMessage}
             </div>
           )}
 
-          <Link to="/tickets" className="btn btn-primary" style={{ marginLeft: '0' }}>
+          <Link to="/tickets" className="btn-view-tickets">
             View All Tickets
           </Link>
         </div>
       </div>
 
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .btn-azure:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
-        }
-
-        .btn-disabled {
-          opacity: 0.6;
-        }
-      `}</style>
       <Toaster
         position="top-right"
         reverseOrder={false}
@@ -272,37 +214,42 @@ function Dashboard({ stats, stageDistribution, onRefresh }) {
         toastOptions={{
           duration: 4000,
           style: {
-            background: '#333',
-            color: '#fff',
-            borderRadius: '8px',
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02))',
+            color: '#EDEDEF',
+            borderRadius: '12px',
             fontWeight: '500',
-            padding: '12px 20px'
+            padding: '14px 20px',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.06), 0 2px 20px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.2)'
           },
           success: {
             iconTheme: {
-              primary: '#fff',
-              secondary: 'rgba(255, 255, 255, 0.8)'
+              primary: '#22c55e',
+              secondary: '#fff'
             },
             style: {
-              background: 'linear-gradient(135deg, #10b981, #059669)'
+              background: 'linear-gradient(to bottom, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05))',
+              border: '1px solid rgba(34, 197, 94, 0.3)'
             }
           },
           error: {
             iconTheme: {
-              primary: '#fff',
-              secondary: 'rgba(255, 255, 255, 0.8)'
+              primary: '#ef4444',
+              secondary: '#fff'
             },
             style: {
-              background: 'linear-gradient(135deg, #ef4444, #dc2626)'
+              background: 'linear-gradient(to bottom, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05))',
+              border: '1px solid rgba(239, 68, 68, 0.3)'
             }
           },
           loading: {
             iconTheme: {
-              primary: '#fff',
-              secondary: 'rgba(255, 255, 255, 0.8)'
+              primary: '#5E6AD2',
+              secondary: '#fff'
             },
             style: {
-              background: 'linear-gradient(135deg, #3b82f6, #6366f1)'
+              background: 'linear-gradient(to bottom, rgba(94, 106, 210, 0.15), rgba(94, 106, 210, 0.05))',
+              border: '1px solid rgba(94, 106, 210, 0.3)'
             }
           }
         }}

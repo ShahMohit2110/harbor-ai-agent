@@ -2,6 +2,9 @@
 
 **Harbor AI Agent v2.0 - Harbor Ticket Tracker Integration**
 
+**🚨 CRITICAL: READ THE CHECKPOINT COMMANDS SECTION BELOW!**
+**All ticket progress updates MUST use the `harbor-ticket-update` command**
+
 ---
 
 ## 🚀 Quick Start
@@ -44,16 +47,28 @@ cat tickets-data.json | jq -r '[.tickets[] | select(.status == "pending" or .sta
 cat tickets-data.json | jq -r '[.tickets[] | select(.status == "pending" or .status == "In Progress")] | sort_by(.priority, .createdAt) | .[0].description'
 ```
 
-### **4. Start Ticket**
+### **4. Start Ticket (CORRECT METHOD)**
 
+**🚨 USE THIS COMMAND - Not the API directly:**
+```bash
+harbor-ticket-update "TKT-137" 5 "Admin" "Harbor AI Agent started working on this ticket"
+```
+
+**OR using API (if wrapper not available):**
 ```bash
 curl -X POST http://localhost:3001/api/harbor-agent/start \
   -H "Content-Type: application/json" \
   -d '{
-    "ticketId": "TKT-146",
-    "stage": "Planning",
+    "ticketId": "TKT-137",
+    "stage": "Admin",
     "message": "Harbor AI Agent started working on this ticket"
   }'
+```
+
+**❌ DO NOT USE (wrong endpoint):**
+```bash
+# This endpoint does NOT exist:
+curl -X PUT http://localhost:3001/api/tickets/TKT-137/start  # ❌ WRONG
 ```
 
 ### **5. Verify Ticket Started**
@@ -123,7 +138,48 @@ jq --version
 
 ```bash
 cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend
-npm run dev
+node src/server.js
+```
+
+---
+
+## 🎯 CHECKPOINT COMMANDS (MANDATORY)
+
+**🚨 CRITICAL: Use these exact commands to update ticket progress!**
+
+### **Checkpoint 0: Agent Starts (5% - Admin Active)**
+```bash
+harbor-ticket-update "TKT-{ID}" 5 "Admin" "Harbor AI Agent started working on this ticket"
+```
+
+### **Checkpoint 1: Documentation Complete (10% - Analysis Active)**
+```bash
+harbor-ticket-update "TKT-{ID}" 10 "Analysis" "Documentation gate complete - all docs read and validated"
+```
+
+### **Checkpoint 2: Analysis Complete (25% - Planning Active)**
+```bash
+harbor-ticket-update "TKT-{ID}" 25 "Planning" "Analysis phase complete - requirements analyzed"
+```
+
+### **Checkpoint 3: Planning Complete (50% - Development Active)**
+```bash
+harbor-ticket-update "TKT-{ID}" 50 "Development" "Planning complete - starting implementation"
+```
+
+### **Checkpoint 4: Development Complete (75% - Testing Active)**
+```bash
+harbor-ticket-update "TKT-{ID}" 75 "Testing" "Development complete - starting testing"
+```
+
+### **Checkpoint 5: Task Complete (100% - All Stages Complete)**
+```bash
+harbor-ticket-complete "TKT-{ID}" "Task completed successfully - all phases complete"
+```
+
+**🚨 ALWAYS verify the update worked:**
+```bash
+curl -s http://localhost:3001/api/tickets/TKT-{ID} | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}, Status: {d['status']}\")"
 ```
 
 ---

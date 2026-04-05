@@ -2,20 +2,27 @@
 
 **🚨 CRITICAL: ALL PROGRESS UPDATES MUST USE THIS EXACT METHOD!**
 
-**Version:** 2.0.0 - Admin Stage Compatible  
-**Date:** 2026-04-04  
+**Version:** 4.0.0 - Stage Sync Fix  
+**Date:** 2026-04-04
 **Status:** ✅ MANDATORY - ZERO EXCEPTIONS
 
 ---
 
-## 🔴 FORBIDDEN METHODS (DO NOT USE!)
+## 🎯 CRITICAL: Progress-Stage Mapping (READ THIS!)
 
-❌ **NEVER use this command:**
-```bash
-node -e "const fs = require('fs'); const data = JSON.parse(fs.readFileSync('...')); ..."
-```
+**Understanding when stages complete:**
 
-**❌ This method bypasses the API and causes inconsistent updates**
+| Progress | Active Stage | Completed Stage | Agent Action |
+|----------|-------------|-----------------|--------------|
+| 0% | None | None | Ticket created (Pending) |
+| 5% | Admin | None | Agent starts working |
+| 10% | Analysis | Admin ✅ | Documentation analysis begins |
+| 25% | Planning | Analysis ✅ | Planning phase begins |
+| 50% | Development | Planning ✅ | Implementation begins |
+| 75% | Testing | Development ✅ | Testing begins |
+| 100% | Done | Testing ✅ | Task complete |
+
+**Key Rule:** A stage completes when the NEXT stage starts (e.g., Admin completes at 10% when Analysis starts)
 
 ---
 
@@ -23,40 +30,58 @@ node -e "const fs = require('fs'); const data = JSON.parse(fs.readFileSync('...'
 
 **🚨 ALL progress updates MUST use this EXACT command:**
 
+### Option 1: Global Wrapper (RECOMMENDED - Works from any directory)
+```bash
+harbor-ticket-update "TKT-{ID}" {PERCENT} "{STAGE}" "{MESSAGE}"
+```
+
+### Option 2: Direct path (Absolute path)
 ```bash
 cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
-
 node ticketTrackerIntegration.js update "TKT-{ID}" {PERCENT} "{STAGE}" "{MESSAGE}"
 ```
 
 ---
 
-## 📋 Checkpoint Commands (Copy & Paste!)
+## 📋 Agent Workflow Checkpoint Commands
 
-### **Checkpoint 0: Agent Starts (10% - Admin → Analysis)**
+### **Step 1: Agent Starts Working (5% - Admin Active)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-137" 10 "Analysis" "Harbor AI Agent started working - Admin phase complete"
+harbor-ticket-update "TKT-137" 5 "Admin" "Harbor AI Agent started working on this ticket"
 ```
+**UI shows:** Admin stage active (blue), all others pending (gray)
 
-### **Checkpoint 1: Analysis Complete (25% - Analysis → Planning)**
+### **Step 2: Documentation Analysis Complete (10% - Analysis Active, Admin Complete)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-137" 25 "Planning" "Analysis phase complete - all docs read and validated"
+harbor-ticket-update "TKT-137" 10 "Analysis" "Documentation gate complete - all docs read and validated"
 ```
+**UI shows:** Analysis active (blue), Admin completed (green ✅)
 
-### **Checkpoint 2: Planning Complete (50% - Planning → Development)**
+### **Step 3: Analysis Complete, Planning Starts (25% - Planning Active, Analysis Complete)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-137" 50 "Development" "Planning complete - starting implementation"
+harbor-ticket-update "TKT-137" 25 "Planning" "Analysis phase complete - requirements analyzed, starting planning"
 ```
+**UI shows:** Planning active (blue), Admin & Analysis completed (green ✅)
 
-### **Checkpoint 3: Development Complete (75% - Development → Testing)**
+### **Step 4: Planning Complete, Implementation Starts (50% - Development Active, Planning Complete)**
 ```bash
-node ticketTrackerIntegration.js update "TKT-137" 75 "Testing" "Development complete - starting testing"
+harbor-ticket-update "TKT-137" 50 "Development" "Planning complete - starting implementation"
 ```
+**UI shows:** Development active (blue), Admin, Analysis & Planning completed (green ✅)
 
-### **Checkpoint 4: Testing Complete (100% - Done)**
+### **Step 5: Implementation Complete, Testing Starts (75% - Testing Active, Development Complete)**
 ```bash
-node ticketTrackerIntegration.js complete "TKT-137" "Task completed successfully - implementation and testing complete"
+harbor-ticket-update "TKT-137" 75 "Testing" "Development complete - starting testing phase"
 ```
+**UI shows:** Testing active (blue), Admin, Analysis, Planning & Development completed (green ✅)
+
+### **Step 6: Task Complete (100% - All Stages Complete)**
+```bash
+harbor-ticket-update "TKT-137" 100 "Testing" "Task completed successfully - all phases complete"
+# OR use complete command:
+harbor-ticket-complete "TKT-137" "Task completed successfully"
+```
+**UI shows:** All stages completed (green ✅), Status = Completed
 
 ---
 
@@ -65,18 +90,19 @@ node ticketTrackerIntegration.js complete "TKT-137" "Task completed successfully
 **After running each command, VERIFY:**
 
 ```bash
-curl -s http://localhost:3001/api/tickets/TKT-137 | jq '.data | {progress, stage, status}'
+curl -s http://localhost:3001/api/tickets/TKT-137 | python3 -c "import sys, json; d=json.load(sys.stdin)['data']; print(f\"Progress: {d['progress']}%, Stage: {d['stage']}, Status: {d['status']}\")"
 ```
 
 **Expected outputs:**
 
-| Checkpoint | Progress | Stage | Status |
-|-----------|---------|-------|--------|
-| 0 | 10 | Analysis | In Progress |
-| 1 | 25 | Planning | In Progress |
-| 2 | 50 | Development | In Progress |
-| 3 | 75 | Testing | In Progress |
-| 4 | 100 | Testing | **Completed** |
+| Step | Progress | Stage | Status | UI Shows |
+|------|---------|-------|--------|----------|
+| 1 | 5 | Admin | In Progress | Admin active |
+| 2 | 10 | Analysis | In Progress | Admin ✅, Analysis active |
+| 3 | 25 | Planning | In Progress | Admin ✅, Analysis ✅, Planning active |
+| 4 | 50 | Development | In Progress | Admin ✅, Analysis ✅, Planning ✅, Development active |
+| 5 | 75 | Testing | In Progress | Admin ✅, Analysis ✅, Planning ✅, Development ✅, Testing active |
+| 6 | 100 | Testing | Completed | All ✅ |
 
 ---
 
