@@ -1,0 +1,129 @@
+import { useState } from 'react'
+import './Projects.css'
+import { api } from '../utils/api'
+import { config } from '../config'
+import logger from '../utils/logger'
+
+function CreateProjectModal({ onClose, onCreate }) {
+  const [projectName, setProjectName] = useState('')
+  const [repoPath, setRepoPath] = useState('')
+  const [description, setDescription] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [projectBrowseError, setProjectBrowseError] = useState('')
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!projectName.trim() || !repoPath.trim()) {
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      await onCreate({
+        projectName: projectName.trim(),
+        repoPath: repoPath.trim(),
+        description: description.trim()
+      })
+      onClose()
+    } catch (error) {
+      console.error('Error creating project:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleFolderSelect = async () => {
+    setProjectBrowseError('')
+    try {
+      const response = await api.post(config.api.endpoints.selectFolder)
+      const data = await response.json()
+
+      if (data.path) {
+        setRepoPath(data.path)
+        return
+      }
+
+      if (data.cancelled) return
+
+      setProjectBrowseError(data.error || 'Could not open system folder picker.')
+    } catch (err) {
+      logger.error('CreateProjectModal', 'Failed to browse folder', err)
+      setProjectBrowseError('Could not open system folder picker. Ensure server is running locally.')
+    }
+  }
+
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Create New Project</h2>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-body">
+          <div className="form-group">
+            <label htmlFor="projectName" className="form-label">Project Name *</label>
+            <input
+              type="text"
+              id="projectName"
+              className="form-input"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder="e.g., Harbor User Service"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="repoPath" className="form-label">Repository Path *</label>
+            <input
+              type="text"
+              id="repoPath"
+              className="form-input"
+              value={repoPath}
+              onChange={(e) => setRepoPath(e.target.value)}
+              placeholder="/path/to/your/repository"
+              required
+            />
+            <button
+              type="button"
+              className="btn-browse"
+              onClick={handleFolderSelect}
+            >
+              📁 Browse Folder
+            </button>
+            <small className="form-hint">
+              Select folder to get path, or paste manually
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description" className="form-label">Description</label>
+            <textarea
+              id="description"
+              className="form-textarea"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief description of the project..."
+              rows={3}
+            />
+          </div>
+
+          <div className="modal-footer">
+            <button type="button" className="btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create Project'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+export default CreateProjectModal

@@ -4,6 +4,7 @@ function Sidebar({ isMobileMenuOpen, onCloseMobileMenu }) {
   const navItems = [
     { path: '/', icon: '📊', label: 'Dashboard' },
     { path: '/tickets', icon: '🎫', label: 'All Tickets' },
+    { path: '/projects', icon: '📁', label: 'Projects' },
     { path: '/revenue-strategy', icon: '💰', label: 'Revenue Strategy' }
   ]
 

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import fs from 'fs'
 import https from 'https'
-import { spawn } from 'child_process'
+import { spawn, exec } from 'child_process'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -19,6 +19,10 @@ app.use(express.json())
 // Data storage (in-memory for now, can be upgraded to database)
 let tickets = []
 let dataFilePath = join(__dirname, '../data/tickets-data.json')
+
+// Projects storage (for Project Setup & Onboarding feature)
+let projects = []
+let projectsFilePath = join(__dirname, '../data/projects-data.json')
 
 // Load data from file on startup
 function loadData() {
@@ -92,6 +96,38 @@ function saveData() {
     fs.writeFileSync(dataFilePath, JSON.stringify({ tickets }, null, 2))
   } catch (error) {
     console.error('Error saving data:', error)
+  }
+}
+
+// Load projects data from file
+function loadProjectsData() {
+  try {
+    if (fs.existsSync(projectsFilePath)) {
+      const data = JSON.parse(fs.readFileSync(projectsFilePath, 'utf8'))
+      projects = data.projects || []
+      console.log(`✅ Loaded ${projects.length} projects`)
+    } else {
+      // Initialize empty projects array
+      projects = []
+      saveProjectsData()
+      console.log('✅ Initialized empty projects database')
+    }
+  } catch (error) {
+    console.error('Error loading projects data:', error)
+    projects = []
+  }
+}
+
+// Save projects data to file
+function saveProjectsData() {
+  try {
+    const dataDir = join(__dirname, '../data')
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true })
+    }
+    fs.writeFileSync(projectsFilePath, JSON.stringify({ projects }, null, 2))
+  } catch (error) {
+    console.error('Error saving projects data:', error)
   }
 }
 
@@ -191,6 +227,7 @@ function initializeSampleData() {
 
 // Load data on startup
 loadData()
+loadProjectsData()
 
 // ============================================
 // ROUTES
@@ -1023,6 +1060,298 @@ app.post('/api/azure/sync', async (req, res) => {
       error: error.message
     })
   }
+})
+
+// ============================================
+// PROJECTS API - Project Setup & Onboarding
+// ============================================
+
+// Get all projects
+app.get('/api/projects', (req, res) => {
+  res.json({
+    success: true,
+    data: projects,
+    count: projects.length
+  })
+})
+
+// Get single project
+app.get('/api/projects/:id', (req, res) => {
+  const project = projects.find(p => p.projectId === req.params.id)
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      error: 'Project not found'
+    })
+  }
+  res.json({
+    success: true,
+    data: project
+  })
+})
+
+// Native folder picker utility
+function selectFolder() {
+  return new Promise((resolve, reject) => {
+    const platform = process.platform;
+
+    const finish = (error, stdout, stderr) => {
+      if (error) {
+        const lower = `${stderr || ""} ${error.message || ""}`.toLowerCase();
+        if (error.code === 1 || lower.includes("cancel") || lower.includes("canceled")) {
+          return resolve({ cancelled: true });
+        }
+        return reject(new Error(stderr || error.message || "Failed to open folder picker."));
+      }
+      const selectedPath = String(stdout || "").trim();
+      if (!selectedPath) return resolve({ cancelled: true });
+      return resolve({ path: selectedPath });
+    };
+
+    if (platform === "darwin") {
+      return exec(
+        `osascript -e 'tell application "System Events" to activate' -e 'POSIX path of (choose folder with prompt "Select Project Root Folder")'`,
+        finish,
+      );
+    }
+
+    if (platform === "win32") {
+      const psCommand =
+        "Add-Type -AssemblyName System.Windows.Forms; " +
+        "$f = New-Object System.Windows.Forms.FolderBrowserDialog; " +
+        '$f.Description = "Select Project Root Folder"; ' +
+        "if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { " +
+        "Write-Output $f.SelectedPath }";
+      return exec(`powershell -NoProfile -Command "${psCommand}"`, finish);
+    }
+
+    // Linux fallback: zenity then kdialog
+    return exec(
+      `bash -lc 'if command -v zenity >/dev/null 2>&1; then zenity --file-selection --directory --title="Select Project Root Folder"; elif command -v kdialog >/dev/null 2>&1; then kdialog --getexistingdirectory; else echo "__NO_PICKER__"; fi'`,
+      (error, stdout, stderr) => {
+        if (!error && String(stdout || "").trim() === "__NO_PICKER__") {
+          return reject(new Error("No folder picker found. Install zenity or kdialog, or paste the absolute path manually."));
+        }
+        return finish(error, stdout, stderr);
+      },
+    );
+  });
+}
+
+// POST /api/utils/select-folder
+async function selectFolderHandler(_req, res) {
+  try {
+    const result = await selectFolder();
+    res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+// Register the folder picker endpoint
+app.post('/api/utils/select-folder', selectFolderHandler);
+
+// Create new project (auto-creates onboarding ticket)
+app.post('/api/projects', async (req, res) => {
+  const { projectName, repoPath, description } = req.body
+
+  if (!projectName || !repoPath) {
+    return res.status(400).json({
+      success: false,
+      error: 'projectName and repoPath are required'
+    })
+  }
+
+  // Check if repo path exists
+  if (!fs.existsSync(repoPath)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Repository path does not exist'
+    })
+  }
+
+  // Generate project ID
+  const projectId = `PRJ-${Date.now().toString(36).toUpperCase()}`
+
+  // Create onboarding ticket first
+  const onboardingTicketId = `TKT-Onboard-${Date.now().toString(36).toUpperCase()}`
+  const onboardingTicket = {
+    id: onboardingTicketId,
+    type: 'onboard', // NEW: ticket type field
+    projectId: projectId,
+    title: `Onboarding: ${projectName}`,
+    description: `Initial project setup and documentation structure creation for ${projectName}.\n\nRepository: ${repoPath}\n\nTasks:\n- Create docs/ folder structure\n- Generate base documentation templates\n- Setup project configuration`,
+    status: 'Pending',
+    stage: 'Admin',
+    priority: 'High',
+    assignedRepos: [],
+    assignee: 'Harbor Agent',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    estimatedCompletion: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    progress: 0,
+    tags: ['onboarding', 'project-setup'],
+    harborAgentActive: false,
+    phaseSummaries: {
+      admin: '',
+      analysis: '',
+      planning: '',
+      development: '',
+      testing: ''
+    },
+    activities: []
+  }
+
+  // Log onboarding ticket creation activity
+  onboardingTicket.activities.unshift({
+    id: `ACT-${Date.now()}`,
+    ticketId: onboardingTicketId,
+    timestamp: new Date().toISOString(),
+    action: "Ticket Created",
+    description: "Onboarding ticket auto-created for project setup",
+    user: "System",
+    stage: "Admin"
+  })
+
+  // Add onboarding ticket to tickets array
+  tickets.push(onboardingTicket)
+  saveData()
+
+  // Create project
+  const newProject = {
+    projectId,
+    projectName,
+    repoPath,
+    description: description || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    onboardingCompleted: false,
+    onboardingTicketId: onboardingTicketId
+  }
+
+  projects.push(newProject)
+  saveProjectsData()
+
+  res.json({
+    success: true,
+    message: 'Project created successfully',
+    data: newProject
+  })
+})
+
+// Update project
+app.put('/api/projects/:id', (req, res) => {
+  const project = projects.find(p => p.projectId === req.params.id)
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      error: 'Project not found'
+    })
+  }
+
+  // Update allowed fields
+  const allowedUpdates = ['projectName', 'repoPath', 'description']
+  allowedUpdates.forEach(field => {
+    if (req.body[field] !== undefined) {
+      project[field] = req.body[field]
+    }
+  })
+
+  project.updatedAt = new Date().toISOString()
+  saveProjectsData()
+
+  res.json({
+    success: true,
+    message: 'Project updated',
+    data: project
+  })
+})
+
+// Delete project
+app.delete('/api/projects/:id', (req, res) => {
+  const projectIndex = projects.findIndex(p => p.projectId === req.params.id)
+  if (projectIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      error: 'Project not found'
+    })
+  }
+
+  const deletedProject = projects.splice(projectIndex, 1)[0]
+
+  // Optionally: Also delete the associated onboarding ticket?
+  // For now, we'll leave the ticket but user can delete manually
+
+  saveProjectsData()
+
+  res.json({
+    success: true,
+    message: 'Project deleted',
+    data: deletedProject
+  })
+})
+
+// Complete onboarding for a project
+app.post('/api/projects/:id/complete', (req, res) => {
+  const project = projects.find(p => p.projectId === req.params.id)
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      error: 'Project not found'
+    })
+  }
+
+  // Mark onboarding as completed
+  project.onboardingCompleted = true
+  project.updatedAt = new Date().toISOString()
+  saveProjectsData()
+
+  // Update associated onboarding ticket
+  if (project.onboardingTicketId) {
+    const ticket = tickets.find(t => t.id === project.onboardingTicketId)
+    if (ticket) {
+      ticket.status = 'Completed'
+      ticket.progress = 100
+      ticket.stage = 'Testing'
+      ticket.harborAgentActive = false
+      ticket.updatedAt = new Date().toISOString()
+
+      // Add completion activity
+      ticket.activities.unshift({
+        id: `ACT-${Date.now()}`,
+        ticketId: ticket.id,
+        timestamp: new Date().toISOString(),
+        action: "Project Onboarding Completed",
+        description: `Project onboarding completed for ${project.projectName}`,
+        user: "System",
+        stage: "Testing"
+      })
+
+      saveData()
+    }
+  }
+
+  res.json({
+    success: true,
+    message: 'Project onboarding completed',
+    data: project
+  })
+})
+
+// Get project stats
+app.get('/api/projects/stats/summary', (req, res) => {
+  const totalProjects = projects.length
+  const completedOnboarding = projects.filter(p => p.onboardingCompleted).length
+  const pendingOnboarding = totalProjects - completedOnboarding
+
+  res.json({
+    success: true,
+    data: {
+      total: totalProjects,
+      completed: completedOnboarding,
+      pending: pendingOnboarding
+    }
+  })
 })
 
 // Start Automatic Tracker (for real-time file changes capture)
