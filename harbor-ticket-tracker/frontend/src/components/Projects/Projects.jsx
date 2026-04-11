@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import CreateProjectModal from './CreateProjectModal'
 import './Projects.css'
@@ -10,27 +10,30 @@ function Projects() {
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0 })
+  const lastFetchTime = useRef(0)
+  const isPageVisible = useRef(true)
 
-  // Load projects
-  useEffect(() => {
-    loadProjects()
-  }, [])
+  // Load projects (optimized)
+  const loadProjects = useCallback(async () => {
+    // ✅ OPTIMIZED: Prevent rapid-fire requests
+    const now = Date.now()
+    if (now - lastFetchTime.current < 2000) { // Minimum 2 seconds between requests
+      return
+    }
+    lastFetchTime.current = now
 
-  // Real-time updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      loadProjects()
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
+    // ✅ OPTIMIZED: Only fetch when page is visible
+    if (!isPageVisible.current) return
 
-  const loadProjects = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects`)
       const result = await response.json()
 
       if (result.success) {
-        setProjects(result.data)
+        // ✅ OPTIMIZED: Only update if data changed
+        if (result.data.length !== projects.length) {
+          setProjects(result.data)
+        }
         // Load stats
         const statsResponse = await fetch(`${API_BASE_URL}/projects/stats/summary`)
         const statsResult = await statsResponse.json()
@@ -43,7 +46,34 @@ function Projects() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [projects.length])
+
+  // Initial load
+  useEffect(() => {
+    loadProjects()
+  }, [loadProjects])
+
+  // Page visibility handler
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isPageVisible.current = !document.hidden
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
+  // ✅ OPTIMIZED: Real-time updates with reduced frequency
+  useEffect(() => {
+    // ✅ CHANGED: Poll every 15 seconds instead of 3 seconds (5x less frequent)
+    const interval = setInterval(() => {
+      if (isPageVisible.current) {
+        loadProjects()
+      }
+    }, 15000) // 15 seconds instead of 3
+
+    return () => clearInterval(interval)
+  }, [loadProjects])
 
   const handleCreateProject = async (projectData) => {
     try {

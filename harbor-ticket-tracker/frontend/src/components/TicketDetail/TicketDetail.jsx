@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import FileChanges from './FileChanges'
 import './TicketDetail.css'
@@ -10,33 +10,69 @@ function TicketDetail({ tickets, onDeleteTicket }) {
   const navigate = useNavigate()
   const [selectedStage, setSelectedStage] = useState(null)
   const [currentTicket, setCurrentTicket] = useState(null)
+  const lastFetchTime = useRef(0)
+  const isPageVisible = useRef(true)
 
-  // Fetch fresh ticket data from API
-  useEffect(() => {
-    const fetchTicketData = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/tickets/${id}`, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        })
-        const result = await response.json()
-        if (result.success) {
-          setCurrentTicket(result.data)
-        }
-      } catch (error) {
-        console.error('Error fetching ticket:', error)
-      }
+  // Fetch fresh ticket data from API (optimized)
+  const fetchTicketData = useCallback(async () => {
+    // ✅ OPTIMIZED: Prevent rapid-fire requests
+    const now = Date.now()
+    if (now - lastFetchTime.current < 2000) { // Minimum 2 seconds between requests
+      return
     }
+    lastFetchTime.current = now
 
+    // ✅ OPTIMIZED: Only fetch when page is visible
+    if (!isPageVisible.current) return
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/tickets/${id}`)
+      const result = await response.json()
+
+      if (result.success) {
+        // ✅ OPTIMIZED: Only update if data actually changed
+        setCurrentTicket(prevTicket => {
+          if (!prevTicket) return result.data
+
+          // Quick check - only update if key fields changed
+          if (prevTicket.progress !== result.data.progress ||
+              prevTicket.status !== result.data.status ||
+              prevTicket.stage !== result.data.stage) {
+            return result.data
+          }
+
+          return prevTicket
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching ticket:', error)
+    }
+  }, [id])
+
+  // Initial fetch and polling setup
+  useEffect(() => {
     fetchTicketData()
 
-    // Poll for updates every 2 seconds
-    const interval = setInterval(fetchTicketData, 2000)
+    // ✅ OPTIMIZED: Increased polling interval to 10 seconds (was 2 seconds)
+    // Only poll when page is visible
+    const interval = setInterval(() => {
+      if (isPageVisible.current) {
+        fetchTicketData()
+      }
+    }, 10000) // 10 seconds instead of 2 - 5x less frequent!
+
     return () => clearInterval(interval)
-  }, [id])
+  }, [fetchTicketData])
+
+  // Page visibility handler
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isPageVisible.current = !document.hidden
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
 
   // Use currentTicket for display, fallback to props
   const ticket = currentTicket || tickets.find((t) => t.id === id)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './components/Dashboard/Dashboard'
 import TicketList from './components/TicketList/TicketList'
@@ -19,6 +19,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const lastFetchTime = useRef(0)
+  const isPageVisible = useRef(true)
 
   const handleToggleMobileMenu = () => {
     setIsMobileMenuOpen(prev => !prev)
@@ -33,49 +35,62 @@ function App() {
     loadTickets()
   }, [])
 
-  // Real-time updates from API
+  // Page visibility handler - pause polling when tab is not visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isPageVisible.current = !document.hidden
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
+  // Optimized real-time updates from API
   useEffect(() => {
     if (!isRealTimeEnabled) return
 
-    // ✅ FIXED: Reduced polling interval to 2 seconds for more responsive updates
-    // This ensures progress updates show within 2 seconds of agent updates
+    // ✅ OPTIMIZED: Increased polling interval to 10 seconds to reduce CPU usage
+    // Only poll when page is visible to save resources
     const interval = setInterval(() => {
-      loadTickets() // Fetch latest data from API (tickets now include their activities)
-    }, 2000) // ✅ CHANGED: Poll every 2 seconds (was 5 seconds)
+      if (isPageVisible.current) {
+        loadTickets()
+      }
+    }, 10000) // ✅ CHANGED: Poll every 10 seconds (was 2 seconds) - 5x less frequent!
 
     return () => clearInterval(interval)
   }, [isRealTimeEnabled])
 
-  const loadTickets = async () => {
+  const loadTickets = useCallback(async () => {
+    // ✅ OPTIMIZED: Prevent rapid-fire requests with throttling
+    const now = Date.now()
+    if (now - lastFetchTime.current < 1000) { // Minimum 1 second between requests
+      return
+    }
+    lastFetchTime.current = now
+
     try {
-      // ✅ FIXED: Add cache-busting to prevent stale data
-      const response = await fetch(`${API_BASE_URL}/tickets`, {
-        cache: 'no-store', // ✅ Prevents caching
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      })
+      const response = await fetch(`${API_BASE_URL}/tickets`)
       const result = await response.json()
 
       if (result.success) {
-        // ✅ FIXED: Check if data actually changed before updating state
-        // This prevents unnecessary re-renders and ensures real-time updates
+        // ✅ OPTIMIZED: Only update if data actually changed (cheap comparison first)
         setTickets(prevTickets => {
-          // Simple comparison - if length changed, data probably changed
+          // Quick check - if length changed, data definitely changed
           if (result.data.length !== prevTickets.length) {
             return result.data
           }
 
-          // Deep comparison of ticket data
-          const ticketsChanged = JSON.stringify(result.data) !== JSON.stringify(prevTickets)
-          if (ticketsChanged) {
-            return result.data
-          }
+          // ✅ OPTIMIZED: Only deep compare if necessary (check progress/status)
+          // This is much faster than full JSON.stringify
+          const hasChanges = result.data.some((newTicket, index) => {
+            const oldTicket = prevTickets[index]
+            return !oldTicket ||
+              newTicket.progress !== oldTicket.progress ||
+              newTicket.status !== oldTicket.status ||
+              newTicket.stage !== oldTicket.stage
+          })
 
-          // Data hasn't changed, but we still want to trigger re-render for UI updates
-          // Force update by creating new array reference
-          return [...result.data]
+          return hasChanges ? result.data : prevTickets
         })
         setError(null)
       } else {
@@ -87,7 +102,7 @@ function App() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const deleteTicket = async (ticketId) => {
     return new Promise((resolve) => {
