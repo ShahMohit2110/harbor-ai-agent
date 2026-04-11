@@ -35,6 +35,45 @@
 - ✅ Development (50-75%): Perform actual implementation
 - ✅ Testing (75-100%): Validate and test the implementation
 
+**🚨 TICKET TYPE DETECTION - ONBOARDING vs REGULAR:**
+
+**🆕 NEW: Onboarding Tickets (v11.3.1):**
+
+Before starting work, agent MUST check ticket type:
+
+```javascript
+// Get ticket details from API
+const ticket = await fetchTicketDetails(ticketId)
+
+// Check ticket type
+const ticketType = ticket.type || "task"
+
+if (ticketType === "onboard") {
+  // → ONBOARDING WORKFLOW
+  // Reference: workflows/onboarding-workflow.md
+  // - Get project details
+  // - Create docs/ folder structure
+  // - Fill base documentation templates
+  // - Complete project onboarding
+  // - Skip regular analysis phases
+} else {
+  // → REGULAR WORKFLOW (this document)
+  // Continue with Phase 0: Documentation Gate
+}
+```
+
+**How to identify onboarding tickets:**
+- `ticket.type === "onboard"`
+- Title usually starts with "Onboarding: {ProjectName}"
+- Has `ticket.projectId` field
+- Auto-created when user creates a project
+
+**🚨 DO NOT mix workflows:**
+- Onboarding tickets → Only create docs, NO implementation
+- Regular tickets → Full workflow including implementation
+
+---
+
 **🚨 DYNAMIC PATH CONFIGURATION:**
 
 All commands in this workflow use dynamic paths. Set environment variable:

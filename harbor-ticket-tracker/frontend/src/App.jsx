@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './components/Dashboard/Dashboard'
 import TicketList from './components/TicketList/TicketList'
 import TicketDetail from './components/TicketDetail/TicketDetail'
+import Projects from './components/Projects/Projects'
 import RevenueStrategy from './components/RevenueStrategy/RevenueStrategy'
 import Sidebar from './components/Shared/Sidebar'
 import Header from './components/Shared/Header'
@@ -323,6 +324,10 @@ function App() {
               <Route
                 path="/ticket/:id"
                 element={<TicketDetail tickets={tickets} onDeleteTicket={deleteTicket} />}
+              />
+              <Route
+                path="/projects"
+                element={<Projects />}
               />
               <Route
                 path="/revenue-strategy"

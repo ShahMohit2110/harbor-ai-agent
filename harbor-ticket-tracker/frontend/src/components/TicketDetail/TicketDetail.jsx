@@ -165,32 +165,14 @@ function TicketDetail({ tickets, onDeleteTicket }) {
         <Link to="/tickets" className="back-link">
           ← Back to Tickets
         </Link>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-          <div style={{ flex: 1 }}>
+        <div className="detail-header-actions">
+          <div className="detail-header-title">
             <h1 className="page-title">{ticket.title}</h1>
             <p className="page-subtitle">{ticket.id}</p>
           </div>
           <button
             onClick={handleDelete}
-            className="btn btn-delete"
-            style={{
-              background: 'rgba(239, 68, 68, 0.15)',
-              color: '#ef4444',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              padding: '0.625rem 1.25rem',
-              borderRadius: '8px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(239, 68, 68, 0.25)'
-              e.target.style.transform = 'translateY(-1px)'
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(239, 68, 68, 0.15)'
-              e.target.style.transform = 'translateY(0)'
-            }}
+            className="btn-delete"
           >
             🗑️ Delete Ticket
           </button>
