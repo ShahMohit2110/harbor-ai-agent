@@ -6,10 +6,9 @@
 
 **🚨 BEFORE DOING ANYTHING, AGENT MUST:**
 1. ✅ Read `NO-NEW-REPOS.md`
-2. ✅ Discover ALL existing repositories
-3. ✅ Choose ONE existing repository
-4. ✅ Work in that existing repository
-5. ✅ NEVER create new repository
+2. ✅ Get current ticket's project details
+3. ✅ Work in that project's repository
+4. ✅ NEVER create new repository
 
 **This is NON-NEGOTIABLE.**
 
@@ -52,7 +51,7 @@ if (ticketType === "onboard") {
   // → ONBOARDING WORKFLOW
   // Reference: workflows/onboarding-workflow.md
   // - Get project details
-  // - Create docs/ folder structure
+  // - Create ai-docs/{projectRepoName}/ folder structure
   // - Fill base documentation templates
   // - Complete project onboarding
   // - Skip regular analysis phases
@@ -188,16 +187,16 @@ cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
 
 **BEFORE DOING ANYTHING ELSE, AGENT MUST:**
 
-1. ✅ Discover ALL repositories in workspace
-2. ✅ Check EACH repository has docs/ folder
-3. ✅ Count .md files in EACH docs/ folder
-4. ✅ Verify EACH repo has EXACTLY 12 .md files
+1. ✅ Get the CURRENT ticket's project details
+2. ✅ Check that project has folder in `ai-docs/`
+3. ✅ Count .md files in `ai-docs/{projectName}/`
+4. ✅ Verify the CURRENT project has EXACTLY 12 .md files
 5. ✅ Generate missing files if count < 12
-6. ✅ Re-verify ALL repos have 12/12 files
-7. ✅ Output "✅ ALL REPOS: Documentation complete"
+6. ✅ Re-verify the CURRENT project has 12/12 files
+7. ✅ Output "✅ PROJECT Documentation complete"
 8. ✅ ONLY THEN proceed to task
 
-**🚨 IF ANY REPO HAS < 12 FILES:**
+**🚨 IF THE CURRENT PROJECT HAS < 12 FILES:**
 - ❌ TASK IS BLOCKED
 - ❌ DO NOT analyze requirements
 - ❌ DO NOT write code
@@ -217,31 +216,37 @@ cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
 
 ---
 
-## 📚 Phase 0: Documentation Gate (AUTOMATIC - NON-SKIPPABLE - ALL REPOS - MANDATORY)
+## 📚 Phase 0: Documentation Gate (AUTOMATIC - NON-SKIPPABLE - CURRENT PROJECT - MANDATORY)
 
 **Reference:** `workflows/DOCUMENTATION-GATE-MANDATORY.md` ⭐ PRIMARY - USE THIS
 
-**🚨 CRITICAL: DOCUMENTATION MUST BE COMPLETE FOR EVERY REPOSITORY**
+**🚨 CRITICAL: DOCUMENTATION MUST BE COMPLETE FOR THE CURRENT TICKET'S PROJECT**
 
 **🚨 CRITICAL: THIS IS THE ABSOLUTE FIRST STEP - MUST EXECUTE BEFORE ANYTHING ELSE**
 
 **Agent MUST:**
-1. ✅ EXECUTE documentation gate checks (use Bash tool to run commands)
-2. ✅ COUNT files in each repo (must be exactly 12)
-3. ✅ GENERATE missing files (use Write tool)
-4. ✅ VERIFY all repos have 12/12 files
-5. ✅ OUTPUT verification summary
-6. ✅ ONLY THEN proceed to Phase 0.5
+1. ✅ GET current ticket's project details
+2. ✅ CHECK that project's ai-docs/ folder
+3. ✅ COUNT files in that project's folder (must be exactly 12)
+4. ✅ GENERATE missing files (use Write tool)
+5. ✅ VERIFY the project has 12/12 files
+6. ✅ OUTPUT verification summary
+7. ✅ ONLY THEN proceed to Phase 0.5
 
 **Expected Output:**
 ```bash
-🔍 Discovered repositories: [list all repos]
-📚 Checking: [each repo]
-✅/❌ [file count and generation]
-🔍 FINAL VERIFICATION
-✅ ALL REPOS: Documentation complete
-✅ Total repos validated: [count]
-✅ Each repo has 12/12 files present
+🎯 Target Project: [project name]
+📁 Checking ai-docs for: [project folder]
+✅/❌ AI-DOCS FOLDER EXISTS
+   Current files: X/12
+✅/❌ Documentation complete
+🔍 VERIFICATION
+Documentation Status:
+  Project: [project name]
+  Location: ai-docs/[project folder]
+  Files: 12/12
+✅ DOCUMENTATION COMPLETE
+✅ Project has all 12 required files
 🟢 PROCEEDING TO TASK EXECUTION
 ```
 
@@ -256,9 +261,9 @@ cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
 **🚨 CRITICAL: AGENT MUST ACTUALLY EXECUTE THESE COMMANDS, NOT JUST READ THEM**
 
 **Agent MUST:**
-1. ✅ ACTUALLY RUN the repository discovery command (not just read it)
-2. ✅ ACTUALLY CHECK each repo's docs folder (not just assume it exists)
-3. ✅ ACTUALLY COUNT files in each docs folder (not just check existence)
+1. ✅ ACTUALLY GET the current ticket's project details from API
+2. ✅ ACTUALLY CHECK that project's ai-docs folder (not just assume it exists)
+3. ✅ ACTUALLY COUNT files in that ai-docs folder (not just check existence)
 4. ✅ OUTPUT the validation results (must show "X/12 files present")
 5. ✅ ACTUALLY CREATE missing files if count < 12
 6. ✅ OUTPUT "Generating missing file..." for each missing file
@@ -268,51 +273,54 @@ cd "${HARBOR_TRACKER_UTILS:-./harbor-ticket-tracker/backend/src/utils}"
 
 ---
 
-### Step 1: Discover ALL Repositories (MUST EXECUTE - NOT JUST READ)
+### Step 1: Get Current Ticket's Project Details (TARGETED CHECK - MANDATORY)
+
+**🚨 IMPORTANT: Only check the SPECIFIC project for the current ticket, NOT all repositories**
 
 ```bash
-# Find ALL git repositories in workspace (dynamic discovery)
-WORKSPACE_ROOT=$(pwd)
-while [ "$WORKSPACE_ROOT" != "/" ] && [ ! -d "$WORKSPACE_ROOT/.git" ]; do
-  WORKSPACE_ROOT=$(dirname "$WORKSPACE_ROOT")
-done
+# For ONBOARDING tickets: Get project from ticket
+# For REGULAR tickets: Get affected repos from ticket
 
-cd "$WORKSPACE_ROOT"
+# Get current ticket details (this will be provided by agent)
+TICKET_ID="{CURRENT_TICKET_ID}"
+PROJECT_ID="{CURRENT_PROJECT_ID}"
 
-# Discover ALL repos dynamically
-find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||' | sort
+# Fetch ticket details to get affected repos
+TICKET_DETAILS=$(curl -s http://localhost:3001/api/tickets/$TICKET_ID)
+
+# Extract the project/repo this ticket is for
+# For onboarding tickets: get project from projectId
+# For regular tickets: get assignedRepos from ticket
+if [ "$PROJECT_ID" != "" ]; then
+    # Onboarding ticket - get the specific project
+    PROJECT_DETAILS=$(curl -s http://localhost:3001/api/projects/$PROJECT_ID)
+    REPO_PATH=$(echo "$PROJECT_DETAILS" | jq -r '.data.repoPath')
+    PROJECT_NAME=$(echo "$PROJECT_DETAILS" | jq -r '.data.projectName')
+
+    # Sanitize project name for folder
+    REPO_FOLDER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+
+    echo "🎯 Target Project: $PROJECT_NAME"
+    echo "📁 Checking ai-docs for: $REPO_FOLDER"
+else
+    # Regular ticket - might have multiple repos
+    # For now, skip repo scanning for regular tickets
+    echo "ℹ️  Regular ticket - repo scanning not required"
+    echo "✅ Proceeding with task execution"
+    exit 0
+fi
+
+# Navigate to workspace root
+cd "$REPO_PATH"
 ```
 
-**🚨 NOTE: Repositories are discovered dynamically at runtime.**
-**NO hardcoded list. The `find` command will discover ALL git repositories automatically.**
+### Step 2: Validate Documentation for Current Project (MANDATORY - BLOCKS TASK EXECUTION)
 
-**Example of what might be discovered (NOT a hardcoded list):**
-```
-Result will vary based on what's in your workspace.
-Example: harbor-ai, harborApp, harborWebsite, harborUserSvc, etc.
-Actual list is discovered dynamically when agent runs.
-```
+**🚨 CRITICAL: THIS STEP BLOCKS TASK EXECUTION UNTIL DOCUMENTATION IS COMPLETE**
 
-### Step 2: Validate Documentation for EVERY Repository (MANDATORY - BLOCKS TASK EXECUTION)
+**🚨 CRITICAL: ONLY CHECK THE CURRENT TICKET'S PROJECT, NOT ALL REPOSITORIES**
 
-**🚨 CRITICAL: THIS STEP BLOCKS TASK EXECUTION UNTIL ALL DOCUMENTATION IS COMPLETE**
-
-**🚨 CRITICAL: READ ALL DOCUMENTATION FROM ALL EXISTING SERVICES FIRST**
-
-**Before making ANY decision about which service to use, agent MUST:**
-
-**First, validate EVERY repo has complete documentation:**
-
-1. ✅ Read ARCHITECTURE.md from EVERY existing service
-2. ✅ Read SERVICE_RULES.md from EVERY existing service
-3. ✅ Read STRUCTURE.md from EVERY existing service
-4. ✅ Understand what each service can handle
-5. ✅ Find existing service that can handle the task
-6. ✅ ONLY if ALL services explicitly prohibit task, consider new service
-
-**🚨 IF THIS STEP IS SKIPPED: BLOCKED**
-
-**For EACH discovered repository, check if `/docs` folder exists and has ALL 12 required files:**
+**Check if the current project's `ai-docs/` folder exists and has ALL 12 required files:**
 
 **Required Documentation Files (12 Total - MANDATORY):**
 1. **ARCHITECTURE.md** - Service overview, relationships, dependency graph
@@ -328,23 +336,32 @@ Actual list is discovered dynamically when agent runs.
 11. **DEVELOPMENT_RULES.md** - Coding standards, conventions
 12. **GIT_RULES.md** - Git rules (NO PUSH, NO BRANCHES)
 
-**For EACH repository, check:**
+**For the CURRENT project, check:**
 
 ```bash
-for repo in $(find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||'); do
-    echo "Checking $repo/docs/..."
+echo "📚 Checking documentation for current project: $REPO_FOLDER"
 
-    # Check if docs folder exists
-    if [ ! -d "$repo/docs" ]; then
-        echo "❌ NO DOCS FOLDER: $repo"
-        echo "   Creating docs folder and generating all 12 files..."
-        mkdir -p "$repo/docs"
-        # Generate all 12 files
-    else
-        echo "✅ DOCS FOLDER EXISTS: $repo"
-    fi
+# Check if ai-docs/{repoName}/ folder exists
+if [ ! -d "ai-docs/$REPO_FOLDER" ]; then
+    echo "❌ NO AI-DOCS FOLDER: ai-docs/$REPO_FOLDER/"
+    echo "   Creating ai-docs/$REPO_FOLDER/ folder..."
+    mkdir -p "ai-docs/$REPO_FOLDER"
+    echo "   ✅ Created: ai-docs/$REPO_FOLDER/"
+else
+    echo "✅ AI-DOCS FOLDER EXISTS: ai-docs/$REPO_FOLDER/"
+fi
 
-    # Check if all 12 required files exist
+# Count .md files in ai-docs/{repoName}/
+MD_COUNT=$(find "ai-docs/$REPO_FOLDER" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+
+echo "   Current files: $MD_COUNT/12"
+
+# Check if exactly 12 files
+if [ "$MD_COUNT" -ne 12 ]; then
+    echo "❌ INCOMPLETE: $REPO_FOLDER has only $MD_COUNT/12 files"
+    echo "   MISSING: $((12 - MD_COUNT)) files"
+
+    # List required files
     REQUIRED_FILES=(
         "ARCHITECTURE.md"
         "STRUCTURE.md"
@@ -360,38 +377,43 @@ for repo in $(find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/
         "GIT_RULES.md"
     )
 
+    # Check which files are missing
     MISSING_FILES=()
-
     for file in "${REQUIRED_FILES[@]}"; do
-        if [ ! -f "$repo/docs/$file" ]; then
+        if [ ! -f "ai-docs/$REPO_FOLDER/$file" ]; then
             MISSING_FILES+=("$file")
         fi
     done
 
-    if [ ${#MISSING_FILES[@]} -gt 0 ]; then
-        echo "❌ MISSING FILES in $repo/docs/:"
-        for file in "${MISSING_FILES[@]}"; do
-            echo "   - $file"
-        done
-        echo "   Generating missing files..."
-        # Generate missing files
-    else
-        echo "✅ ALL 12 FILES PRESENT: $repo/docs/"
-    fi
-done
+    echo "   Generating ${#MISSING_FILES[@]} missing files..."
+
+    # Generate each missing file
+    for file in "${MISSING_FILES[@]}"; do
+        echo "   📝 Generating: ai-docs/$REPO_FOLDER/$file"
+        # Use Write tool to generate the file
+        # Generate appropriate content based on:
+        # - Repo type (backend/frontend/shared)
+        # - File type (ARCHITECTURE vs STRUCTURE vs etc.)
+        # - Existing code in the repo
+    done
+
+    echo "   ✅ Generated all missing files for $REPO_FOLDER"
+else
+    echo "✅ COMPLETE: $REPO_FOLDER has all 12 files"
+fi
 ```
 
-**🚨 CRITICAL CHECKLIST (Must be TRUE for EVERY repo):**
+**🚨 CRITICAL CHECKLIST (Must be TRUE for CURRENT project):**
 
 ```markdown
 ## Documentation Validation Report
 
-**Discovered Repositories:** {count} (discovered dynamically via `find` command)
+**Target Project:** {PROJECT_NAME}
+**Location:** ai-docs/{PROJECT_FOLDER}
 
-### Per-Repository Documentation Status:
+### Documentation Status:
 
-**{DYNAMIC-REPO-NAME-1}:**
-- [ ] docs/ folder exists
+- [ ] ai-docs/{projectFolder}/ folder exists
 - [ ] ARCHITECTURE.md present
 - [ ] STRUCTURE.md present
 - [ ] DEPENDENCIES.md present
@@ -406,76 +428,38 @@ done
 - [ ] GIT_RULES.md present
 - Status: {COMPLETE/INCOMPLETE}
 
-**{DYNAMIC-REPO-NAME-2}:**
-- [ ] [Same checklist for each discovered repo]
-- Status: {COMPLETE/INCOMPLETE}
-
-**[Continue for ALL dynamically discovered repos - one checklist per repo]**
-
 **🚨 CRITICAL: Agent MUST OUTPUT this exact validation summary:**
 
 ```bash
-🔍 FINAL VALIDATION
-✅ ALL REPOS: Documentation complete
-✅ Total repos validated: {count}
-✅ Each repo has 12/12 files present
+🔍 VERIFICATION
+
+Documentation Status:
+  Project: {PROJECT_NAME}
+  Location: ai-docs/{PROJECT_FOLDER}
+  Files: 12/12
+
+✅ DOCUMENTATION COMPLETE
+✅ Project has all 12 required files
+✅ ai-docs location: {REPO_PATH}/ai-docs/{PROJECT_FOLDER}/
 🟢 PROCEEDING TO TASK EXECUTION
 ```
 
 **If agent does NOT output this summary, Phase 0 FAILED.**
 
----
-
-### Special Repo Types (Detected Dynamically):
-
-**React Native Apps (e.g., [REACT-NATIVE-APP-NAME]):**
-If a repo is detected as React Native, additional checks:
-- [ ] STRUCTURE.md covers React Native project structure
-- [ ] DEPENDENCIES.md covers npm packages, React Native dependencies
-- [ ] DATABASE.md covers Realm/SQLite if applicable
-- [ ] MODEL_FLOW.md covers component flow, state management
-- [ ] API_PATTERNS.md covers API integration patterns
-- [ ] AUTH.md covers React Native auth (tokens, biometrics)
-- [ ] SERVICE_RULES.md covers React Native development rules
-- [ ] SHARED_SERVICES.md covers shared React Native components
-- [ ] CHANGE_IMPACT.md covers React Native bundle rebuild impact
-- [ ] DEVELOPMENT_RULES.md covers React Native coding standards
-- [ ] GIT_RULES.md covers NO PUSH rule
-
-**Frontend Apps (e.g., Next.js, React):**
-If a repo is detected as Frontend, additional checks:
-- [ ] STRUCTURE.md covers frontend project structure
-- [ ] DEPENDENCIES.md covers npm packages
-- [ ] API_PATTERNS.md covers API integration patterns
-- [ ] Other frontend-specific documentation
-
-**Backend Services (e.g., Node.js, Python):**
-If a repo is detected as Backend Service, additional checks:
-- [ ] DATABASE.md covers database schema
-- [ ] MODEL_FLOW.md covers data flow
-- [ ] API_PATTERNS.md covers endpoint patterns
-- [ ] Other backend-specific documentation
-
-### Summary:
-- Total Repos Discovered: {count} (discovered dynamically)
-- Repos with Complete Docs: {count}
-- Repos with Incomplete Docs: 0
-- Overall Status: ✅ COMPLETE (proceed) OR ❌ INCOMPLETE (fix first)
-```
-
-**If ANY repository has incomplete documentation:**
+**If the current project has incomplete documentation:**
 ```
 ❌ DOCUMENTATION INCOMPLETE
-Repository: {repo-name}
+Project: {PROJECT_NAME}
+Location: ai-docs/{PROJECT_FOLDER}
 Missing Files: {list}
 Action: AUTO-GENERATING MISSING FILES...
 Please wait...
-✅ Documentation generation complete for {repo-name}
+✅ Documentation generation complete for {PROJECT_NAME}
 ```
 
 **Only proceed to task execution when:**
 ```
-✅ ALL repositories have docs/ folder
+✅ ALL repositories have folder in ai-docs/
 ✅ ALL repositories have ALL 12 required .md files
 ✅ NO missing documentation in any repo
 ✅ ALL repos validated
@@ -508,55 +492,64 @@ CANNOT PROCEED UNTIL ALL DOCUMENTATION IS COMPLETE
 4. ✅ Only then proceed to task
 ```
 
-### Step 3: READ ALL Documentation (MANDATORY - CRITICAL)
+### Step 3: READ Current Project's Documentation (MANDATORY - CRITICAL)
 
 **🚨 THIS STEP CANNOT BE SKIPPED 🚨**
 
-**For EVERY repository, READ EVERY .md file:**
+**For the CURRENT ticket's project, READ the 12 documentation files:**
 
 ```bash
-# Navigate to workspace root
-cd "$WORKSPACE_ROOT"
+# Navigate to repo path
+cd "$REPO_PATH"
 
-# For EACH repository
-for repo in $(find "$WORKSPACE_ROOT" -maxdepth 2 -type d -name ".git" | sed 's|/.git||'); do
-    echo "📚 READING DOCUMENTATION: $repo"
-    cd "$repo"
+echo "📚 READING DOCUMENTATION FOR: $PROJECT_NAME"
+echo "📁 Location: ai-docs/$REPO_FOLDER/"
 
-    # READ EVERY .md file in docs/
-    for md_file in docs/*.md; do
-        echo "  📖 READING: $md_file"
-        # Actually READ the file content
-        cat "$md_file"
-        # Store in context
-        echo "  ✅ LOADED INTO CONTEXT: $md_file"
-    done
+# READ the 12 required documentation files
+REQUIRED_FILES=(
+    "ARCHITECTURE.md"
+    "STRUCTURE.md"
+    "DEPENDENCIES.md"
+    "DATABASE.md"
+    "MODEL_FLOW.md"
+    "API_PATTERNS.md"
+    "AUTH.md"
+    "SERVICE_RULES.md"
+    "SHARED_SERVICES.md"
+    "CHANGE_IMPACT.md"
+    "DEVELOPMENT_RULES.md"
+    "GIT_RULES.md"
+)
 
-    cd ..
+for file in "${REQUIRED_FILES[@]}"; do
+    if [ -f "ai-docs/$REPO_FOLDER/$file" ]; then
+        echo "  📖 READING: ai-docs/$REPO_FOLDER/$file"
+        # Actually READ the file content (use Read tool)
+        cat "ai-docs/$REPO_FOLDER/$file"
+        echo "  ✅ LOADED INTO CONTEXT: $file"
+    else
+        echo "  ⚠️  FILE NOT FOUND: ai-docs/$REPO_FOLDER/$file"
+    fi
 done
 ```
 
 **🚨 CRITICAL VALIDATION CHECKLIST:**
 
 Before proceeding to implementation, verify:
-- [ ] Discovered ALL repos dynamically (no hardcoded list!)
-- [ ] READ [EACH-DISCOVERED-REPO]/docs/ARCHITECTURE.md
-- [ ] READ [EACH-DISCOVERED-REPO]/docs/STRUCTURE.md
-- [ ] READ [EACH-DISCOVERED-REPO]/docs/DEPENDENCIES.md (if exists)
-- [ ] READ [EACH-DISCOVERED-REPO]/docs/SERVICE_RULES.md (if exists)
-- [ ] READ [EACH-DISCOVERED-REPO]/docs/SHARED_SERVICES.md (if exists)
-- [ ] READ [EACH-DISCOVERED-REPO]/docs/CHANGE_IMPACT.md (if exists)
-- [ ] READ ALL other .md files in docs/ for EACH repo
-- [ ] Special attention to React Native repos (detected dynamically)
-- [ ] Special attention to Frontend repos (detected dynamically)
-- [ ] Special attention to Backend repos (detected dynamically)
-
-**🚨 FOR ALL DISCOVERED REPOS (dynamic list, not hardcoded):**
-- [ ] Repeat for ALL repositories found via find command
-- [ ] NO exceptions
-- [ ] NO skipping
-- [ ] Output checklist with ACTUAL discovered repo names (not hardcoded!)
-- [ ] READ EVERYTHING
+- [ ] Read ai-docs/{PROJECT_FOLDER}/ARCHITECTURE.md
+- [ ] Read ai-docs/{PROJECT_FOLDER}/STRUCTURE.md
+- [ ] Read ai-docs/{PROJECT_FOLDER}/DEPENDENCIES.md
+- [ ] Read ai-docs/{PROJECT_FOLDER}/DATABASE.md (if applicable)
+- [ ] Read ai-docs/{PROJECT_FOLDER}/MODEL_FLOW.md (if applicable)
+- [ ] Read ai-docs/{PROJECT_FOLDER}/API_PATTERNS.md (if applicable)
+- [ ] Read ai-docs/{PROJECT_FOLDER}/AUTH.md (if applicable)
+- [ ] Read ai-docs/{PROJECT_FOLDER}/SERVICE_RULES.md
+- [ ] Read ai-docs/{PROJECT_FOLDER}/SHARED_SERVICES.md
+- [ ] Read ai-docs/{PROJECT_FOLDER}/CHANGE_IMPACT.md
+- [ ] Read ai-docs/{PROJECT_FOLDER}/DEVELOPMENT_RULES.md
+- [ ] Read ai-docs/{PROJECT_FOLDER}/GIT_RULES.md
+- [ ] ALL files loaded into context
+- [ ] Ready to proceed to task execution
 
 ### Step 4: ONLY THEN Proceed to Implementation
 
@@ -630,10 +623,11 @@ harbor-ticket-update "TKT-${AZURE_DEVOPS_ID}" 5 "Admin" "Harbor AI Agent started
 ```
 
 **✅ THEN: While in Admin phase, DO:**
-1. Discover all repositories
-2. Read documentation from each repository
-3. Validate documentation completeness
-4. ONLY after all docs are read → Proceed to Checkpoint 1
+1. Get current ticket's project details
+2. Check that project's ai-docs folder
+3. Read documentation from that project
+4. Validate documentation completeness (12 files)
+5. ONLY after docs are read → Proceed to Checkpoint 1
 
 **⚠️ DO NOT proceed to Checkpoint 1 until documentation gate is complete!**
 
@@ -682,17 +676,17 @@ Progress: 5%, Stage: Admin, Status: In Progress
 **Reference:** `workflows/PROGRESS-UPDATE-MANDATORY.md`
 
 **⚠️ WHEN TO RUN THIS CHECKPOINT:**
-- ✅ AFTER all repositories have been discovered
-- ✅ AFTER all documentation has been read
+- ✅ AFTER current ticket's project details are retrieved
+- ✅ AFTER that project's documentation has been read
 - ✅ AFTER documentation gate is validated complete
 - ❌ DO NOT run this at the start - only AFTER documentation work is DONE!
 
 **What happens during Admin phase (before this checkpoint):**
 1. Agent starts working (Checkpoint 0)
-2. Discovers all repositories
-3. Reads ARCHITECTURE.md from each repo
-4. Reads SERVICE_RULES.md from each repo
-5. Validates all required docs exist
+2. Gets current ticket's project details
+3. Reads ARCHITECTURE.md from that project
+4. Reads SERVICE_RULES.md from that project
+5. Validates all required docs exist (12 files)
 6. **THEN this checkpoint marks Admin complete and Analysis begins**
 
 **After Phase 0 (Documentation Gate) completes, agent MUST:**

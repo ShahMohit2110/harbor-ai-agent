@@ -219,7 +219,7 @@ sudo apt-get install jq
 User: "start harbor-ai"
 
 # 2. Agent reads pending tickets
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/data"
 cat tickets-data.json | jq '[.tickets[] | select(.status == "pending" or .status == "In Progress")] | sort_by(.priority, .createdAt) | .[0]'
 
 # 3. Output: Highest priority ticket

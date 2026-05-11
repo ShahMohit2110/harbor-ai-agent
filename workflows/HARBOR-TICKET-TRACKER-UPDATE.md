@@ -28,7 +28,7 @@
 
 ```bash
 # Navigate to utils directory
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 
 # Update progress (25% - Analysis complete)
 node ticketTrackerIntegration.js update "TKT-137" 25 "Planning" "Analysis phase complete - all docs read and validated"
@@ -174,7 +174,7 @@ curl -s http://localhost:3001/api/tickets/TKT-137 | jq '.data | {id, status, sta
 
 **Solution:**
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 ls -la ticketTrackerIntegration.js
 ```
 
@@ -198,7 +198,7 @@ If file doesn't exist, check:
 ```bash
 # 1. Agent starts working
 echo "🎯 Agent starting work on TKT-137"
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 node ticketTrackerIntegration.js update "TKT-137" 10 "Analysis" "Harbor AI Agent started working"
 
 # 2. Agent completes analysis phase

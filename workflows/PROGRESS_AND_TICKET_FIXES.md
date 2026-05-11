@@ -16,7 +16,7 @@
 - If ticket doesn't exist: Create new ticket
 
 **Fixed File:**
-- `/Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils/mandatory-ticket-creation.sh`
+- `$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils/mandatory-ticket-creation.sh`
 
 **How it works now:**
 ```bash
@@ -61,7 +61,7 @@
 ```bash
 # At each phase completion, agent MUST execute:
 
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 
 # 25% - After documentation
 node ticketTrackerIntegration.js update "TKT-137" 25 "Development" "Documentation complete"

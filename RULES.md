@@ -29,9 +29,9 @@
 
 ### 3. 🚨 DOCUMENTATION FIRST
 **Agent MUST:**
-- Validate ALL repos have docs/ folder
-- Validate ALL repos have 12/12 .md files
-- Generate missing files automatically
+- Validate ALL repos have folder in `ai-docs/`
+- Validate ALL repos have 12/12 .md files in `ai-docs/{repoName}/`
+- Generate missing files automatically in centralized location
 - ONLY proceed when documentation is complete
 
 **Required files:** ARCHITECTURE.md, STRUCTURE.md, DEPENDENCIES.md, DATABASE.md, MODEL_FLOW.md, API_PATTERNS.md, AUTH.md, SERVICE_RULES.md, SHARED_SERVICES.md, CHANGE_IMPACT.md, DEVELOPMENT_RULES.md, GIT_RULES.md
@@ -61,6 +61,7 @@
 - `workflows/DOCUMENTATION-GATE-MANDATORY.md`
 - `workflows/multi-frontend-implementation.md`
 - `memory/HARBOR_NO_PUSH_RULE.md`
+- `IDOCS-MIGRATION-GUIDE.md` - Documentation architecture migration guide
 
 ---
 

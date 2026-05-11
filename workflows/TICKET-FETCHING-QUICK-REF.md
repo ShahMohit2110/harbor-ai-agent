@@ -1,3 +1,5 @@
+# DYNAMIC PATH RESOLUTION - Add at top of bash scripts
+export HARBOR_AI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../.."
 # 🎫 Ticket Fetching Quick Reference
 
 **Harbor AI Agent v2.0 - Harbor Ticket Tracker Integration**
@@ -12,7 +14,7 @@
 ### **Fetch Pending Tickets (One-Liner)**
 
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data && \
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/data" && \
 cat tickets-data.json | jq '[.tickets[] | select(.status == "pending" or .status == "In Progress")] | sort_by(.priority, .createdAt) | .[0]'
 ```
 
@@ -23,7 +25,7 @@ cat tickets-data.json | jq '[.tickets[] | select(.status == "pending" or .status
 ### **1. View All Pending Tickets**
 
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/data"
 
 cat tickets-data.json | jq '.tickets[] | select(.status == "pending" or .status == "In Progress")'
 ```
@@ -137,7 +139,7 @@ jq --version
 ### **Backend not running?**
 
 ```bash
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend"
 node src/server.js
 ```
 
@@ -224,7 +226,7 @@ curl -s http://localhost:3001/api/tickets/TKT-{ID} | python3 -c "import sys, jso
 
 ```bash
 # 1. Fetch highest priority pending ticket
-TICKET_JSON=$(cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data && \
+TICKET_JSON=$(cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/data" && \
 cat tickets-data.json | jq '[.tickets[] | select(.status == "pending" or .status == "In Progress")] | sort_by(.priority, .createdAt) | .[0]')
 
 # 2. Extract ticket ID

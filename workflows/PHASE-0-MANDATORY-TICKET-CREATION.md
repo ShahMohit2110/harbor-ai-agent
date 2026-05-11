@@ -27,7 +27,10 @@
 
 ```bash
 # Read tickets from Harbor Ticket Tracker
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data
+# DYNAMIC PATH: Auto-detect harbor-ai root and navigate to tracker data
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HARBOR_AI_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/data"
 
 # View all tickets
 cat tickets-data.json | jq '.tickets[] | select(.status == "pending" or .status == "In Progress") | {id, title, priority, status, assignee}'
@@ -216,7 +219,10 @@ curl -s http://localhost:3001/api/tickets | jq ".data[] | select(.id == \"${TICK
 
 ```bash
 # Step 1: Read tickets from Harbor Ticket Tracker
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/data
+# DYNAMIC PATH: Auto-detect harbor-ai root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HARBOR_AI_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/data"
 
 # Step 2: Get highest priority pending ticket
 cat tickets-data.json | jq '[.tickets[] | select(.status == "pending" or .status == "In Progress")] | sort_by(.priority, .createdAt) | .[0]'

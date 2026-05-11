@@ -74,7 +74,7 @@ Based on agent execution logs analysis, the Harbor AI Agent was:
 **Content:**
 ```bash
 # Update Progress to 25% (Analysis Stage)
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 25 "Analysis" "Documentation gate complete - all docs read and validated"
 
 # Verify
@@ -88,7 +88,7 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 **Content:**
 ```bash
 # Update Progress to 50% (Development Stage)
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 50 "Development" "Documentation and analysis complete - starting implementation"
 
 # Verify
@@ -102,7 +102,7 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 **Content:**
 ```bash
 # Update Progress to 75% (Testing Stage)
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 75 "Testing" "Implementation complete - starting testing phase"
 
 # Verify
@@ -116,7 +116,7 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 **Content:**
 ```bash
 # Update Progress to 90% (Deployment Stage)
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 node ticketTrackerIntegration.js update "TKT-${AZURE_DEVOPS_ID}" 90 "Deployment" "Testing complete - all tests passing, ready for deployment"
 
 # Verify
@@ -130,7 +130,7 @@ curl -s http://localhost:3001/api/tickets/TKT-${AZURE_DEVOPS_ID} | grep -o '"pro
 **Content:**
 ```bash
 # Update Progress to 100% (Ticket Complete)
-cd /Users/mohitshah/Documents/HarborService/harbor-ai/harbor-ticket-tracker/backend/src/utils
+cd "$HARBOR_AI_ROOT/harbor-ticket-tracker/backend/src/utils"
 node ticketTrackerIntegration.js complete "TKT-${AZURE_DEVOPS_ID}" "Successfully completed ${AZURE_DEVOPS_TITLE}. Implementation complete, all tests passing, code committed locally."
 
 # Verify

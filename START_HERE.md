@@ -16,8 +16,8 @@
 
 **Agent MUST:**
 1. ✅ Discover ALL repositories in workspace
-2. ✅ Check EACH repository has docs/ folder
-3. ✅ Count .md files in EACH docs/ folder (must be 12)
+2. ✅ Check EACH repository has folder in `ai-docs/`
+3. ✅ Count .md files in `ai-docs/{repoName}/` (must be 12)
 4. ✅ Generate missing files if count < 12
 5. ✅ Re-verify ALL repos have 12/12 files
 6. ✅ Output "✅ ALL REPOS: Documentation complete"

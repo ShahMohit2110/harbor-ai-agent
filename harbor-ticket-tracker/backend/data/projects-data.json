@@ -1,3 +1,14 @@
 {
-  "projects": []
+  "projects": [
+    {
+      "projectId": "PRJ-MNVEUEQJ",
+      "projectName": "Harbor Backend Services",
+      "repoPath": "/Users/mohitshah/Documents/HarborService/",
+      "description": "Harbor backend micro service project repo.",
+      "createdAt": "2026-04-12T06:56:28.714Z",
+      "updatedAt": "2026-04-12T07:16:14.790Z",
+      "onboardingCompleted": true,
+      "onboardingTicketId": "TKT-Onboard-MNVEUEQJ"
+    }
+  ]
 }
